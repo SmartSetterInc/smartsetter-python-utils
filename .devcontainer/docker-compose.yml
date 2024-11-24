@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  python:
+    build:
+      context: ../
+      dockerfile: ./.devcontainer/Dockerfile
+    volumes:
+      - ../:/app:z
+  
