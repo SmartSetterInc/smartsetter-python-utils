@@ -6,9 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "smartsetter-utils"
 version = "0.1"
 dynamic = ["dependencies", "optional-dependencies"]
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
-optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
 description = "Common utilities used by SmartSetter projects"
 requires-python = ">= 3.12"
 authors = [
@@ -31,6 +28,10 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
 
 [project.urls]
 Homepage = "https://www.smartsetter.com/"
