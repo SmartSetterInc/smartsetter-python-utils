@@ -14,6 +14,15 @@ def download_s3_file(filename, bucket_name="smartsetter-media", file_suffix=None
     return temp_download
 
 
+def upload_s3_file(file, file_name, bucket_name="smartsetter-media"):
+    file.seek(0)
+    return get_boto_client("s3").upload_fileobj(
+        Fileobj=open(file.name, "rb"),
+        Bucket=bucket_name,
+        Key=file_name,
+    )
+
+
 def download_extract_iterate_s3_zipfile(filename, bucket_name="smartsetter-media"):
     temp_download = download_s3_file(filename, bucket_name, file_suffix=".zip")
     zip_file = zipfile.ZipFile(open(temp_download.name, "rb"))
