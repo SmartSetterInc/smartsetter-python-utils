@@ -30,8 +30,8 @@ classifiers = [
 ]
 
 [tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
-optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
+dependencies = {file = ["requirements/requirements.txt"]}
+optional-dependencies = {dev = { file = ["requirements/requirements-dev.txt"] }}
 
 [project.urls]
 Homepage = "https://www.smartsetter.com/"
