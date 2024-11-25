@@ -80,5 +80,53 @@ class AirtableWebhookAPI:
         return {"authorization": f"Bearer {settings.AIRTABLE_API_KEY}"}
 
 
+def iterate_airtable_records(airtable_webhook: AirtableWebhook):
+    airtable_webhook_api = AirtableWebhookAPI(airtable_webhook.base_id)
+    payloads = airtable_webhook_api.list_webhook_payloads(airtable_webhook.airtable_id)
+    records = []
+
+    for payload in payloads:
+        base_transaction_number = payload.get("baseTransactionNumber")
+        if (
+            not airtable_webhook.last_transaction_number
+            or airtable_webhook.last_transaction_number < base_transaction_number
+        ):
+            airtable_webhook.last_transaction_number = base_transaction_number
+            airtable_webhook.save()
+            changed_table_id = list(payload["changedTablesById"].keys())[0]
+            changed_table_data = payload["changedTablesById"][changed_table_id]
+            created_record_id = None
+            deleted_record_ids = []
+            updated_record_id = None
+            if "createdRecordsById" in changed_table_data:
+                # record created
+                created_record_id = list(
+                    changed_table_data["createdRecordsById"].keys()
+                )[0]
+            elif "destroyedRecordIds" in changed_table_data:
+                # record deleted
+                deleted_record_ids.extend(changed_table_data["destroyedRecordIds"])
+            elif "changedRecordsById" in changed_table_data:
+                # record updated
+                updated_record_id = list(
+                    changed_table_data["changedRecordsById"].keys()
+                )[0]
+            if created_record_id:
+                records.append((created_record_id, changed_table_id, "created"))
+            elif deleted_record_ids:
+                for deleted_record_id in deleted_record_ids:
+                    records.append((deleted_record_id, changed_table_id, "deleted"))
+            elif updated_record_id:
+                records.append((updated_record_id, changed_table_id, "updated"))
+    return records
+
+
+def initiate_process_airtable_webhook(webhook_id):
+    airtable_webhook = AirtableWebhook.objects.get(airtable_id=webhook_id)
+    records = iterate_airtable_records(airtable_webhook)
+
+    return airtable_webhook, records
+
+
 def get_airtable_table(table_name, base_id=settings.AIRTABLE_BASE_KEY):
     return AirtableAPI(settings.AIRTABLE_API_KEY).table(base_id, table_name)
