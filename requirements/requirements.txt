@@ -6,3 +6,4 @@ phonenumbers==8.13.32
 hubspot-api-client==8.2.1
 pyairtable==2.1.0.post1
 requests==2.32.3
+googlemaps==4.5.3
