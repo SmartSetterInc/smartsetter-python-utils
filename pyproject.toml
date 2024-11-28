@@ -33,5 +33,11 @@ classifiers = [
 dependencies = {file = ["requirements/requirements.txt"]}
 optional-dependencies = {dev = { file = ["requirements/requirements-dev.txt"] }}
 
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "smartsetter_utils.django_settings"
+python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
+django_find_project = false
+pythonpath = "."
+
 [project.urls]
 Homepage = "https://www.smartsetter.com/"
