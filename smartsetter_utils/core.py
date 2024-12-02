@@ -14,13 +14,10 @@ def run_task_in_transaction(task, *args, **kwargs):
 
 
 def format_phone(phone: str):
-    try:
-        return phonenumbers.format_number(
-            phonenumbers.parse(phone, "US"),
-            phonenumbers.PhoneNumberFormat.E164,
-        )
-    except phonenumbers.NumberParseException:
-        return phone
+    return phonenumbers.format_number(
+        phonenumbers.parse(phone, "US"),
+        phonenumbers.PhoneNumberFormat.E164,
+    )
 
 
 def validate_passwords(password_1, password_2):
