@@ -55,7 +55,7 @@ def import_from_reality_db():
         Agent.objects.update_cached_stats()
 
 
-@shared_task(name="realitydb.pull_reality_db_updates")
+@shared_task(name="ssot.pull_reality_db_updates")
 def pull_reality_db_updates():
     connection = get_reality_db_connection()
 
