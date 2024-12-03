@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.13-bullseye
+ARG PYTHON_VERSION=3.12-bullseye
 
 # define an alias for the specfic python version used in this file.
 FROM python:${PYTHON_VERSION} as python
@@ -6,14 +6,19 @@ FROM python:${PYTHON_VERSION} as python
 # Python build stage
 FROM python as python-build-stage
 
-ARG BUILD_ENVIRONMENT=production
-
 # Install apt packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
   # psycopg2 dependencies
-  libpq-dev
+  libpq-dev \
+  # postgis dependencies
+  proj-bin \
+  libgeos-dev \
+  libxml2 \
+  libjson-c-dev \
+  gdal-bin \
+  libsqlite3-mod-spatialite
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements/* .
@@ -30,7 +35,6 @@ ARG APP_HOME=/app
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV BUILD_ENV ${BUILD_ENVIRONMENT}
 
 WORKDIR ${APP_HOME}
 

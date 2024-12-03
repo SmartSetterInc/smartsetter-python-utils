@@ -4,3 +4,4 @@ pre-commit==4.0.1
 pytest==8.3.3
 pytest-django==4.9.0
 django-test-plus==2.2.4
+factory-boy==3.3.0

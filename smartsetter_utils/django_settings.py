@@ -13,7 +13,7 @@ USE_TZ = True
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
+        "ENGINE": "django.contrib.gis.db.backends.spatialite",
         "NAME": ":memory:",
         "USER": "",
         "PASSWORD": "",
@@ -62,7 +62,9 @@ INSTALLED_APPS = (
     "django.contrib.staticfiles",
     "django.contrib.admin",
     "django.contrib.humanize",
+    "django.contrib.gis",
     "smartsetter_utils.airtable",
+    "smartsetter_utils.ssot",
 )
 
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
@@ -92,3 +94,6 @@ PASSWORD_HASHERS = [
 ELASTICSEARCH_RESEARCH_URL = ""
 AIRTABLE_API_KEY = ""
 AIRTABLE_BASE_KEY = ""
+
+HUBSPOT_ACCESS_TOKEN = ""
+ENVIRONMENT = "test"

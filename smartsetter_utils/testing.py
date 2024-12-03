@@ -11,7 +11,7 @@ from smartsetter_utils.elasticsearch import create_elasticsearch_connection
 class TestMixin:
     def get_test_file(self, app_name, filename):
         return Path(__file__).parent.parent.joinpath(
-            app_name, "tests", "files", filename
+            "smartsetter_utils", app_name, "tests", "files", filename
         )
 
     def read_test_file(self, app_name, filename, mode="r"):
