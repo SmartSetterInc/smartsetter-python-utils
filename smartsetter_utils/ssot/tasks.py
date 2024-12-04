@@ -4,6 +4,7 @@ import time
 
 import isodate
 import pymysql.cursors
+import pymysql.err
 from celery import shared_task
 from django.conf import settings
 from hubspot.crm.companies import (
@@ -30,7 +31,13 @@ from smartsetter_utils.ssot.utils import format_phone, get_reality_db_hubspot_cl
 @shared_task
 def import_from_reality_db():
     def iterate_all_create_in_batches(ModelClass):
-        cursor.execute(f"SELECT * FROM {ModelClass.reality_table_name}")
+        while True:
+            try:
+                cursor.execute(f"SELECT * FROM {ModelClass.reality_table_name}")
+            except pymysql.err.OperationalError:
+                time.sleep(30)
+            else:
+                break
         # this fetchmany doesn't reduce memory usage because all data
         # has been fetched already
         while many_fetched := cursor.fetchmany(1000):
