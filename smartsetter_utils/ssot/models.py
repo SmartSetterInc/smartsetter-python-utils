@@ -367,6 +367,9 @@ class AgentQuerySet(CommonQuerySet):
             queryset = filter_method(**{f"{field_name}__{field_lookup}": filter_value})
         return queryset
 
+    def list_view_queryset(self):
+        return self.select_related("mls", "brand").annotate_extended_stats()
+
 
 class Agent(RealityDBBase, LifecycleModelMixin, CommonEntity):
 
