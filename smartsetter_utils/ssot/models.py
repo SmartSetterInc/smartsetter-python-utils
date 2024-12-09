@@ -436,8 +436,8 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonEntity):
     @staticmethod
     def get_property_dict_from_reality_dict(reality_dict):
         return {
-            "name": reality_dict["AgentName"],
-            "email": reality_dict["Email"],
+            "name": reality_dict["AgentName"].title(),
+            "email": reality_dict["Email"].lower(),
             "office": Office.objects.get_by_id_or_none(
                 Office.get_id_from_reality_dict(reality_dict)
             ),
