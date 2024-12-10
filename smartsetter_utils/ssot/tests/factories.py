@@ -31,6 +31,7 @@ class BrandFactory(factory.django.DjangoModelFactory):
 
 class OfficeFactory(factory.django.DjangoModelFactory):
     id = factory.Faker("password")
+    name = factory.Faker("name")
     office_id = factory.Faker("random_letter")
     address = factory.Faker("address")
     city = factory.Faker("city")
