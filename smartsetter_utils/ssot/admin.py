@@ -25,7 +25,7 @@ class OfficeAdmin(admin.ModelAdmin):
             "zipcode",
             "state",
             "years_in_business",
-            "mls_id",
+            "mls",
         )
         readonly_fields = fields
 
@@ -83,11 +83,19 @@ class OfficeAdmin(admin.ModelAdmin):
         "state",
         "zipcode",
         "phone",
-        "mls_id",
+        "mls",
         "hubspot_link",
     )
-    readonly_fields = ("hubspot_link",)
-    search_fields = ("name", "address", "city", "state", "zipcode", "phone", "mls_id")
+    readonly_fields = ("hubspot_link", "mls")
+    search_fields = (
+        "name",
+        "address",
+        "city",
+        "state",
+        "zipcode",
+        "phone",
+        "mls__name",
+    )
     inlines = [AgentsInline, ListingTransactionsInline, SellingTransactionsInline]
 
     @admin.display(description="HubSpot Link")
@@ -153,7 +161,7 @@ class AgentAdmin(admin.ModelAdmin):
         "zipcode",
         "state",
         "years_in_business",
-        "mls_id",
+        "mls",
         "office",
     )
     raw_id_fields = ("office",)
@@ -166,7 +174,7 @@ class AgentAdmin(admin.ModelAdmin):
         "city",
         "zipcode",
         "state",
-        "mls_id",
+        "mls__name",
     )
     inlines = [ListingTransactionsInline, SellingTransactionsInline]
 
