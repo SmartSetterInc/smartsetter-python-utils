@@ -31,13 +31,7 @@ from smartsetter_utils.ssot.utils import format_phone, get_reality_db_hubspot_cl
 @shared_task
 def import_from_reality_db():
     def iterate_all_create_in_batches(ModelClass):
-        while True:
-            try:
-                cursor.execute(f"SELECT * FROM {ModelClass.reality_table_name}")
-            except pymysql.err.OperationalError:
-                time.sleep(30)
-            else:
-                break
+        guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
         # this fetchmany doesn't reduce memory usage because all data
         # has been fetched already
         while many_fetched := cursor.fetchmany(1000):
@@ -67,7 +61,7 @@ def pull_reality_db_updates():
     connection = get_reality_db_connection()
 
     def update_or_create_items(ModelClass):
-        cursor.execute(f"SELECT * FROM {ModelClass.reality_table_name}")
+        guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
         for reality_dict in cursor.fetchall():
             item_id = ModelClass.get_id_from_reality_dict(reality_dict)
             try:
@@ -244,3 +238,13 @@ def get_reality_db_connection():
         database=settings.REALITY_DB_NAME,
         cursorclass=pymysql.cursors.DictCursor,
     )
+
+
+def guarded_cursor_execute(cursor, statement):
+    while True:
+        try:
+            cursor.execute(statement)
+        except pymysql.err.OperationalError:
+            time.sleep(30)
+        else:
+            break
