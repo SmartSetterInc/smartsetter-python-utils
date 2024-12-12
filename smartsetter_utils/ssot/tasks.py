@@ -30,29 +30,16 @@ from smartsetter_utils.ssot.utils import format_phone, get_reality_db_hubspot_cl
 
 @shared_task
 def import_from_reality_db():
-    def iterate_all_create_in_batches(ModelClass):
-        guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
-        # this fetchmany doesn't reduce memory usage because all data
-        # has been fetched already
-        while many_fetched := cursor.fetchmany(1000):
-            instances = []
-            for reality_dict in many_fetched:
-                try:
-                    instances.append(ModelClass.from_reality_dict(reality_dict))
-                except BadDataException:
-                    continue
-            ModelClass.objects.bulk_create(instances)
-
     MLS.import_from_s3()
     Brand.create_from_mapping_sheet()
 
     connection = get_reality_db_connection()
 
     with connection.cursor() as cursor:
-        iterate_all_create_in_batches(Office)
+        iterate_all_create_in_batches(Office, cursor)
         # warning: doesn't assign brands to agents. Use pull_reality_db_updates instead
-        iterate_all_create_in_batches(Agent)
-        iterate_all_create_in_batches(Transaction)
+        iterate_all_create_in_batches(Agent, cursor)
+        iterate_all_create_in_batches(Transaction, cursor)
         Agent.objects.update_cached_stats()
 
 
@@ -238,6 +225,20 @@ def get_reality_db_connection():
         database=settings.REALITY_DB_NAME,
         cursorclass=pymysql.cursors.DictCursor,
     )
+
+
+def iterate_all_create_in_batches(ModelClass, cursor):
+    guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
+    # this fetchmany doesn't reduce memory usage because all data
+    # has been fetched already
+    while many_fetched := cursor.fetchmany(1000):
+        instances = []
+        for reality_dict in many_fetched:
+            try:
+                instances.append(ModelClass.from_reality_dict(reality_dict))
+            except BadDataException:
+                continue
+        ModelClass.objects.bulk_create(instances)
 
 
 def guarded_cursor_execute(cursor, statement):
