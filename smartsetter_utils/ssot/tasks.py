@@ -14,6 +14,7 @@ from hubspot.crm.contacts import (
     SimplePublicObjectInputForCreate as HubspotCreateContactInput,
 )
 from hubspot.crm.contacts.exceptions import ApiException as HubSpotContactsApiException
+from django.db.utils import IntegrityError
 
 from smartsetter_utils.aws_utils import download_s3_file
 from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
@@ -33,14 +34,11 @@ def import_from_reality_db():
     MLS.import_from_s3()
     Brand.create_from_mapping_sheet()
 
-    connection = get_reality_db_connection()
-
-    with connection.cursor() as cursor:
-        iterate_all_create_in_batches(Office, cursor)
-        # warning: doesn't assign brands to agents. Use pull_reality_db_updates instead
-        iterate_all_create_in_batches(Agent, cursor)
-        iterate_all_create_in_batches(Transaction, cursor)
-        Agent.objects.update_cached_stats()
+    iterate_all_create_in_batches("o")
+    # warning: doesn't assign brands to agents. Use pull_reality_db_updates instead
+    iterate_all_create_in_batches("a")
+    iterate_all_create_in_batches("t")
+    Agent.objects.update_cached_stats()
 
 
 @shared_task(name="ssot.pull_reality_db_updates")
@@ -217,28 +215,34 @@ def populate_hubspot_database(limit=None):
     Office.objects.bulk_update(offices, ["hubspot_id"], batch_size=1000)
 
 
-def get_reality_db_connection():
-    return pymysql.connect(
-        host=settings.REALITY_DB_HOST,
-        user=settings.REALITY_DB_USER,
-        password=settings.REALITY_DB_PASSWORD,
-        database=settings.REALITY_DB_NAME,
-        cursorclass=pymysql.cursors.DictCursor,
-    )
-
-
-def iterate_all_create_in_batches(ModelClass, cursor):
-    guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
-    # this fetchmany doesn't reduce memory usage because all data
-    # has been fetched already
-    while many_fetched := cursor.fetchmany(1000):
-        instances = []
-        for reality_dict in many_fetched:
+@shared_task
+def iterate_all_create_in_batches(model_class_name: str):
+    model_class_name_to_model_class_map = {
+        "a": Agent,
+        "o": Office,
+        "t": Transaction
+    }
+    ModelClass = model_class_name_to_model_class_map[model_class_name]
+    connection = get_reality_db_connection()
+    with connection.cursor() as cursor:
+        guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
+        # this fetchmany doesn't reduce memory usage because all data
+        # has been fetched already
+        while many_fetched := cursor.fetchmany(1000):
+            instances = []
+            for reality_dict in many_fetched:
+                try:
+                    instances.append(ModelClass.from_reality_dict(reality_dict))
+                except BadDataException:
+                    continue
             try:
-                instances.append(ModelClass.from_reality_dict(reality_dict))
-            except BadDataException:
-                continue
-        ModelClass.objects.bulk_create(instances)
+                ModelClass.objects.bulk_create(instances)
+            except IntegrityError:
+                for instance in instances:
+                    try:
+                        instance.save()
+                    except IntegrityError:
+                        continue
 
 
 def guarded_cursor_execute(cursor, statement):
@@ -249,3 +253,13 @@ def guarded_cursor_execute(cursor, statement):
             time.sleep(30)
         else:
             break
+
+
+def get_reality_db_connection():
+    return pymysql.connect(
+        host=settings.REALITY_DB_HOST,
+        user=settings.REALITY_DB_USER,
+        password=settings.REALITY_DB_PASSWORD,
+        database=settings.REALITY_DB_NAME,
+        cursorclass=pymysql.cursors.DictCursor,
+    )
