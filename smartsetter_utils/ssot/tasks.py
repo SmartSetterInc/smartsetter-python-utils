@@ -245,6 +245,11 @@ def iterate_all_create_in_batches(model_class_name: str):
                         continue
 
 
+@shared_task
+def update_agent_cached_stats():
+    Agent.objects.update_cached_stats()
+
+
 def guarded_cursor_execute(cursor, statement):
     while True:
         try:

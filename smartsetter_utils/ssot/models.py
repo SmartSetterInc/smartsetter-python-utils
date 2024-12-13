@@ -9,7 +9,7 @@ import more_itertools
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.files import File
-from django.db.models import F
+from django.db.models import F, Sum
 from django.db.models.functions import Cast, Greatest
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
 from django_lifecycle.models import LifecycleModelMixin
@@ -277,12 +277,8 @@ class AgentQuerySet(CommonQuerySet):
             for agent in agent_group:
                 agent.listing_transactions_count = agent.listing_transactions.count()
                 agent.selling_transactions_count = agent.selling_transactions.count()
-                agent.listing_production = sum(
-                    agent.listing_transactions.values_list("list_price", flat=True)
-                )
-                agent.selling_production = sum(
-                    agent.selling_transactions.values_list("sold_price", flat=True)
-                )
+                agent.listing_production = agent.listing_transactions.aggregate(listing_production=Sum("list_price"))["listing_production"]
+                agent.selling_production = agent.selling_transactions.aggregate(selling_production=Sum("sold_price"))["selling_production"]
             Agent.objects.bulk_update(
                 agent_group,
                 [
