@@ -277,8 +277,18 @@ class AgentQuerySet(CommonQuerySet):
             for agent in agent_group:
                 agent.listing_transactions_count = agent.listing_transactions.count()
                 agent.selling_transactions_count = agent.selling_transactions.count()
-                agent.listing_production = agent.listing_transactions.aggregate(listing_production=Sum("list_price"))["listing_production"] or 0
-                agent.selling_production = agent.selling_transactions.aggregate(selling_production=Sum("sold_price"))["selling_production"] or 0
+                agent.listing_production = (
+                    agent.listing_transactions.aggregate(
+                        listing_production=Sum("list_price")
+                    )["listing_production"]
+                    or 0
+                )
+                agent.selling_production = (
+                    agent.selling_transactions.aggregate(
+                        selling_production=Sum("sold_price")
+                    )["selling_production"]
+                    or 0
+                )
             Agent.objects.bulk_update(
                 agent_group,
                 [
@@ -392,6 +402,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonEntity):
         Office, related_name="agents", null=True, blank=True, on_delete=models.SET_NULL
     )
     office_name = models.CharField(max_length=128, db_index=True)
+    job_title = models.CharField(max_length=64, null=True, blank=True)
     brand = models.ForeignKey(
         Brand, related_name="agents", null=True, on_delete=models.SET_NULL
     )
