@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from smartsetter_utils.ssot.models import Agent, Office, Transaction
+from smartsetter_utils.ssot.models import MLS, Agent, Office, Transaction
 
 
 class NoAddMixin:
@@ -198,3 +198,8 @@ class TransactionAdmin(admin.ModelAdmin):
         "zipcode",
         "state_code",
     )
+
+
+@admin.register(MLS)
+class MLSAdmin(admin.ModelAdmin):
+    list_display = ["name", "table_name"]
