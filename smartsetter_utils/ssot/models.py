@@ -1,7 +1,6 @@
 import csv
 import functools
 import mimetypes
-import re
 import tempfile
 import urllib.request
 from decimal import Decimal
@@ -22,7 +21,11 @@ from smartsetter_utils.airtable.utils import get_airtable_table
 from smartsetter_utils.aws_utils import read_brand_code_mapping_sheet
 from smartsetter_utils.core import run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
-from smartsetter_utils.ssot.utils import format_phone, get_reality_db_hubspot_client
+from smartsetter_utils.ssot.utils import (
+    format_phone,
+    get_brand_fixed_office_name,
+    get_reality_db_hubspot_client,
+)
 
 
 class CommonQuerySet(models.QuerySet):
@@ -229,16 +232,8 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonEntity):
 
     @staticmethod
     def get_property_dict_from_reality_dict(reality_dict):
-        office_name = reality_dict["Office"]
-        for brand in cached_brands():
-            for mark in brand.marks:
-                if mark in office_name.lower():
-                    office_name = re.sub(
-                        mark, brand.name, office_name, flags=re.IGNORECASE
-                    )
-                    break
         data = {
-            "name": office_name,
+            "name": get_brand_fixed_office_name(reality_dict["Office"]),
             "office_id": reality_dict["OfficeID"],
             **CommonEntity.get_common_properties_from_reality_dict(
                 reality_dict, "Phone"
