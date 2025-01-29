@@ -458,7 +458,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonEntity):
             "office": Office.objects.get_by_id_or_none(
                 Office.get_id_from_reality_dict(reality_dict)
             ),
-            "office_name": reality_dict["OfficeName"],
+            "office_name": get_brand_fixed_office_name(reality_dict["OfficeName"]),
             "years_in_business": reality_dict["YIB"],
             **CommonEntity.get_common_properties_from_reality_dict(
                 reality_dict, "AgentPhone", "Zipcode"
