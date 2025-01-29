@@ -1,5 +1,7 @@
 import csv
+import functools
 import mimetypes
+import re
 import tempfile
 import urllib.request
 from decimal import Decimal
@@ -127,6 +129,11 @@ class Brand(TimeStampedModel):
         ordering = ("name",)
 
 
+@functools.cache
+def cached_brands():
+    return Brand.objects.all()
+
+
 class CommonEntity(TimeStampedModel):
     address = models.CharField(max_length=128, db_index=True)
     city = models.CharField(max_length=128, db_index=True)
@@ -222,8 +229,16 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonEntity):
 
     @staticmethod
     def get_property_dict_from_reality_dict(reality_dict):
+        office_name = reality_dict["Office"]
+        for brand in cached_brands():
+            for mark in brand.marks:
+                if mark in office_name.lower():
+                    office_name = re.sub(
+                        mark, brand.name, office_name, flags=re.IGNORECASE
+                    )
+                    break
         data = {
-            "name": reality_dict["Office"],
+            "name": office_name,
             "office_id": reality_dict["OfficeID"],
             **CommonEntity.get_common_properties_from_reality_dict(
                 reality_dict, "Phone"

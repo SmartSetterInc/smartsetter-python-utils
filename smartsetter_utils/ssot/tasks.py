@@ -7,6 +7,7 @@ import pymysql.cursors
 import pymysql.err
 from celery import shared_task
 from django.conf import settings
+from django.db.utils import IntegrityError
 from hubspot.crm.companies import (
     SimplePublicObjectInputForCreate as HubSpotCompanyInputForCreate,
 )
@@ -14,7 +15,6 @@ from hubspot.crm.contacts import (
     SimplePublicObjectInputForCreate as HubspotCreateContactInput,
 )
 from hubspot.crm.contacts.exceptions import ApiException as HubSpotContactsApiException
-from django.db.utils import IntegrityError
 
 from smartsetter_utils.aws_utils import download_s3_file
 from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
@@ -25,6 +25,7 @@ from smartsetter_utils.ssot.models import (
     Brand,
     Office,
     Transaction,
+    cached_brands,
 )
 from smartsetter_utils.ssot.utils import format_phone, get_reality_db_hubspot_client
 
@@ -70,7 +71,7 @@ def process_agent_fields(agent_id, agent=None):
     if not agent:
         agent = Agent.objects.select_related("office").get(id=agent_id)
 
-    for brand in Brand.objects.all():
+    for brand in cached_brands():
         for mark in brand.marks:
             if (
                 agent.email
@@ -217,11 +218,7 @@ def populate_hubspot_database(limit=None):
 
 @shared_task
 def iterate_all_create_in_batches(model_class_name: str):
-    model_class_name_to_model_class_map = {
-        "a": Agent,
-        "o": Office,
-        "t": Transaction
-    }
+    model_class_name_to_model_class_map = {"a": Agent, "o": Office, "t": Transaction}
     ModelClass = model_class_name_to_model_class_map[model_class_name]
     connection = get_reality_db_connection()
     with connection.cursor() as cursor:
