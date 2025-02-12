@@ -1,6 +1,8 @@
+import enum
 from urllib.parse import urlunparse
 
 import phonenumbers
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
@@ -37,3 +39,21 @@ def absolute_link(url_name, *args, **kwargs):
     return urlunparse(
         (protocol, site.domain, reverse(url_name, args=args, kwargs=kwargs), "", "", "")
     )
+
+
+class Environments(enum.StrEnum):
+    TESTING = "testing"
+    LIVE_DEV = "live-dev"
+    LIVE_PROD = "live-prod"
+
+    @classmethod
+    def is_testing(cls):
+        return settings.ENVIRONMENT == cls.TESTING
+
+    @classmethod
+    def is_dev(cls):
+        return settings.ENVIRONMENT in [cls.LIVE_DEV, "development"]
+
+    @classmethod
+    def is_prod(cls):
+        return settings.ENVIRONMENT == cls.LIVE_PROD
