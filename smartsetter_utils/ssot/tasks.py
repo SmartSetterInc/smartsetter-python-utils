@@ -17,6 +17,7 @@ from hubspot.crm.contacts import (
 from hubspot.crm.contacts.exceptions import ApiException as HubSpotContactsApiException
 
 from smartsetter_utils.aws_utils import download_s3_file
+from smartsetter_utils.core import Environments
 from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
 from smartsetter_utils.ssot.models import (
     MLS,
@@ -44,6 +45,9 @@ def import_from_reality_db():
 
 @shared_task(name="ssot.pull_reality_db_updates")
 def pull_reality_db_updates():
+    if Environments.is_dev():
+        return
+
     connection = get_reality_db_connection()
 
     def update_or_create_items(ModelClass):
