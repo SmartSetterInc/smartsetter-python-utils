@@ -36,10 +36,10 @@ def import_from_reality_db():
     MLS.import_from_s3()
     Brand.create_from_mapping_sheet()
 
-    iterate_all_create_in_batches("o")
+    iterate_all_create_in_batches(ModelClassMapper.office_id)
     # warning: doesn't assign brands to agents. Use pull_reality_db_updates instead
-    iterate_all_create_in_batches("a")
-    iterate_all_create_in_batches("t")
+    iterate_all_create_in_batches(ModelClassMapper.agent_id)
+    iterate_all_create_in_batches(ModelClassMapper.transaction_id)
     Agent.objects.update_cached_stats()
 
 
@@ -48,26 +48,9 @@ def pull_reality_db_updates():
     if Environments.is_dev():
         return
 
-    connection = get_reality_db_connection()
-
-    def update_or_create_items(ModelClass):
-        guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
-        for reality_dict in cursor.fetchall():
-            item_id = ModelClass.get_id_from_reality_dict(reality_dict)
-            try:
-                ModelClass.objects.update_or_create(
-                    id=item_id,
-                    defaults=ModelClass.get_property_dict_from_reality_dict(
-                        reality_dict
-                    ),
-                )
-            except BadDataException:
-                continue
-
-    with connection.cursor() as cursor:
-        update_or_create_items(Office)
-        update_or_create_items(Agent)
-        update_or_create_items(Transaction)
+    update_or_create_items(ModelClassMapper.office_id)
+    update_or_create_items(ModelClassMapper.agent_id)
+    update_or_create_items(ModelClassMapper.transaction_id)
 
 
 @shared_task
@@ -222,8 +205,7 @@ def populate_hubspot_database(limit=None):
 
 @shared_task
 def iterate_all_create_in_batches(model_class_name: str):
-    model_class_name_to_model_class_map = {"a": Agent, "o": Office, "t": Transaction}
-    ModelClass = model_class_name_to_model_class_map[model_class_name]
+    ModelClass = ModelClassMapper.get_model_class_from_id(model_class_name)
     connection = get_reality_db_connection()
     with connection.cursor() as cursor:
         guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
@@ -251,11 +233,30 @@ def update_agent_cached_stats():
     Agent.objects.update_cached_stats()
 
 
+@shared_task
+def update_or_create_items(model_class_id):
+    ModelClass = ModelClassMapper.get_model_class_from_id(model_class_id)
+    connection = get_reality_db_connection()
+    with connection.cursor() as cursor:
+        guarded_cursor_execute(cursor, f"SELECT * FROM {ModelClass.reality_table_name}")
+        for reality_dict in cursor.fetchall():
+            item_id = ModelClass.get_id_from_reality_dict(reality_dict)
+            try:
+                ModelClass.objects.update_or_create(
+                    id=item_id,
+                    defaults=ModelClass.get_property_dict_from_reality_dict(
+                        reality_dict
+                    ),
+                )
+            except BadDataException:
+                continue
+
+
 def guarded_cursor_execute(cursor, statement):
     while True:
         try:
             cursor.execute(statement)
-        except pymysql.err.OperationalError:
+        except (pymysql.err.OperationalError, pymysql.err.InterfaceError):
             time.sleep(30)
         else:
             break
@@ -269,3 +270,19 @@ def get_reality_db_connection():
         database=settings.REALITY_DB_NAME,
         cursorclass=pymysql.cursors.DictCursor,
     )
+
+
+class ModelClassMapper:
+    agent_id = "a"
+    office_id = "o"
+    transaction_id = "t"
+
+    @staticmethod
+    def get_model_class_from_id(id):
+        match id:
+            case ModelClassMapper.agent_id:
+                return Agent
+            case ModelClassMapper.office_id:
+                return Office
+            case _:
+                return Transaction
