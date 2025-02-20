@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 from django.utils.html import format_html
 
 from smartsetter_utils.ssot.models import MLS, Agent, Office, Transaction
@@ -202,4 +203,28 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(MLS)
 class MLSAdmin(admin.ModelAdmin):
-    list_display = ["name", "table_name"]
+    list_display = ["name", "table_name", "agents", "offices", "transactions"]
+    readonly_fields = ["agents", "offices", "transactions"]
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(
+                agent_count=Count("agents"),
+                office_count=Count("offices"),
+                transaction_count=Count("transactions"),
+            )
+        )
+
+    @admin.display(description="Agents", ordering="agent_count")
+    def agents(self, mls):
+        return mls.agent_count
+
+    @admin.display(description="Offices", ordering="office_count")
+    def offices(self, mls):
+        return mls.office_count
+
+    @admin.display(description="Transactions", ordering="transaction_count")
+    def transactions(self, mls):
+        return mls.transaction_count
