@@ -18,7 +18,7 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
 from smartsetter_utils.airtable.utils import get_airtable_table
-from smartsetter_utils.aws_utils import read_brand_code_mapping_sheet
+from smartsetter_utils.aws_utils import download_s3_file, read_brand_code_mapping_sheet
 from smartsetter_utils.core import run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
 from smartsetter_utils.ssot.utils import (
@@ -575,3 +575,15 @@ class Zipcode(TimeStampedModel):
     zipcode = models.CharField(max_length=16, db_index=True)
     city = models.CharField(max_length=64)
     state = models.CharField(max_length=16)
+
+    @classmethod
+    def import_from_s3(cls):
+        zipcodes_file = download_s3_file("Zipcodes.csv")
+        csv_reader = csv.DictReader(open(zipcodes_file.name, "r"))
+        Zipcode.objects.bulk_create(
+            [
+                Zipcode(zipcode=row["zip"], city=row["city"], state=row["state_id"])
+                for row in csv_reader
+            ],
+            batch_size=1000,
+        )
