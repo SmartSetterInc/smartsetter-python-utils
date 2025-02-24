@@ -26,6 +26,7 @@ from smartsetter_utils.ssot.models import (
     Brand,
     Office,
     Transaction,
+    Zipcode,
     cached_brands,
 )
 from smartsetter_utils.ssot.utils import format_phone, get_reality_db_hubspot_client
@@ -75,6 +76,13 @@ def process_agent_fields(agent_id, agent=None):
     agent.location = query_location_for_zipcode(agent.zipcode)
     if not agent.location:
         agent.location = geocode_address(agent.address, agent.zipcode)
+
+    if not agent.state:
+        try:
+            zipcode = Zipcode.objects.get(zipcode=agent.zipcode)
+            agent.state = zipcode.state
+        except Zipcode.DoesNotExist:
+            pass
 
     agent.save()
 
