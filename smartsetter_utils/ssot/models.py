@@ -569,3 +569,9 @@ class Transaction(RealityDBBase, LifecycleModelMixin, TimeStampedModel):
     @staticmethod
     def get_id_from_reality_dict(reality_dict):
         return f"{reality_dict['MLSNumber']}__{reality_dict['MLSID']}"
+
+
+class Zipcode(TimeStampedModel):
+    zipcode = models.CharField(max_length=16, db_index=True)
+    city = models.CharField(max_length=64)
+    state = models.CharField(max_length=16)
