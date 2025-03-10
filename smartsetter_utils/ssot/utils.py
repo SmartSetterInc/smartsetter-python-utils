@@ -29,3 +29,26 @@ def get_brand_fixed_office_name(office_name):
                 office_name = re.sub(mark, brand.name, office_name, flags=re.IGNORECASE)
                 break
     return office_name
+
+
+def apply_filter_to_queryset(queryset, filter, is_number_field=False):
+    field_name = filter["field"]
+    filter_method = queryset.filter
+    filter_type = filter["type"]
+    filter_value = filter.get("value")
+    if filter_type in ("is_not", "is_none_of", "not_contains", "not_exists"):
+        filter_method = queryset.exclude
+    field_lookup = None
+    match filter_type:
+        case "is" | "is_not":
+            field_lookup = "exact" if is_number_field else "iexact"
+        case "is_one_of" | "is_none_of":
+            field_lookup = "in"
+        case "contains" | "not_contains":
+            field_lookup = "icontains"
+        case "exists" | "not_exists":
+            field_lookup = "isnull"
+            filter_value = False
+        case "gt" | "lt":
+            field_lookup = filter_type
+    return filter_method(**{f"{field_name}__{field_lookup}": filter_value})

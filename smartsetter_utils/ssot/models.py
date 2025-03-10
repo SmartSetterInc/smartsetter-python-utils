@@ -22,6 +22,7 @@ from smartsetter_utils.aws_utils import download_s3_file, read_brand_code_mappin
 from smartsetter_utils.core import run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
 from smartsetter_utils.ssot.utils import (
+    apply_filter_to_queryset,
     format_phone,
     get_brand_fixed_office_name,
     get_reality_db_hubspot_client,
@@ -363,24 +364,10 @@ class AgentQuerySet(CommonQuerySet):
                         location__intersects=create_geometry_from_geojson(filter_value)
                     )
                     continue
-            filter_method = queryset.filter
-            filter_type = filter["type"]
-            if filter_type in ("is_not", "is_none_of", "not_contains", "not_exists"):
-                filter_method = queryset.exclude
-            field_lookup = None
-            match filter_type:
-                case "is" | "is_not":
-                    field_lookup = "exact" if field_name in NUMBER_FIELDS else "iexact"
-                case "is_one_of" | "is_none_of":
-                    field_lookup = "in"
-                case "contains" | "not_contains":
-                    field_lookup = "icontains"
-                case "exists" | "not_exists":
-                    field_lookup = "isnull"
-                    filter_value = False
-                case "gt" | "lt":
-                    field_lookup = filter_type
-            queryset = filter_method(**{f"{field_name}__{field_lookup}": filter_value})
+            filter["field"] = field_name
+            queryset = apply_filter_to_queryset(
+                queryset, filter, field_name in NUMBER_FIELDS
+            )
         return queryset
 
     def list_view_queryset(self):
