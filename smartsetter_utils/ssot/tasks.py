@@ -45,8 +45,9 @@ def import_from_reality_db():
 
 
 @shared_task(name="ssot.pull_reality_db_updates")
-def pull_reality_db_updates():
-    if Environments.is_dev():
+def pull_reality_db_updates(force=False):
+    # force allows to run without hubspot updates
+    if Environments.is_dev() and not force:
         return
 
     update_or_create_items(ModelClassMapper.office_id)
