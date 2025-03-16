@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import factory.django
 from django.utils import timezone
 from faker.providers import address, internet, misc, phone_number, python
@@ -41,6 +43,17 @@ class OfficeFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Office
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        with patch(
+            "smartsetter_utils.ssot.models.get_reality_db_hubspot_client"
+        ) as mock_hubspot_client:
+            create_return_value = (
+                mock_hubspot_client.return_value.crm.companies.basic_api.create.return_value
+            )
+            create_return_value.to_dict.return_value = {"id": "some-id"}
+            return super()._create(model_class, *args, **kwargs)
 
 
 class AgentFactory(factory.django.DjangoModelFactory):

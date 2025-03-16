@@ -14,12 +14,15 @@ from django.db.models import F, Sum
 from django.db.models.functions import Cast, Greatest
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
 from django_lifecycle.models import LifecycleModelMixin
+from hubspot.crm.companies import (
+    SimplePublicObjectInputForCreate as HubSpotCompanyInputForCreate,
+)
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
 from smartsetter_utils.airtable.utils import get_airtable_table
 from smartsetter_utils.aws_utils import download_s3_file, read_brand_code_mapping_sheet
-from smartsetter_utils.core import run_task_in_transaction
+from smartsetter_utils.core import Environments, run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
 from smartsetter_utils.ssot.utils import (
     apply_filter_to_queryset,
@@ -199,6 +202,13 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonEntity):
     def __str__(self):
         return self.name
 
+    @hook(AFTER_CREATE)
+    def handle_created(self):
+        if Environments.is_dev():
+            return
+
+        self.create_husbpot_company()
+
     @hook(
         AFTER_UPDATE,
         when_any=["name", "address", "city", "zipcode", "phone", "state"],
@@ -207,16 +217,19 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonEntity):
     def handle_hubspot_properties_changed(self):
         from hubspot.crm.companies import SimplePublicObjectInput
 
-        if settings.ENVIRONMENT == "dev":
+        if Environments.is_dev():
             return
 
-        hubspot_client = get_reality_db_hubspot_client()
-        hubspot_client.crm.companies.basic_api.update(
-            company_id=self.hubspot_id,
-            simple_public_object_input=SimplePublicObjectInput(
-                properties=self.get_hubspot_dict()
-            ),
-        )
+        if self.hubspot_id:
+            hubspot_client = get_reality_db_hubspot_client()
+            hubspot_client.crm.companies.basic_api.update(
+                company_id=self.hubspot_id,
+                simple_public_object_input=SimplePublicObjectInput(
+                    properties=self.get_hubspot_dict()
+                ),
+            )
+        else:
+            self.create_husbpot_company()
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
@@ -254,6 +267,17 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonEntity):
             "state": self.state,
             "mls_board": self.mls.name if self.mls else None,
         }
+
+    def create_husbpot_company(self):
+        hubspot_company = (
+            get_reality_db_hubspot_client().crm.companies.basic_api.create(
+                simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
+                    properties=self.get_hubspot_dict()
+                )
+            )
+        )
+        self.hubspot_id = hubspot_company.to_dict()["id"]
+        self.save(update_fields=["hubspot_id"])
 
     @property
     def hubspot_url(self):
