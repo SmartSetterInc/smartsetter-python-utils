@@ -53,6 +53,7 @@ def pull_reality_db_updates(force=False):
     update_or_create_items(ModelClassMapper.office_id)
     update_or_create_items(ModelClassMapper.agent_id)
     update_or_create_items(ModelClassMapper.transaction_id)
+    Agent.objects.update_cached_stats()
 
 
 @shared_task
