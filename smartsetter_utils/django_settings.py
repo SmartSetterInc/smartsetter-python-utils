@@ -14,7 +14,7 @@ USE_TZ = True
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.spatialite",
-        "NAME": ":memory:",
+        "NAME": "db.sqlite3",
         "USER": "",
         "PASSWORD": "",
         "HOST": "",
