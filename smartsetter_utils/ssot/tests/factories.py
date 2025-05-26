@@ -14,7 +14,7 @@ factory.Faker.add_provider(python)
 
 
 class MLSFactory(factory.django.DjangoModelFactory):
-    id = factory.Faker("pyint")
+    id = factory.Faker("pystr")
     name = factory.Faker("name")
     table_name = factory.Faker("name")
 
