@@ -271,7 +271,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         return data
 
     def get_hubspot_dict(self):
-        return {
+        hubspot_dict = {
             "name": self.name,
             "address": self.address,
             "city": self.city,
@@ -280,6 +280,9 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
             "state": self.state,
             "mls_board": self.mls.name if self.mls else None,
         }
+        if self.source == self.SOURCE_CHOICES.constellation:
+            hubspot_dict["resoofficekey"] = self.id
+        return hubspot_dict
 
     def create_husbpot_company(self):
         hubspot_company = (
