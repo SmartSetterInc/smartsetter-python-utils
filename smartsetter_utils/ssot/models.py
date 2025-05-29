@@ -281,7 +281,6 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
             "phone": self.phone,
             "state": self.state,
             "mls_board": self.mls.name if self.mls else None,
-            "numberofemployees": self.agents.count(),
         }
         if self.source == self.SOURCE_CHOICES.constellation:
             hubspot_dict["resoofficekey"] = self.id
