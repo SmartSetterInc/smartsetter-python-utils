@@ -101,10 +101,17 @@ def handle_transaction_created(transaction_id: int):
         transaction.listing_agent.listing_transactions_count += 1
         transaction.listing_agent.listing_production += transaction.list_price
         transaction.listing_agent.save()
+
     if transaction.selling_agent:
         transaction.selling_agent.selling_transactions_count += 1
         transaction.selling_agent.selling_production += transaction.sold_price
         transaction.selling_agent.save()
+
+    if transaction.listing_office:
+        transaction.listing_office.update_hubspot_stats()
+
+    if transaction.selling_office:
+        transaction.selling_office.update_hubspot_stats()
 
 
 @shared_task

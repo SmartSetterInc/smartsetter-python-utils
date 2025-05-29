@@ -7,11 +7,13 @@ from decimal import Decimal
 from typing import Any, List, Literal, Optional, TypedDict
 
 import more_itertools
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.files import File
 from django.db.models import F, Sum
 from django.db.models.functions import Cast, Greatest
+from django.utils import timezone
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
 from django_lifecycle.models import LifecycleModelMixin
 from hubspot.crm.companies import (
@@ -296,6 +298,27 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     def update_hubspot_employee_count(self):
         self.update_hubspot_properties({"numberofemployees": self.agents.count()})
 
+    def update_hubspot_stats(self):
+        listing_transactions = self.listing_transactions.all()
+        listing_transactions_12m = listing_transactions.filter_12m()
+        selling_transactions = self.selling_transactions.all()
+        selling_transactions_12m = selling_transactions.filter_12m()
+        listing_production_12m = listing_transactions_12m.listing_production()
+        selling_production_12m = selling_transactions_12m.selling_production()
+        self.update_hubspot_properties(
+            {
+                "sales_volume__12m_": listing_production_12m + selling_production_12m,
+                "sales_listing_volume__12m_": listing_production_12m,
+                "sales_buying_volume__12m_": selling_production_12m,
+                "sales_listing_count__12m_": listing_transactions_12m.count(),
+                "sales_buying_count__12m_": selling_transactions_12m.count(),
+                "sales_volume__all_time_": listing_transactions.listing_production()
+                + selling_transactions.selling_production(),
+                "sales_count__all_time_": listing_transactions.count()
+                + selling_transactions.count(),
+            }
+        )
+
     def update_hubspot_properties(self, properties: dict):
         from hubspot.crm.companies import SimplePublicObjectInput
 
@@ -339,16 +362,10 @@ class AgentQuerySet(CommonQuerySet):
                 agent.listing_transactions_count = agent.listing_transactions.count()
                 agent.selling_transactions_count = agent.selling_transactions.count()
                 agent.listing_production = (
-                    agent.listing_transactions.aggregate(
-                        listing_production=Sum("list_price")
-                    )["listing_production"]
-                    or 0
+                    agent.listing_transactions.listing_production()
                 )
                 agent.selling_production = (
-                    agent.selling_transactions.aggregate(
-                        selling_production=Sum("sold_price")
-                    )["selling_production"]
-                    or 0
+                    agent.selling_transactions.selling_production()
                 )
             Agent.objects.bulk_update(
                 agent_group,
@@ -502,6 +519,24 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         }
 
 
+class TransactionQuerySet(CommonQuerySet):
+    def filter_12m(self):
+        year_ago = timezone.now() - relativedelta(years=1)
+        return self.filter(closed_date__gte=year_ago)
+
+    def listing_production(self):
+        return (
+            self.aggregate(listing_production=Sum("list_price"))["listing_production"]
+            or 0
+        )
+
+    def selling_production(self):
+        return (
+            self.aggregate(selling_production=Sum("sold_price"))["selling_production"]
+            or 0
+        )
+
+
 class Transaction(
     RealityDBBase, LifecycleModelMixin, DataSourceMixin, TimeStampedModel
 ):
@@ -553,6 +588,8 @@ class Transaction(
         blank=True,
         on_delete=models.SET_NULL,
     )
+
+    objects = TransactionQuerySet.as_manager()
 
     def __str__(self):
         return self.mls_number
