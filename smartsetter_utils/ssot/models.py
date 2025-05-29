@@ -559,14 +559,12 @@ class Transaction(
 
     @hook(AFTER_CREATE)
     def handle_created(self):
-        if self.listing_agent:
-            self.listing_agent.listing_transactions_count += 1
-            self.listing_agent.listing_production += self.list_price
-            self.listing_agent.save()
-        if self.selling_agent:
-            self.selling_agent.selling_transactions_count += 1
-            self.selling_agent.selling_production += self.sold_price
-            self.selling_agent.save()
+        from smartsetter_utils.ssot.tasks import handle_transaction_created
+
+        if Environments.is_dev():
+            return
+
+        run_task_in_transaction(handle_transaction_created, self.id)
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
