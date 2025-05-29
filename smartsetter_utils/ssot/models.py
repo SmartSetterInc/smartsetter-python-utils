@@ -145,8 +145,10 @@ class CommonEntity(TimeStampedModel):
     address = models.CharField(max_length=128, db_index=True)
     city = models.CharField(max_length=128, db_index=True)
     zipcode = models.CharField(max_length=32, db_index=True)
+    location = models.PointField(null=True, blank=True, srid=4326)
     phone = models.CharField(max_length=32, null=True, db_index=True)
     state = models.CharField(max_length=16, db_index=True)
+    status = models.CharField(max_length=32, null=True, blank=True)
     mls = models.ForeignKey(
         MLS, related_name="%(class)ss", null=True, on_delete=models.SET_NULL
     )
@@ -279,6 +281,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
             "phone": self.phone,
             "state": self.state,
             "mls_board": self.mls.name if self.mls else None,
+            "numberofemployees": self.agents.count(),
         }
         if self.source == self.SOURCE_CHOICES.constellation:
             hubspot_dict["resoofficekey"] = self.id
@@ -449,7 +452,6 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     selling_transactions_count = models.PositiveIntegerField(default=0)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
-    location = models.PointField(null=True, blank=True, srid=4326)
     hubspot_id = models.CharField(max_length=128, null=True, blank=True)
 
     objects = AgentQuerySet.as_manager()
@@ -510,6 +512,7 @@ class Transaction(
     city = models.CharField(max_length=128, db_index=True)
     county = models.CharField(max_length=64, db_index=True)
     zipcode = models.CharField(max_length=32, db_index=True)
+    location = models.PointField(null=True, blank=True, srid=4326)
     state_code = models.CharField(max_length=16, db_index=True)
     list_price = models.PositiveBigIntegerField(db_index=True)
     sold_price = models.PositiveBigIntegerField(db_index=True)
