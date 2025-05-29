@@ -1,13 +1,16 @@
 import json
+from unittest.mock import patch
 
 from django.utils import timezone
 
 from smartsetter_utils.ssot.models import Agent, Office, Transaction
+from smartsetter_utils.ssot.tasks import handle_transaction_created
 from smartsetter_utils.ssot.tests.base import TestCase
 
 
+@patch("smartsetter_utils.ssot.models.get_reality_db_hubspot_client")
 class TestTransactionModel(TestCase):
-    def test_import_from_reality_data(self):
+    def test_import_from_reality_data(self, _1):
         transaction_data = json.loads(
             self.read_test_file("ssot", "reality_transaction.json")
         )
@@ -37,11 +40,13 @@ class TestTransactionModel(TestCase):
             )
         )
 
-    def test_updates_agent_stats_when_created(self):
+    def test_handle_transaction_created_task(self, _1):
         transaction = self.make_transaction(
             listing_agent=self.make_agent(),
             selling_agent=self.make_agent(),
         )
+
+        handle_transaction_created(transaction.id)
 
         transaction.listing_agent.refresh_from_db()
         self.assertEqual(transaction.listing_agent.listing_transactions_count, 1)
