@@ -1,6 +1,7 @@
 import csv
 import datetime
 import time
+import typing
 
 import isodate
 import pymysql.cursors
@@ -57,7 +58,7 @@ def pull_reality_db_updates(force=False):
 
 
 @shared_task
-def process_agent_fields(agent_id, agent=None):
+def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
     if not agent:
         agent = Agent.objects.select_related("office").get(id=agent_id)
 
@@ -87,6 +88,9 @@ def process_agent_fields(agent_id, agent=None):
             pass
 
     agent.save()
+
+    if agent.office:
+        agent.office.update_hubspot_employee_count()
 
 
 @shared_task

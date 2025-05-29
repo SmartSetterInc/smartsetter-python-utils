@@ -230,19 +230,11 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         has_changed=True,
     )
     def handle_hubspot_properties_changed(self):
-        from hubspot.crm.companies import SimplePublicObjectInput
-
         if Environments.is_dev():
             return
 
         if self.hubspot_id:
-            hubspot_client = get_reality_db_hubspot_client()
-            hubspot_client.crm.companies.basic_api.update(
-                company_id=self.hubspot_id,
-                simple_public_object_input=SimplePublicObjectInput(
-                    properties=self.get_hubspot_dict()
-                ),
-            )
+            self.update_hubspot_properties(self.get_hubspot_dict())
         else:
             self.create_husbpot_company()
 
@@ -300,6 +292,18 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         )
         self.hubspot_id = hubspot_company.to_dict()["id"]
         self.save(update_fields=["hubspot_id"])
+
+    def update_hubspot_employee_count(self):
+        self.update_hubspot_properties({"numberofemployees": self.agents.count()})
+
+    def update_hubspot_properties(self, properties: dict):
+        from hubspot.crm.companies import SimplePublicObjectInput
+
+        hubspot_client = get_reality_db_hubspot_client()
+        hubspot_client.crm.companies.basic_api.update(
+            company_id=self.hubspot_id,
+            simple_public_object_input=SimplePublicObjectInput(properties=properties),
+        )
 
     @property
     def hubspot_url(self):
@@ -464,12 +468,12 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
 
     @hook(AFTER_CREATE)
     def handle_after_create(self):
-        from smartsetter_utils.ssot.tasks import process_agent_fields
+        from smartsetter_utils.ssot.tasks import handle_agent_created
 
         if settings.ENVIRONMENT == "dev":
             return
 
-        run_task_in_transaction(process_agent_fields, self.id)
+        run_task_in_transaction(handle_agent_created, self.id)
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
