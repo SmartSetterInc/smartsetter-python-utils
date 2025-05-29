@@ -289,6 +289,9 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         return hubspot_dict
 
     def create_husbpot_company(self):
+        if self.status != "Active":
+            return
+
         hubspot_company = (
             get_reality_db_hubspot_client().crm.companies.basic_api.create(
                 simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
