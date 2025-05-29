@@ -226,7 +226,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
 
     @hook(
         AFTER_UPDATE,
-        when_any=["name", "address", "city", "zipcode", "phone", "state"],
+        when_any=["name", "address", "city", "zipcode", "phone", "state", "status"],
         has_changed=True,
     )
     def handle_hubspot_properties_changed(self):
@@ -285,6 +285,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         }
         if self.source == self.SOURCE_CHOICES.constellation:
             hubspot_dict["resoofficekey"] = self.id
+            hubspot_dict["resoofficestatus"] = self.status
         return hubspot_dict
 
     def create_husbpot_company(self):
