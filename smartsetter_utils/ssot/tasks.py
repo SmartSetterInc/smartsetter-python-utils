@@ -58,6 +58,13 @@ def pull_reality_db_updates(force=False):
 
 
 @shared_task
+def handle_office_created(office_id: int):
+    office = Office.objects.get(id=office_id)
+
+    office.create_husbpot_company()
+
+
+@shared_task
 def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
     if not agent:
         agent = Agent.objects.select_related("office").get(id=agent_id)

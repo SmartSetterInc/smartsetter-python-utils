@@ -221,10 +221,12 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
 
     @hook(AFTER_CREATE)
     def handle_created(self):
+        from smartsetter_utils.ssot.tasks import handle_office_created
+
         if Environments.is_dev():
             return
 
-        self.create_husbpot_company()
+        run_task_in_transaction(handle_office_created, self.id)
 
     @hook(
         AFTER_UPDATE,
