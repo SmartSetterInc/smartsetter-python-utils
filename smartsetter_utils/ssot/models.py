@@ -30,11 +30,11 @@ from smartsetter_utils.airtable.utils import get_airtable_table
 from smartsetter_utils.aws_utils import download_s3_file, read_brand_code_mapping_sheet
 from smartsetter_utils.core import Environments, run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
+from smartsetter_utils.hubspot.utils import get_hubspot_client
 from smartsetter_utils.ssot.utils import (
     apply_filter_to_queryset,
     format_phone,
     get_brand_fixed_office_name,
-    get_reality_db_hubspot_client,
 )
 
 
@@ -291,11 +291,9 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         if self.status != "Active":
             return
 
-        hubspot_company = (
-            get_reality_db_hubspot_client().crm.companies.basic_api.create(
-                simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
-                    properties=self.get_hubspot_dict()
-                )
+        hubspot_company = get_hubspot_client().crm.companies.basic_api.create(
+            simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
+                properties=self.get_hubspot_dict()
             )
         )
         self.hubspot_id = hubspot_company.to_dict()["id"]
@@ -328,7 +326,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     def update_hubspot_properties(self, properties: dict):
         from hubspot.crm.companies import SimplePublicObjectInput
 
-        hubspot_client = get_reality_db_hubspot_client()
+        hubspot_client = get_hubspot_client()
         hubspot_client.crm.companies.basic_api.update(
             company_id=self.hubspot_id,
             simple_public_object_input=SimplePublicObjectInput(properties=properties),
@@ -525,7 +523,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
 
     def create_hubspot_contact(self):
         first_name, *last_name_parts = self.name.split(" ")
-        hubspot_client = get_reality_db_hubspot_client()
+        hubspot_client = get_hubspot_client()
         try:
             hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
                 simple_public_object_input_for_create=HubSpotContactInputForCreate(
@@ -577,7 +575,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         selling_transactions_12m = self.selling_transactions.filter_12m()
         selling_production_12m = selling_transactions_12m.selling_production()
 
-        get_reality_db_hubspot_client().crm.contacts.basic_api.update(
+        get_hubspot_client().crm.contacts.basic_api.update(
             self.hubspot_id,
             simple_public_object_input=SimplePublicObjectInput(
                 properties={

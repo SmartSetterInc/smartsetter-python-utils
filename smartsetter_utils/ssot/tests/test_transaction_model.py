@@ -8,7 +8,7 @@ from smartsetter_utils.ssot.tasks import handle_transaction_created
 from smartsetter_utils.ssot.tests.base import TestCase
 
 
-@patch("smartsetter_utils.ssot.models.get_reality_db_hubspot_client")
+@patch("smartsetter_utils.ssot.models.get_hubspot_client")
 class TestTransactionModel(TestCase):
     def test_import_from_reality_data(self, _1):
         transaction_data = json.loads(

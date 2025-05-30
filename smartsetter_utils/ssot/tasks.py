@@ -20,6 +20,7 @@ from hubspot.crm.contacts.exceptions import ApiException as HubSpotContactsApiEx
 from smartsetter_utils.aws_utils import download_s3_file
 from smartsetter_utils.core import Environments
 from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
+from smartsetter_utils.hubspot.utils import get_hubspot_client
 from smartsetter_utils.ssot.models import (
     MLS,
     Agent,
@@ -127,7 +128,7 @@ def handle_transaction_created(transaction_id: int):
 
 @shared_task
 def create_hubspot_offices():
-    hubspot_client = get_reality_db_hubspot_client()
+    hubspot_client = get_hubspot_client()
     # limit api calls to 100 per 10 seconds
     hubspot_created_offices_count = 0
     start_time = time.time()

@@ -47,7 +47,7 @@ class OfficeFactory(factory.django.DjangoModelFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         with patch(
-            "smartsetter_utils.ssot.models.get_reality_db_hubspot_client"
+            "smartsetter_utils.ssot.models.get_hubspot_client"
         ) as mock_hubspot_client:
             create_return_value = (
                 mock_hubspot_client.return_value.crm.companies.basic_api.create.return_value
