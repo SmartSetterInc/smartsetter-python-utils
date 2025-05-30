@@ -492,7 +492,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     def handle_after_create(self):
         from smartsetter_utils.ssot.tasks import handle_agent_created
 
-        if settings.ENVIRONMENT == "dev":
+        if Environments.is_dev():
             return
 
         run_task_in_transaction(handle_agent_created, self.id)
@@ -565,6 +565,35 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
                         }
                     ],
                 )
+
+    def update_hubspot_stats(self):
+        from hubspot.crm.contacts import SimplePublicObjectInput
+
+        if not self.hubspot_id:
+            return
+
+        listing_transactions_12m = self.listing_transactions.filter_12m()
+        listing_production_12m = listing_transactions_12m.listing_production()
+        selling_transactions_12m = self.selling_transactions.filter_12m()
+        selling_production_12m = selling_transactions_12m.selling_production()
+
+        get_reality_db_hubspot_client().crm.contacts.basic_api.update(
+            self.hubspot_id,
+            simple_public_object_input=SimplePublicObjectInput(
+                properties={
+                    "sales_volume__12m_": listing_production_12m
+                    + selling_production_12m,
+                    "sales_listing_volume__12m_": listing_production_12m,
+                    "sales_listing_count__12m_": listing_transactions_12m.count(),
+                    "sales_buying_volume__12m_": selling_production_12m,
+                    "sales_buying_count__12m_": selling_transactions_12m.count(),
+                    "sales_volume__all_time_": self.listing_production
+                    + self.selling_production,
+                    "sales_count__all_time_": self.listing_transactions_count
+                    + self.selling_transactions_count,
+                }
+            ),
+        )
 
 
 class TransactionQuerySet(CommonQuerySet):

@@ -37,4 +37,4 @@ class TestAgentModel(TestCase):
     def test_runs_submit_to_clay_webhook_task(self, mock_run_task):
         self.make_agent()
 
-        self.assertEqual(mock_run_task.call_count, 1)
+        self.assertEqual(mock_run_task.call_count, 2)
