@@ -19,7 +19,11 @@ from django_lifecycle.models import LifecycleModelMixin
 from hubspot.crm.companies import (
     SimplePublicObjectInputForCreate as HubSpotCompanyInputForCreate,
 )
-from model_utils import Choices
+from hubspot.crm.contacts import (
+    SimplePublicObjectInputForCreate as HubSpotContactInputForCreate,
+)
+from hubspot.crm.contacts.exceptions import ApiException as ContactApiException
+from model_utils.choices import Choices
 from model_utils.models import TimeStampedModel
 
 from smartsetter_utils.airtable.utils import get_airtable_table
@@ -154,6 +158,7 @@ class CommonEntity(TimeStampedModel):
     mls = models.ForeignKey(
         MLS, related_name="%(class)ss", null=True, on_delete=models.SET_NULL
     )
+    hubspot_id = models.CharField(max_length=128, null=True, blank=True)
 
     objects = CommonQuerySet.as_manager()
 
@@ -214,7 +219,6 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     id = models.CharField(max_length=256, primary_key=True)
     name = models.CharField(max_length=128, db_index=True)
     office_id = models.CharField(max_length=128)
-    hubspot_id = models.CharField(max_length=128, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -478,7 +482,6 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     selling_transactions_count = models.PositiveIntegerField(default=0)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
-    hubspot_id = models.CharField(max_length=128, null=True, blank=True)
 
     objects = AgentQuerySet.as_manager()
 
@@ -519,6 +522,49 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
                 reality_dict, "AgentPhone", "Zipcode"
             ),
         }
+
+    def create_hubspot_contact(self):
+        first_name, *last_name_parts = self.name.split(" ")
+        hubspot_client = get_reality_db_hubspot_client()
+        try:
+            hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
+                simple_public_object_input_for_create=HubSpotContactInputForCreate(
+                    properties={
+                        "email": self.email,
+                        "full_name": self.name,
+                        "firstname": first_name,
+                        "lastname": " ".join(last_name_parts),
+                        "company": self.office_name,
+                        "address": self.address,
+                        "city": self.city,
+                        "state": self.state,
+                        "zip": self.zipcode,
+                        "phone": self.phone,
+                        "jobtitle": self.job_title,
+                        "mls_name": self.mls.name if self.mls else None,
+                    }
+                )
+            )
+        except ContactApiException:
+            pass
+        else:
+            hubspot_contact_id = hubspot_contact.to_dict()["id"]
+            self.hubspot_id = hubspot_contact_id
+            self.save()
+
+            if self.office:
+                hubspot_client.crm.associations.v4.basic_api.create(
+                    object_type="contacts",
+                    object_id=self.hubspot_id,
+                    to_object_type="companies",
+                    to_object_id=self.office.hubspot_id,
+                    association_spec=[
+                        {
+                            "associationCategory": "HUBSPOT_DEFINED",
+                            "associationTypeId": 279,
+                        }
+                    ],
+                )
 
 
 class TransactionQuerySet(CommonQuerySet):

@@ -96,6 +96,8 @@ def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
 
     agent.save()
 
+    agent.create_hubspot_contact()
+
     if agent.office:
         agent.office.update_hubspot_employee_count()
 
