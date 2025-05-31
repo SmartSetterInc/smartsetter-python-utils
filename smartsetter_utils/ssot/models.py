@@ -148,12 +148,12 @@ def cached_brands():
 
 
 class CommonEntity(TimeStampedModel):
-    address = models.CharField(max_length=128, db_index=True)
-    city = models.CharField(max_length=128, db_index=True)
-    zipcode = models.CharField(max_length=32, db_index=True)
+    address = models.CharField(max_length=128, null=True, blank=True)
+    city = models.CharField(max_length=128, null=True, blank=True)
+    zipcode = models.CharField(max_length=32, null=True, blank=True)
     location = models.PointField(null=True, blank=True, srid=4326)
     phone = models.CharField(max_length=32, null=True, db_index=True)
-    state = models.CharField(max_length=16, db_index=True)
+    state = models.CharField(max_length=16, null=True, blank=True)
     status = models.CharField(max_length=32, null=True, blank=True)
     mls = models.ForeignKey(
         MLS, related_name="%(class)ss", null=True, on_delete=models.SET_NULL
@@ -217,8 +217,8 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     reality_table_name = "tblOffices"
 
     id = models.CharField(max_length=256, primary_key=True)
-    name = models.CharField(max_length=128, db_index=True)
-    office_id = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, null=True, blank=True)
+    office_id = models.CharField(max_length=128, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -460,21 +460,21 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
     )
 
     id = models.CharField(max_length=32, primary_key=True)
-    name = models.CharField(max_length=128, db_index=True)
-    email = models.CharField(max_length=64, null=True, db_index=True)
-    verified_phone = models.CharField(max_length=32, null=True, db_index=True)
+    name = models.CharField(max_length=128, null=True, blank=True)
+    email = models.CharField(max_length=64, null=True, blank=True)
+    verified_phone = models.CharField(max_length=32, null=True, blank=True)
     verified_phone_source = models.CharField(
         max_length=32, null=True, blank=True, choices=PHONE_VERIFIED_SOURCE_CHOICES
     )
     office = models.ForeignKey(
         Office, related_name="agents", null=True, blank=True, on_delete=models.SET_NULL
     )
-    office_name = models.CharField(max_length=128, db_index=True)
+    office_name = models.CharField(max_length=128, null=True, blank=True)
     job_title = models.CharField(max_length=64, null=True, blank=True)
     brand = models.ForeignKey(
         Brand, related_name="agents", null=True, on_delete=models.SET_NULL
     )
-    years_in_business = models.PositiveSmallIntegerField(db_index=True)
+    years_in_business = models.PositiveSmallIntegerField(null=True, blank=True)
     # cached fields that can be calculated at query time but too slow to do so
     listing_transactions_count = models.PositiveIntegerField(default=0)
     selling_transactions_count = models.PositiveIntegerField(default=0)
@@ -619,22 +619,22 @@ class Transaction(
     reality_table_name = "tblTransactions"
 
     id = models.CharField(max_length=32, primary_key=True)
-    mls_number = models.CharField(max_length=32, db_index=True)
+    mls_number = models.CharField(max_length=32, null=True, blank=True)
     mls = models.ForeignKey(
         MLS, related_name="transactions", null=True, on_delete=models.SET_NULL
     )
-    address = models.CharField(max_length=128, db_index=True)
-    district = models.CharField(max_length=128, db_index=True)
-    community = models.CharField(max_length=128, db_index=True)
-    city = models.CharField(max_length=128, db_index=True)
-    county = models.CharField(max_length=64, db_index=True)
-    zipcode = models.CharField(max_length=32, db_index=True)
+    address = models.CharField(max_length=128, null=True, blank=True)
+    district = models.CharField(max_length=128, null=True, blank=True)
+    community = models.CharField(max_length=128, null=True, blank=True)
+    city = models.CharField(max_length=128, null=True, blank=True)
+    county = models.CharField(max_length=64, null=True, blank=True)
+    zipcode = models.CharField(max_length=32, null=True, blank=True)
     location = models.PointField(null=True, blank=True, srid=4326)
-    state_code = models.CharField(max_length=16, db_index=True)
-    list_price = models.PositiveBigIntegerField(db_index=True)
-    sold_price = models.PositiveBigIntegerField(db_index=True)
-    days_on_market = models.IntegerField(db_index=True)
-    closed_date = models.DateField(db_index=True)
+    state_code = models.CharField(max_length=16, null=True, blank=True)
+    list_price = models.PositiveBigIntegerField(null=True, blank=True)
+    sold_price = models.PositiveBigIntegerField(null=True, blank=True)
+    days_on_market = models.IntegerField(null=True, blank=True)
+    closed_date = models.DateField(null=True, blank=True)
     listing_agent = models.ForeignKey(
         Agent,
         related_name="listing_transactions",
