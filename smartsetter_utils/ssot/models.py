@@ -19,6 +19,7 @@ from django_lifecycle.models import LifecycleModelMixin
 from hubspot.crm.companies import (
     SimplePublicObjectInputForCreate as HubSpotCompanyInputForCreate,
 )
+from hubspot.crm.companies.exceptions import ApiException as CompanyApiException
 from hubspot.crm.contacts import (
     SimplePublicObjectInputForCreate as HubSpotContactInputForCreate,
 )
@@ -291,18 +292,25 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         if self.status != "Active":
             return
 
-        hubspot_company = get_hubspot_client().crm.companies.basic_api.create(
-            simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
-                properties=self.get_hubspot_dict()
+        try:
+            hubspot_company = get_hubspot_client().crm.companies.basic_api.create(
+                simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
+                    properties=self.get_hubspot_dict()
+                )
             )
-        )
-        self.hubspot_id = hubspot_company.to_dict()["id"]
-        self.save(update_fields=["hubspot_id"])
+        except CompanyApiException:
+            return
+        else:
+            self.hubspot_id = hubspot_company.to_dict()["id"]
+            self.save(update_fields=["hubspot_id"])
 
     def update_hubspot_employee_count(self):
         self.update_hubspot_properties({"numberofemployees": self.agents.count()})
 
     def update_hubspot_stats(self):
+        if not self.hubspot_id:
+            return
+
         listing_transactions = self.listing_transactions.all()
         listing_transactions_12m = listing_transactions.filter_12m()
         selling_transactions = self.selling_transactions.all()
@@ -325,6 +333,9 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
 
     def update_hubspot_properties(self, properties: dict):
         from hubspot.crm.companies import SimplePublicObjectInput
+
+        if not self.hubspot_id:
+            return
 
         hubspot_client = get_hubspot_client()
         hubspot_client.crm.companies.basic_api.update(
