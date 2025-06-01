@@ -258,7 +258,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         if self.hubspot_id:
             self.update_hubspot_properties(self.get_hubspot_dict())
         else:
-            self.create_husbpot_company()
+            self.create_hubspot_company()
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
@@ -301,7 +301,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
             hubspot_dict["resoofficestatus"] = self.status
         return hubspot_dict
 
-    def create_husbpot_company(self):
+    def create_hubspot_company(self):
         if not self.is_active:
             return
 

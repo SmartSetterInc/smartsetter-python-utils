@@ -62,7 +62,7 @@ def pull_reality_db_updates(force=False):
 def handle_office_created(office_id: int):
     office = Office.objects.get(id=office_id)
 
-    office.create_husbpot_company()
+    office.create_hubspot_company()
 
 
 @shared_task
