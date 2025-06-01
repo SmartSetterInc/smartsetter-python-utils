@@ -561,7 +561,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
             self.hubspot_id = hubspot_contact_id
             self.save()
 
-            if self.office:
+            if self.office and self.office.hubspot_id:
                 hubspot_client.crm.associations.v4.basic_api.create(
                     object_type="contacts",
                     object_id=self.hubspot_id,
