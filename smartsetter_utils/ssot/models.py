@@ -550,7 +550,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
                         "zip": self.zipcode,
                         "phone": self.phone,
                         "jobtitle": self.job_title,
-                        "mls_name": self.mls.name if self.mls else None,
+                        "mls_name__dropdown_": self.mls.name if self.mls else None,
                     }
                 )
             )
