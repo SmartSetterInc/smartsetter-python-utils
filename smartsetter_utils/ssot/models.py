@@ -190,7 +190,7 @@ class CommonEntity(TimeStampedModel):
 
     @property
     def is_active(self):
-        return self.status == "active"
+        return self.status == "Active"
 
 
 class RealityDBBase:
