@@ -84,11 +84,13 @@ def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
         if agent.brand:
             break
 
-    agent.location = query_location_for_zipcode(agent.zipcode)
-    if not agent.location:
+    if agent.zipcode:
+        agent.location = query_location_for_zipcode(agent.zipcode)
+
+    if not agent.location and agent.address:
         agent.location = geocode_address(agent.address, agent.zipcode)
 
-    if not agent.state:
+    if not agent.state and agent.zipcode:
         try:
             zipcode = Zipcode.objects.get(zipcode=agent.zipcode)
             agent.state = zipcode.state
@@ -109,13 +111,15 @@ def handle_transaction_created(transaction_id: int):
 
     if transaction.listing_agent:
         transaction.listing_agent.listing_transactions_count += 1
-        transaction.listing_agent.listing_production += transaction.list_price
+        if transaction.list_price:
+            transaction.listing_agent.listing_production += transaction.list_price
         transaction.listing_agent.save()
         transaction.listing_agent.update_hubspot_stats()
 
     if transaction.selling_agent:
         transaction.selling_agent.selling_transactions_count += 1
-        transaction.selling_agent.selling_production += transaction.sold_price
+        if transaction.sold_price:
+            transaction.selling_agent.selling_production += transaction.sold_price
         transaction.selling_agent.save()
         transaction.selling_agent.update_hubspot_stats()
 
