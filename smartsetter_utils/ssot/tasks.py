@@ -107,7 +107,9 @@ def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
 
 @shared_task
 def handle_transaction_created(transaction_id: int):
-    transaction = Transaction.objects.get(id=transaction_id)
+    transaction = Transaction.objects.select_related(
+        "listing_agent", "selling_agent", "listing_office", "selling_office"
+    ).get(id=transaction_id)
 
     if transaction.listing_agent:
         transaction.listing_agent.listing_transactions_count += 1
