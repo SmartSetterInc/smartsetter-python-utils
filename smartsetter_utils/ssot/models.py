@@ -179,6 +179,10 @@ class CommonEntity(TimeStampedModel):
             "state": reality_dict["State"],
         }
 
+    @property
+    def is_active(self):
+        return self.status == "active"
+
 
 class RealityDBBase:
     reality_table_name = None
@@ -289,7 +293,7 @@ class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         return hubspot_dict
 
     def create_husbpot_company(self):
-        if self.status != "Active":
+        if not self.is_active:
             return
 
         try:
@@ -533,7 +537,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         }
 
     def create_hubspot_contact(self):
-        if not self.office or not self.office.hubspot_id:
+        if not self.is_active or not self.office or not self.office.hubspot_id:
             return
 
         first_name, *last_name_parts = self.name.split(" ")
