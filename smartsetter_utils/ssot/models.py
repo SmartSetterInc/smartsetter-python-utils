@@ -533,6 +533,9 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
         }
 
     def create_hubspot_contact(self):
+        if not self.office or not self.office.hubspot_id:
+            return
+
         first_name, *last_name_parts = self.name.split(" ")
         hubspot_client = get_hubspot_client()
         try:
@@ -561,19 +564,18 @@ class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
             self.hubspot_id = hubspot_contact_id
             self.save()
 
-            if self.office and self.office.hubspot_id:
-                hubspot_client.crm.associations.v4.basic_api.create(
-                    object_type="contacts",
-                    object_id=self.hubspot_id,
-                    to_object_type="companies",
-                    to_object_id=self.office.hubspot_id,
-                    association_spec=[
-                        {
-                            "associationCategory": "HUBSPOT_DEFINED",
-                            "associationTypeId": 279,
-                        }
-                    ],
-                )
+            hubspot_client.crm.associations.v4.basic_api.create(
+                object_type="contacts",
+                object_id=self.hubspot_id,
+                to_object_type="companies",
+                to_object_id=self.office.hubspot_id,
+                association_spec=[
+                    {
+                        "associationCategory": "HUBSPOT_DEFINED",
+                        "associationTypeId": 279,
+                    }
+                ],
+            )
 
     def update_hubspot_stats(self):
         from hubspot.crm.contacts import SimplePublicObjectInput
