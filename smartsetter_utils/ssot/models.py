@@ -46,6 +46,15 @@ class CommonQuerySet(models.QuerySet):
         except Exception:
             return None
 
+    def reality(self):
+        return self.filter(source=DataSourceMixin.SOURCE_CHOICES.reality)
+
+    def constellation(self):
+        return self.filter(source=DataSourceMixin.SOURCE_CHOICES.constellation)
+
+    def active(self):
+        return self.filter(status="Active")
+
 
 class MLS(TimeStampedModel):
     id = models.CharField(max_length=32, primary_key=True)
