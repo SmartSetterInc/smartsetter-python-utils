@@ -300,6 +300,19 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
         if self.source == self.SOURCE_CHOICES.constellation:
             hubspot_dict["resoofficekey"] = self.id
             hubspot_dict["resoofficestatus"] = self.status
+            hubspot_dict["resomainofficekey"] = self.raw_data["MainOfficeKey"]
+            hubspot_dict["resomainofficename"] = self.raw_data["MainOfficeName"]
+            hubspot_dict["resoofficemlsid"] = self.raw_data["OfficeMlsId"]
+            hubspot_dict["resoofficename"] = self.name
+            hubspot_dict["originatingsystemname"] = self.raw_data[
+                "OriginatingSystemName"
+            ]
+            hubspot_dict["rawmlsmodificationtimestamp"] = self.raw_data[
+                "RawMlsModificationTimestamp"
+            ]
+            hubspot_dict["sourcesystemid"] = self.raw_data["SourceSystemID"]
+            hubspot_dict["sourcesystemname"] = self.raw_data["SourceSystemName"]
+            hubspot_dict["reso_data_"] = "true"
         return hubspot_dict
 
     def create_hubspot_company(self):
