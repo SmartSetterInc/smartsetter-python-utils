@@ -563,16 +563,16 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
         if not self.is_active or not self.office or not self.office.hubspot_id:
             return
 
-        first_name, *last_name_parts = self.name.split(" ")
         hubspot_client = get_hubspot_client()
         try:
             hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
                 simple_public_object_input_for_create=HubSpotContactInputForCreate(
                     properties={
                         "email": self.email,
-                        "full_name": self.name,
-                        "firstname": first_name,
-                        "lastname": " ".join(last_name_parts),
+                        "firstname": self.raw_data["MemberFirstName"],
+                        "lastname": self.raw_data["MemberLastName"],
+                        "middle_name": self.raw_data["MemberMiddleName"],
+                        "full_name": self.raw_data["MemberFullName"],
                         "company": self.office_name,
                         "address": self.address,
                         "city": self.city,
@@ -581,6 +581,26 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
                         "phone": self.phone,
                         "jobtitle": self.job_title,
                         "mls_name__dropdown_": self.mls.name if self.mls else None,
+                        "memberdirectphone": self.raw_data["MemberDirectPhone"],
+                        "memberhomephone": self.raw_data["MemberHomePhone"],
+                        "resomemberkeyunique": self.raw_data["MemberKey"],
+                        "membermlsid": self.raw_data["MemberMlsId"],
+                        "membermlssecurityclass": self.raw_data[
+                            "MemberMlsSecurityClass"
+                        ],
+                        "resomembermobilephone": self.raw_data["MemberMobilePhone"],
+                        "memberpreferredphone": self.raw_data["MemberPreferredPhone"],
+                        "resomemberstatus": self.raw_data["MemberStatus"],
+                        "resomembertype": self.raw_data["ResoMemberType"],
+                        "resomodificationtimestamp": self.raw_data[
+                            "ModificationTimestamp"
+                        ],
+                        "originatingsystemname": self.raw_data["OriginatingSystemName"],
+                        "rawmlsmodificationtimestamp": self.raw_data[
+                            "RawMlsModificationTimestamp"
+                        ],
+                        "memberstatelicense": self.raw_data["MemberStateLicense"],
+                        "reso_data_": "true",
                     }
                 )
             )

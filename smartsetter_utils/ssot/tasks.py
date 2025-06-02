@@ -68,7 +68,7 @@ def handle_office_created(office_id: int):
 @shared_task
 def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
     if not agent:
-        agent = Agent.objects.select_related("office").get(id=agent_id)
+        agent = Agent.objects.select_related("mls", "office").get(id=agent_id)
 
     for brand in cached_brands():
         for mark in brand.marks:
