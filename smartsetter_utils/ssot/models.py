@@ -47,10 +47,10 @@ class CommonQuerySet(models.QuerySet):
             return None
 
     def reality(self):
-        return self.filter(source=DataSourceMixin.SOURCE_CHOICES.reality)
+        return self.filter(source=CommonFields.SOURCE_CHOICES.reality)
 
     def constellation(self):
-        return self.filter(source=DataSourceMixin.SOURCE_CHOICES.constellation)
+        return self.filter(source=CommonFields.SOURCE_CHOICES.constellation)
 
     def active(self):
         return self.filter(status="Active")
@@ -209,7 +209,7 @@ class RealityDBBase:
         raise NotImplementedError
 
 
-class DataSourceMixin(models.Model):
+class CommonFields(models.Model):
     SOURCE_CHOICES = Choices(
         ("reality", "Reality"), ("constellation", "Constellation1")
     )
@@ -217,6 +217,7 @@ class DataSourceMixin(models.Model):
     source = models.CharField(
         max_length=32, choices=SOURCE_CHOICES, default=SOURCE_CHOICES.reality
     )
+    raw_data = models.JSONField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -226,7 +227,7 @@ class BadDataException(Exception):
     pass
 
 
-class Office(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
+class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
 
     reality_table_name = "tblOffices"
 
@@ -469,7 +470,7 @@ class AgentQuerySet(CommonQuerySet):
         return self.select_related("mls", "brand").annotate_extended_stats()
 
 
-class Agent(RealityDBBase, LifecycleModelMixin, DataSourceMixin, CommonEntity):
+class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
 
     reality_table_name = "tblAgents"
 
@@ -638,9 +639,7 @@ class TransactionQuerySet(CommonQuerySet):
         )
 
 
-class Transaction(
-    RealityDBBase, LifecycleModelMixin, DataSourceMixin, TimeStampedModel
-):
+class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedModel):
 
     reality_table_name = "tblTransactions"
 
