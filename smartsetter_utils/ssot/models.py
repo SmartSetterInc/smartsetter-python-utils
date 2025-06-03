@@ -308,10 +308,10 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
             hubspot_dict["originatingsystemname"] = self.raw_data[
                 "OriginatingSystemName"
             ]
-            hubspot_dict["rawmlsmodificationtimestamp"] = int(
-                isodate.parse_datetime(
+            hubspot_dict["rawmlsmodificationtimestamp"] = (
+                get_hubspot_timestamp_from_iso_date(
                     self.raw_data["RawMlsModificationTimestamp"]
-                ).timestamp()
+                )
             )
             hubspot_dict["sourcesystemid"] = self.raw_data["SourceSystemID"]
             hubspot_dict["sourcesystemname"] = self.raw_data["SourceSystemName"]
@@ -594,14 +594,14 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
                         "resomembermobilephone": self.raw_data["MemberMobilePhone"],
                         "memberpreferredphone": self.raw_data["MemberPreferredPhone"],
                         "resomemberstatus": self.raw_data["MemberStatus"],
-                        "resomembertype": self.raw_data["ResoMemberType"],
+                        "resomembertype": self.raw_data["MemberType"],
                         "resomodificationtimestamp": self.raw_data[
                             "ModificationTimestamp"
                         ],
                         "originatingsystemname": self.raw_data["OriginatingSystemName"],
-                        "rawmlsmodificationtimestamp": self.raw_data[
-                            "RawMlsModificationTimestamp"
-                        ],
+                        "rawmlsmodificationtimestamp": get_hubspot_timestamp_from_iso_date(
+                            self.raw_data["RawMlsModificationTimestamp"]
+                        ),
                         "memberstatelicense": self.raw_data["MemberStateLicense"],
                         "reso_data_": "true",
                     }
@@ -797,3 +797,7 @@ class Zipcode(TimeStampedModel):
             ],
             batch_size=1000,
         )
+
+
+def get_hubspot_timestamp_from_iso_date(date: str):
+    return int(isodate.parse_datetime(date).timestamp()) * 1000
