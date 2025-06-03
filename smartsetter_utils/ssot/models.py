@@ -6,6 +6,7 @@ import urllib.request
 from decimal import Decimal
 from typing import Any, List, Literal, Optional, TypedDict
 
+import isodate
 import more_itertools
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
@@ -307,9 +308,11 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
             hubspot_dict["originatingsystemname"] = self.raw_data[
                 "OriginatingSystemName"
             ]
-            hubspot_dict["rawmlsmodificationtimestamp"] = self.raw_data[
-                "RawMlsModificationTimestamp"
-            ]
+            hubspot_dict["rawmlsmodificationtimestamp"] = int(
+                isodate.parse_datetime(
+                    self.raw_data["RawMlsModificationTimestamp"]
+                ).timestamp()
+            )
             hubspot_dict["sourcesystemid"] = self.raw_data["SourceSystemID"]
             hubspot_dict["sourcesystemname"] = self.raw_data["SourceSystemName"]
             hubspot_dict["reso_data_"] = "true"
