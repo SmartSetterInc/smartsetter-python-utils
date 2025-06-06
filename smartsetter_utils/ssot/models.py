@@ -91,7 +91,7 @@ def brand_icon_upload_to(instance, filename):
 
 class Brand(TimeStampedModel):
     name = models.CharField(max_length=64, unique=True)
-    code = models.CharField(max_length=64, unique=True)
+    code = models.CharField(max_length=64, unique=True, db_index=True)
     marks = models.JSONField(default=list)
     icon = models.ImageField(null=True, blank=True, upload_to=brand_icon_upload_to)
     icon_circular = models.ImageField(
@@ -160,12 +160,12 @@ def cached_brands():
 
 class CommonEntity(TimeStampedModel):
     address = models.CharField(max_length=128, null=True, blank=True)
-    city = models.CharField(max_length=128, null=True, blank=True)
-    zipcode = models.CharField(max_length=32, null=True, blank=True)
+    city = models.CharField(max_length=128, null=True, blank=True, db_index=True)
+    zipcode = models.CharField(max_length=32, null=True, blank=True, db_index=True)
     location = models.PointField(null=True, blank=True, srid=4326)
     phone = models.CharField(max_length=32, null=True, db_index=True)
-    state = models.CharField(max_length=16, null=True, blank=True)
-    status = models.CharField(max_length=32, null=True, blank=True)
+    state = models.CharField(max_length=16, null=True, blank=True, db_index=True)
+    status = models.CharField(max_length=32, null=True, blank=True, db_index=True)
     mls = models.ForeignKey(
         MLS, related_name="%(class)ss", null=True, on_delete=models.SET_NULL
     )
@@ -216,7 +216,10 @@ class CommonFields(models.Model):
     )
 
     source = models.CharField(
-        max_length=32, choices=SOURCE_CHOICES, default=SOURCE_CHOICES.reality
+        max_length=32,
+        choices=SOURCE_CHOICES,
+        default=SOURCE_CHOICES.reality,
+        db_index=True,
     )
     raw_data = models.JSONField(null=True, blank=True)
 
@@ -502,7 +505,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
 
     id = models.CharField(max_length=32, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True)
-    email = models.CharField(max_length=64, null=True, blank=True)
+    email = models.CharField(max_length=64, null=True, blank=True, db_index=True)
     verified_phone = models.CharField(max_length=32, null=True, blank=True)
     verified_phone_source = models.CharField(
         max_length=32, null=True, blank=True, choices=PHONE_VERIFIED_SOURCE_CHOICES
@@ -515,7 +518,9 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
     brand = models.ForeignKey(
         Brand, related_name="agents", null=True, on_delete=models.SET_NULL
     )
-    years_in_business = models.PositiveSmallIntegerField(null=True, blank=True)
+    years_in_business = models.PositiveSmallIntegerField(
+        null=True, blank=True, db_index=True
+    )
     # cached fields that can be calculated at query time but too slow to do so
     listing_transactions_count = models.PositiveIntegerField(default=0)
     selling_transactions_count = models.PositiveIntegerField(default=0)
