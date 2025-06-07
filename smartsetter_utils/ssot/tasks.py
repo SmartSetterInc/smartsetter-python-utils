@@ -59,8 +59,9 @@ def pull_reality_db_updates(force=False):
 
 
 @shared_task
-def handle_office_created(office_id: int):
-    office = Office.objects.select_related("mls").get(id=office_id)
+def handle_office_created(office_id: int, office: typing.Optional[Office] = None):
+    if not office:
+        office = Office.objects.select_related("mls").get(id=office_id)
 
     office.create_hubspot_company()
 
