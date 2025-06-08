@@ -2,7 +2,6 @@ import csv
 import functools
 import mimetypes
 import tempfile
-import time
 import urllib.request
 from decimal import Decimal
 from typing import Any, List, Literal, Optional, TypedDict
@@ -327,21 +326,17 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
         if not self.is_active:
             return
 
-        while True:
-            try:
-                hubspot_company = get_hubspot_client().crm.companies.basic_api.create(
-                    simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
-                        properties=self.get_hubspot_dict()
-                    )
+        try:
+            hubspot_company = get_hubspot_client().crm.companies.basic_api.create(
+                simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
+                    properties=self.get_hubspot_dict()
                 )
-            except CompanyApiException:
-                return
-            except urllib3.exceptions.ProtocolError:
-                time.sleep(1)
-            else:
-                self.hubspot_id = hubspot_company.to_dict()["id"]
-                self.save(update_fields=["hubspot_id"])
-                break
+            )
+        except (CompanyApiException, urllib3.exceptions.ProtocolError):
+            return
+        else:
+            self.hubspot_id = hubspot_company.to_dict()["id"]
+            self.save(update_fields=["hubspot_id"])
 
     def update_hubspot_employee_count(self):
         self.update_hubspot_properties({"numberofemployees": self.agents.count()})
@@ -578,73 +573,65 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
             return
 
         hubspot_client = get_hubspot_client()
-        while True:
-            try:
-                hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
-                    simple_public_object_input_for_create=HubSpotContactInputForCreate(
-                        properties={
-                            "email": self.email,
-                            "firstname": self.raw_data["MemberFirstName"],
-                            "lastname": self.raw_data["MemberLastName"],
-                            "middle_name": self.raw_data["MemberMiddleName"],
-                            "full_name": self.raw_data["MemberFullName"],
-                            "company": self.office_name,
-                            "address": self.address,
-                            "city": self.city,
-                            "state": self.state,
-                            "zip": self.zipcode,
-                            "phone": self.phone,
-                            "jobtitle": self.job_title,
-                            "mls_name__dropdown_": self.mls.name if self.mls else None,
-                            "memberdirectphone": self.raw_data["MemberDirectPhone"],
-                            "memberhomephone": self.raw_data["MemberHomePhone"],
-                            "resomemberkeyunique": self.raw_data["MemberKey"],
-                            "membermlsid": self.raw_data["MemberMlsId"],
-                            "membermlssecurityclass": self.raw_data[
-                                "MemberMlsSecurityClass"
-                            ],
-                            "resomembermobilephone": self.raw_data["MemberMobilePhone"],
-                            "memberpreferredphone": self.raw_data[
-                                "MemberPreferredPhone"
-                            ],
-                            "resomemberstatus": self.raw_data["MemberStatus"],
-                            "resomembertype": self.raw_data["MemberType"],
-                            "resomodificationtimestamp": self.raw_data[
-                                "ModificationTimestamp"
-                            ],
-                            "originatingsystemname": self.raw_data[
-                                "OriginatingSystemName"
-                            ],
-                            "rawmlsmodificationtimestamp": get_hubspot_timestamp_from_iso_date(
-                                self.raw_data["RawMlsModificationTimestamp"]
-                            ),
-                            "memberstatelicense": self.raw_data["MemberStateLicense"],
-                            "reso_data_": "true",
-                        }
-                    )
+        try:
+            hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
+                simple_public_object_input_for_create=HubSpotContactInputForCreate(
+                    properties={
+                        "email": self.email,
+                        "firstname": self.raw_data["MemberFirstName"],
+                        "lastname": self.raw_data["MemberLastName"],
+                        "middle_name": self.raw_data["MemberMiddleName"],
+                        "full_name": self.raw_data["MemberFullName"],
+                        "company": self.office_name,
+                        "address": self.address,
+                        "city": self.city,
+                        "state": self.state,
+                        "zip": self.zipcode,
+                        "phone": self.phone,
+                        "jobtitle": self.job_title,
+                        "mls_name__dropdown_": self.mls.name if self.mls else None,
+                        "memberdirectphone": self.raw_data["MemberDirectPhone"],
+                        "memberhomephone": self.raw_data["MemberHomePhone"],
+                        "resomemberkeyunique": self.raw_data["MemberKey"],
+                        "membermlsid": self.raw_data["MemberMlsId"],
+                        "membermlssecurityclass": self.raw_data[
+                            "MemberMlsSecurityClass"
+                        ],
+                        "resomembermobilephone": self.raw_data["MemberMobilePhone"],
+                        "memberpreferredphone": self.raw_data["MemberPreferredPhone"],
+                        "resomemberstatus": self.raw_data["MemberStatus"],
+                        "resomembertype": self.raw_data["MemberType"],
+                        "resomodificationtimestamp": self.raw_data[
+                            "ModificationTimestamp"
+                        ],
+                        "originatingsystemname": self.raw_data["OriginatingSystemName"],
+                        "rawmlsmodificationtimestamp": get_hubspot_timestamp_from_iso_date(
+                            self.raw_data["RawMlsModificationTimestamp"]
+                        ),
+                        "memberstatelicense": self.raw_data["MemberStateLicense"],
+                        "reso_data_": "true",
+                    }
                 )
-            except ContactApiException:
-                pass
-            except urllib3.exceptions.ProtocolError:
-                time.sleep(1)
-            else:
-                hubspot_contact_id = hubspot_contact.to_dict()["id"]
-                self.hubspot_id = hubspot_contact_id
-                self.save()
+            )
+        except (ContactApiException, urllib3.exceptions.ProtocolError):
+            pass
+        else:
+            hubspot_contact_id = hubspot_contact.to_dict()["id"]
+            self.hubspot_id = hubspot_contact_id
+            self.save()
 
-                hubspot_client.crm.associations.v4.basic_api.create(
-                    object_type="contacts",
-                    object_id=self.hubspot_id,
-                    to_object_type="companies",
-                    to_object_id=self.office.hubspot_id,
-                    association_spec=[
-                        {
-                            "associationCategory": "HUBSPOT_DEFINED",
-                            "associationTypeId": 279,
-                        }
-                    ],
-                )
-                break
+            hubspot_client.crm.associations.v4.basic_api.create(
+                object_type="contacts",
+                object_id=self.hubspot_id,
+                to_object_type="companies",
+                to_object_id=self.office.hubspot_id,
+                association_spec=[
+                    {
+                        "associationCategory": "HUBSPOT_DEFINED",
+                        "associationTypeId": 279,
+                    }
+                ],
+            )
 
     def update_hubspot_stats(self):
         from hubspot.crm.contacts import SimplePublicObjectInput
