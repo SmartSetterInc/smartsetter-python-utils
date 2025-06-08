@@ -375,10 +375,15 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
             return
 
         hubspot_client = get_hubspot_client()
-        hubspot_client.crm.companies.basic_api.update(
-            company_id=self.hubspot_id,
-            simple_public_object_input=SimplePublicObjectInput(properties=properties),
-        )
+        try:
+            hubspot_client.crm.companies.basic_api.update(
+                company_id=self.hubspot_id,
+                simple_public_object_input=SimplePublicObjectInput(
+                    properties=properties
+                ),
+            )
+        except urllib3.exceptions.ProtocolError:
+            pass
 
     @property
     def hubspot_url(self):
