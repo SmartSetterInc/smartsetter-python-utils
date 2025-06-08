@@ -18,6 +18,9 @@ from django.db.models.functions import Cast, Greatest
 from django.utils import timezone
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
 from django_lifecycle.models import LifecycleModelMixin
+from hubspot.crm.associations.v4.exceptions import (
+    ApiException as AssociationsApiException,
+)
 from hubspot.crm.companies import (
     SimplePublicObjectInputForCreate as HubSpotCompanyInputForCreate,
 )
@@ -620,18 +623,21 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
             self.hubspot_id = hubspot_contact_id
             self.save()
 
-            hubspot_client.crm.associations.v4.basic_api.create(
-                object_type="contacts",
-                object_id=self.hubspot_id,
-                to_object_type="companies",
-                to_object_id=self.office.hubspot_id,
-                association_spec=[
-                    {
-                        "associationCategory": "HUBSPOT_DEFINED",
-                        "associationTypeId": 279,
-                    }
-                ],
-            )
+            try:
+                hubspot_client.crm.associations.v4.basic_api.create(
+                    object_type="contacts",
+                    object_id=self.hubspot_id,
+                    to_object_type="companies",
+                    to_object_id=self.office.hubspot_id,
+                    association_spec=[
+                        {
+                            "associationCategory": "HUBSPOT_DEFINED",
+                            "associationTypeId": 279,
+                        }
+                    ],
+                )
+            except AssociationsApiException:
+                pass
 
     def update_hubspot_stats(self):
         from hubspot.crm.contacts import SimplePublicObjectInput
