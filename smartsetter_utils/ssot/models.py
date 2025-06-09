@@ -382,7 +382,7 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
                     properties=properties
                 ),
             )
-        except urllib3.exceptions.ProtocolError:
+        except (CompanyApiException, urllib3.exceptions.ProtocolError):
             pass
 
     @property
