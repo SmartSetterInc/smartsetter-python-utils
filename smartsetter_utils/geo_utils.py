@@ -1,7 +1,7 @@
 import json
 import re
 
-import googlemaps
+import googlemaps.exceptions
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
 
@@ -18,13 +18,17 @@ def geocode_address(address, zip_code=None):
             components["country"] = "US"
         elif CANADA_ZIPCODE_RE.match(zip_code):
             components["country"] = "CA"
-    geocode_res = get_googlemaps_client().geocode(
-        address,
-        components=components,
-    )
-    if geocode_res:
-        location = geocode_res[0]["geometry"]["location"]
-        return Point((location["lng"], location["lat"]))
+    try:
+        geocode_res = get_googlemaps_client().geocode(
+            address,
+            components=components,
+        )
+    except googlemaps.exceptions.ApiError:
+        return None
+    else:
+        if geocode_res:
+            location = geocode_res[0]["geometry"]["location"]
+            return Point((location["lng"], location["lat"]))
     return None
 
 
