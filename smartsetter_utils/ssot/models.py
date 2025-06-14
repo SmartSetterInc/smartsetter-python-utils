@@ -514,7 +514,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
 
     id = models.CharField(max_length=32, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True)
-    email = models.CharField(max_length=64, null=True, blank=True, db_index=True)
+    email = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     verified_phone = models.CharField(max_length=32, null=True, blank=True)
     verified_phone_source = models.CharField(
         max_length=32, null=True, blank=True, choices=PHONE_VERIFIED_SOURCE_CHOICES
@@ -522,8 +522,8 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
     office = models.ForeignKey(
         Office, related_name="agents", null=True, blank=True, on_delete=models.SET_NULL
     )
-    office_name = models.CharField(max_length=128, null=True, blank=True)
-    job_title = models.CharField(max_length=64, null=True, blank=True)
+    office_name = models.CharField(max_length=256, null=True, blank=True)
+    job_title = models.CharField(max_length=256, null=True, blank=True)
     brand = models.ForeignKey(
         Brand, related_name="agents", null=True, on_delete=models.SET_NULL
     )
