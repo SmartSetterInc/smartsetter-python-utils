@@ -162,7 +162,7 @@ def cached_brands():
     return Brand.objects.all()
 
 
-class CommonEntity(TimeStampedModel):
+class AgentOfficeCommonFields(TimeStampedModel):
     address = models.CharField(max_length=128, null=True, blank=True)
     city = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     zipcode = models.CharField(max_length=32, null=True, blank=True, db_index=True)
@@ -174,6 +174,7 @@ class CommonEntity(TimeStampedModel):
         MLS, related_name="%(class)ss", null=True, on_delete=models.SET_NULL
     )
     hubspot_id = models.CharField(max_length=128, null=True, blank=True)
+    raw_data = models.JSONField(null=True, blank=True)
 
     objects = CommonQuerySet.as_manager()
 
@@ -225,7 +226,6 @@ class CommonFields(models.Model):
         default=SOURCE_CHOICES.reality,
         db_index=True,
     )
-    raw_data = models.JSONField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -235,7 +235,7 @@ class BadDataException(Exception):
     pass
 
 
-class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
+class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields):
 
     reality_table_name = "tblOffices"
 
@@ -287,7 +287,7 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
         data = {
             "name": get_brand_fixed_office_name(reality_dict["Office"]),
             "office_id": reality_dict["OfficeID"],
-            **CommonEntity.get_common_properties_from_reality_dict(
+            **AgentOfficeCommonFields.get_common_properties_from_reality_dict(
                 reality_dict, "Phone"
             ),
         }
@@ -498,7 +498,7 @@ class AgentQuerySet(CommonQuerySet):
         return self.select_related("mls", "brand").annotate_extended_stats()
 
 
-class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
+class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields):
 
     reality_table_name = "tblAgents"
 
@@ -571,7 +571,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, CommonEntity):
             ),
             "office_name": get_brand_fixed_office_name(reality_dict["OfficeName"]),
             "years_in_business": reality_dict["YIB"],
-            **CommonEntity.get_common_properties_from_reality_dict(
+            **AgentOfficeCommonFields.get_common_properties_from_reality_dict(
                 reality_dict, "AgentPhone", "Zipcode"
             ),
         }
