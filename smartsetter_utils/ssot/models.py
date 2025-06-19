@@ -332,7 +332,10 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
         try:
             hubspot_company = get_hubspot_client().crm.companies.basic_api.create(
                 simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
-                    properties=self.get_hubspot_dict()
+                    properties={
+                        **self.get_hubspot_dict(),
+                        **self.get_hubspot_stats_dict(),
+                    }
                 )
             )
         except (CompanyApiException, urllib3.exceptions.ProtocolError):
@@ -348,25 +351,7 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
         if not self.hubspot_id:
             return
 
-        listing_transactions = self.listing_transactions.all()
-        listing_transactions_12m = listing_transactions.filter_12m()
-        selling_transactions = self.selling_transactions.all()
-        selling_transactions_12m = selling_transactions.filter_12m()
-        listing_production_12m = listing_transactions_12m.listing_production()
-        selling_production_12m = selling_transactions_12m.selling_production()
-        self.update_hubspot_properties(
-            {
-                "sales_volume__12m_": listing_production_12m + selling_production_12m,
-                "sales_listing_volume__12m_": listing_production_12m,
-                "sales_buying_volume__12m_": selling_production_12m,
-                "sales_listing_count__12m_": listing_transactions_12m.count(),
-                "sales_buying_count__12m_": selling_transactions_12m.count(),
-                "sales_volume__all_time_": listing_transactions.listing_production()
-                + selling_transactions.selling_production(),
-                "sales_count__all_time_": listing_transactions.count()
-                + selling_transactions.count(),
-            }
-        )
+        self.update_hubspot_properties(self.get_hubspot_stats_dict())
 
     def update_hubspot_properties(self, properties: dict):
         from hubspot.crm.companies import SimplePublicObjectInput
@@ -384,6 +369,26 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
             )
         except (CompanyApiException, urllib3.exceptions.ProtocolError):
             pass
+
+    def get_hubspot_stats_dict(self):
+        listing_transactions = self.listing_transactions.all()
+        listing_transactions_12m = listing_transactions.filter_12m()
+        selling_transactions = self.selling_transactions.all()
+        selling_transactions_12m = selling_transactions.filter_12m()
+        listing_production_12m = listing_transactions_12m.listing_production()
+        selling_production_12m = selling_transactions_12m.selling_production()
+
+        return {
+            "sales_volume__12m_": listing_production_12m + selling_production_12m,
+            "sales_listing_volume__12m_": listing_production_12m,
+            "sales_buying_volume__12m_": selling_production_12m,
+            "sales_listing_count__12m_": listing_transactions_12m.count(),
+            "sales_buying_count__12m_": selling_transactions_12m.count(),
+            "sales_volume__all_time_": listing_transactions.listing_production()
+            + selling_transactions.selling_production(),
+            "sales_count__all_time_": listing_transactions.count()
+            + selling_transactions.count(),
+        }
 
     @property
     def hubspot_url(self):
