@@ -335,6 +335,7 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
                     properties={
                         **self.get_hubspot_dict(),
                         **self.get_hubspot_stats_dict(),
+                        **self.get_hubspot_employee_count_dict(),
                     }
                 )
             )
@@ -345,7 +346,10 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
             self.save(update_fields=["hubspot_id"])
 
     def update_hubspot_employee_count(self):
-        self.update_hubspot_properties({"numberofemployees": self.agents.count()})
+        if not self.hubspot_id:
+            return
+
+        self.update_hubspot_properties(self.get_hubspot_employee_count_dict())
 
     def update_hubspot_stats(self):
         if not self.hubspot_id:
@@ -389,6 +393,9 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
             "sales_count__all_time_": listing_transactions.count()
             + selling_transactions.count(),
         }
+
+    def get_hubspot_employee_count_dict(self):
+        return {"numberofemployees": self.agents.count()}
 
     @property
     def hubspot_url(self):
