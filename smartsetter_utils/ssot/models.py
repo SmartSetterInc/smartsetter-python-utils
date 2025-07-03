@@ -627,6 +627,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             "reso_data_": "true",
             **self.get_hubspot_stats_dict(),
         }
+        hubspot_contact = None
         try:
             hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
                 simple_public_object_input_for_create=HubSpotContactInputForCreate(
@@ -647,7 +648,8 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
                 )
         except urllib3.exceptions.ProtocolError:
             pass
-        else:
+
+        if hubspot_contact:
             hubspot_contact_id = hubspot_contact.to_dict()["id"]
             self.hubspot_id = hubspot_contact_id
             self.save()
