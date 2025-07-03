@@ -635,12 +635,12 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             )
         except ContactApiException as exc:
             if exc.reason == "Conflict":
-                duplicate_contact_id = re.search(r"(?P<id>\d+)", exc.body).groupdict(
+                duplicate_contact_id = re.search(r"(?P<id>\d+)", exc.body).groupdict()[
                     "id"
-                )
+                ]
                 hubspot_contact_properties.pop("phone")
                 hubspot_contact = hubspot_client.crm.contacts.basic_api.update(
-                    duplicate_contact_id,
+                    int(duplicate_contact_id),
                     simple_public_object_input=HubSpotContactInput(
                         properties=hubspot_contact_properties
                     ),
