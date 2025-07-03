@@ -31,6 +31,7 @@ from hubspot.crm.contacts import (
     SimplePublicObjectInputForCreate as HubSpotContactInputForCreate,
 )
 from hubspot.crm.contacts.exceptions import ApiException as ContactApiException
+from hubspot.crm.contacts.exceptions import ServiceException as ContactServiceException
 from model_utils.choices import Choices
 from model_utils.models import TimeStampedModel
 
@@ -640,12 +641,15 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
                     "id"
                 ]
                 hubspot_contact_properties.pop("phone")
-                hubspot_contact = hubspot_client.crm.contacts.basic_api.update(
-                    int(duplicate_contact_id),
-                    simple_public_object_input=HubSpotContactInput(
-                        properties=hubspot_contact_properties
-                    ),
-                )
+                try:
+                    hubspot_contact = hubspot_client.crm.contacts.basic_api.update(
+                        int(duplicate_contact_id),
+                        simple_public_object_input=HubSpotContactInput(
+                            properties=hubspot_contact_properties
+                        ),
+                    )
+                except ContactServiceException:
+                    pass
         except urllib3.exceptions.ProtocolError:
             pass
 
