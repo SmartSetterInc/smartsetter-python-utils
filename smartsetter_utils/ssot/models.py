@@ -1,6 +1,7 @@
 import csv
 import functools
 import mimetypes
+import re
 import tempfile
 import urllib.request
 from decimal import Decimal
@@ -25,6 +26,7 @@ from hubspot.crm.companies import (
     SimplePublicObjectInputForCreate as HubSpotCompanyInputForCreate,
 )
 from hubspot.crm.companies.exceptions import ApiException as CompanyApiException
+from hubspot.crm.contacts import SimplePublicObjectInput as HubSpotContactInput
 from hubspot.crm.contacts import (
     SimplePublicObjectInputForCreate as HubSpotContactInputForCreate,
 )
@@ -593,48 +595,57 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             return
 
         hubspot_client = get_hubspot_client()
+        hubspot_contact_properties = {
+            "email": self.email,
+            "firstname": self.raw_data["MemberFirstName"],
+            "lastname": self.raw_data["MemberLastName"],
+            "middle_name": self.raw_data["MemberMiddleName"],
+            "full_name": self.raw_data["MemberFullName"],
+            "company": self.office_name,
+            "address": self.address,
+            "city": self.city,
+            "state": self.state,
+            "zip": self.zipcode,
+            "phone": self.phone,
+            "jobtitle": self.job_title,
+            "mls_name__dropdown_": self.mls.name if self.mls else None,
+            "memberdirectphone": self.raw_data["MemberDirectPhone"],
+            "memberhomephone": self.raw_data["MemberHomePhone"],
+            "resomemberkeyunique": self.raw_data["MemberKey"],
+            "membermlsid": self.raw_data["MemberMlsId"],
+            "membermlssecurityclass": self.raw_data["MemberMlsSecurityClass"],
+            "resomembermobilephone": self.raw_data["MemberMobilePhone"],
+            "memberpreferredphone": self.raw_data["MemberPreferredPhone"],
+            "resomemberstatus": self.raw_data["MemberStatus"],
+            "resomembertype": self.raw_data["MemberType"],
+            "resomodificationtimestamp": self.raw_data["ModificationTimestamp"],
+            "originatingsystemname": self.raw_data["OriginatingSystemName"],
+            "rawmlsmodificationtimestamp": get_hubspot_timestamp_from_iso_date(
+                self.raw_data["RawMlsModificationTimestamp"]
+            ),
+            "memberstatelicense": self.raw_data["MemberStateLicense"],
+            "reso_data_": "true",
+            **self.get_hubspot_stats_dict(),
+        }
         try:
             hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
                 simple_public_object_input_for_create=HubSpotContactInputForCreate(
-                    properties={
-                        "email": self.email,
-                        "firstname": self.raw_data["MemberFirstName"],
-                        "lastname": self.raw_data["MemberLastName"],
-                        "middle_name": self.raw_data["MemberMiddleName"],
-                        "full_name": self.raw_data["MemberFullName"],
-                        "company": self.office_name,
-                        "address": self.address,
-                        "city": self.city,
-                        "state": self.state,
-                        "zip": self.zipcode,
-                        "phone": self.phone,
-                        "jobtitle": self.job_title,
-                        "mls_name__dropdown_": self.mls.name if self.mls else None,
-                        "memberdirectphone": self.raw_data["MemberDirectPhone"],
-                        "memberhomephone": self.raw_data["MemberHomePhone"],
-                        "resomemberkeyunique": self.raw_data["MemberKey"],
-                        "membermlsid": self.raw_data["MemberMlsId"],
-                        "membermlssecurityclass": self.raw_data[
-                            "MemberMlsSecurityClass"
-                        ],
-                        "resomembermobilephone": self.raw_data["MemberMobilePhone"],
-                        "memberpreferredphone": self.raw_data["MemberPreferredPhone"],
-                        "resomemberstatus": self.raw_data["MemberStatus"],
-                        "resomembertype": self.raw_data["MemberType"],
-                        "resomodificationtimestamp": self.raw_data[
-                            "ModificationTimestamp"
-                        ],
-                        "originatingsystemname": self.raw_data["OriginatingSystemName"],
-                        "rawmlsmodificationtimestamp": get_hubspot_timestamp_from_iso_date(
-                            self.raw_data["RawMlsModificationTimestamp"]
-                        ),
-                        "memberstatelicense": self.raw_data["MemberStateLicense"],
-                        "reso_data_": "true",
-                        **self.get_hubspot_stats_dict(),
-                    }
+                    properties=hubspot_contact_properties
                 )
             )
-        except (ContactApiException, urllib3.exceptions.ProtocolError):
+        except ContactApiException as exc:
+            if exc.reason == "Conflict":
+                duplicate_contact_id = re.search(r"(?P<id>\d+)", exc.body).groupdict(
+                    "id"
+                )
+                hubspot_contact_properties.pop("phone")
+                hubspot_contact = hubspot_client.crm.contacts.basic_api.update(
+                    duplicate_contact_id,
+                    simple_public_object_input=HubSpotContactInput(
+                        properties=hubspot_contact_properties
+                    ),
+                )
+        except urllib3.exceptions.ProtocolError:
             pass
         else:
             hubspot_contact_id = hubspot_contact.to_dict()["id"]
