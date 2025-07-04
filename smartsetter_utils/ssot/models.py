@@ -77,6 +77,12 @@ class MLS(TimeStampedModel):
         max_length=MLS_NAME_LENGTH, null=True, blank=True
     )
 
+    def get_company_hubspot_internal_value(self):
+        return self.company_hubspot_internal_value or self.name
+
+    def get_contact_hubspot_internal_value(self):
+        return self.contact_hubspot_internal_value or self.name
+
     objects = CommonQuerySet.as_manager()
 
     def __str__(self):
@@ -314,7 +320,9 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
             "zip": self.zipcode,
             "phone": self.phone,
             "state": self.state,
-            "mls_board": self.mls.name if self.mls else None,
+            "mls_board": (
+                self.mls.get_company_hubspot_internal_value() if self.mls else None
+            ),
         }
         if self.source == self.SOURCE_CHOICES.constellation:
             hubspot_dict["resoofficekey"] = self.id
@@ -617,7 +625,9 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             "zip": self.zipcode,
             "phone": self.phone,
             "jobtitle": self.job_title,
-            "mls_name__dropdown_": self.mls.name if self.mls else None,
+            "mls_name__dropdown_": (
+                self.mls.get_contact_hubspot_internal_value() if self.mls else None
+            ),
             "memberdirectphone": self.raw_data["MemberDirectPhone"],
             "memberhomephone": self.raw_data["MemberHomePhone"],
             "resomemberkeyunique": self.raw_data["MemberKey"],
