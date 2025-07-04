@@ -666,8 +666,9 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
                             properties=hubspot_contact_properties
                         ),
                     )
-                except ContactServiceException:
+                except (ContactServiceException, urllib3.exceptions.ProtocolError):
                     pass
+
         except urllib3.exceptions.ProtocolError:
             pass
 
