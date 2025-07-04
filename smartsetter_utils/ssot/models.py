@@ -65,9 +65,17 @@ class CommonQuerySet(models.QuerySet):
 
 
 class MLS(TimeStampedModel):
+    MLS_NAME_LENGTH = 256
+
     id = models.CharField(max_length=32, primary_key=True)
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=MLS_NAME_LENGTH)
     table_name = models.CharField(max_length=64, null=True, blank=True)
+    company_hubspot_internal_value = models.CharField(
+        max_length=MLS_NAME_LENGTH, null=True, blank=True
+    )
+    contact_hubspot_internal_value = models.CharField(
+        max_length=MLS_NAME_LENGTH, null=True, blank=True
+    )
 
     objects = CommonQuerySet.as_manager()
 
