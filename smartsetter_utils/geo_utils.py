@@ -23,7 +23,7 @@ def geocode_address(address, zip_code=None):
             address,
             components=components,
         )
-    except googlemaps.exceptions.ApiError:
+    except (googlemaps.exceptions.ApiError, googlemaps.exceptions.HTTPError):
         return None
     else:
         if geocode_res:
