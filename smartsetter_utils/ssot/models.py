@@ -612,6 +612,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             return
 
         hubspot_client = get_hubspot_client()
+        mls_modification_timestamp = self.raw_data.get("RawMlsModificationTimestamp")
         hubspot_contact_properties = {
             "email": self.email,
             "firstname": self.raw_data["MemberFirstName"],
@@ -639,9 +640,8 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             "resomembertype": self.raw_data["MemberType"],
             "resomodificationtimestamp": self.raw_data["ModificationTimestamp"],
             "originatingsystemname": self.raw_data["OriginatingSystemName"],
-            "rawmlsmodificationtimestamp": get_hubspot_timestamp_from_iso_date(
-                self.raw_data["RawMlsModificationTimestamp"]
-            ),
+            "rawmlsmodificationtimestamp": mls_modification_timestamp
+            and get_hubspot_timestamp_from_iso_date(mls_modification_timestamp),
             "memberstatelicense": self.raw_data["MemberStateLicense"],
             "reso_data_": "true",
             **self.get_hubspot_stats_dict(),
