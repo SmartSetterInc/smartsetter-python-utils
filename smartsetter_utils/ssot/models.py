@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.files import File
-from django.db.models import F, Sum
+from django.db.models import F, Q, Sum
 from django.db.models.functions import Cast, Greatest
 from django.utils import timezone
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
@@ -252,6 +252,11 @@ class BadDataException(Exception):
     pass
 
 
+class OfficeQuerySet(CommonQuerySet):
+    def filter_hubspot_material(self):
+        return self.active()
+
+
 class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields):
 
     reality_table_name = "tblOffices"
@@ -259,6 +264,8 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
     id = models.CharField(max_length=256, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True)
     office_id = models.CharField(max_length=128, null=True, blank=True)
+
+    objects = OfficeQuerySet.as_manager()
 
     def __str__(self):
         return self.name
@@ -344,18 +351,21 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
             hubspot_dict["reso_data_"] = "true"
         return hubspot_dict
 
+    def get_full_hubspot_dict(self):
+        return {
+            **self.get_hubspot_dict(),
+            **self.get_hubspot_stats_dict(),
+            **self.get_hubspot_employee_count_dict(),
+        }
+
     def create_hubspot_company(self):
-        if not self.is_active:
+        if not self.should_be_in_hubspot:
             return
 
         try:
             hubspot_company = get_hubspot_client().crm.companies.basic_api.create(
                 simple_public_object_input_for_create=HubSpotCompanyInputForCreate(
-                    properties={
-                        **self.get_hubspot_dict(),
-                        **self.get_hubspot_stats_dict(),
-                        **self.get_hubspot_employee_count_dict(),
-                    }
+                    properties=self.get_full_hubspot_dict()
                 )
             )
         except (CompanyApiException, urllib3.exceptions.ProtocolError):
@@ -363,6 +373,15 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
         else:
             self.hubspot_id = hubspot_company.to_dict()["id"]
             self.save(update_fields=["hubspot_id"])
+
+    def update_or_create_hubspot_company(self):
+        if not self.should_be_in_hubspot:
+            return
+
+        if self.hubspot_id:
+            self.update_hubspot_properties(self.get_full_hubspot_dict())
+        else:
+            self.create_hubspot_company()
 
     def update_hubspot_employee_count(self):
         if not self.hubspot_id:
@@ -415,6 +434,10 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
 
     def get_hubspot_employee_count_dict(self):
         return {"numberofemployees": self.agents.count()}
+
+    @property
+    def should_be_in_hubspot(self):
+        return self.is_active
 
     @property
     def hubspot_url(self):
@@ -528,6 +551,11 @@ class AgentQuerySet(CommonQuerySet):
     def list_view_queryset(self):
         return self.select_related("mls", "brand").annotate_extended_stats()
 
+    def filter_hubspot_material(self):
+        return self.active().exclude(
+            Q(office__isnull=True) | Q(office__hubspot_id__isnull=True)
+        )
+
 
 class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields):
 
@@ -607,13 +635,9 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             ),
         }
 
-    def create_hubspot_contact(self):
-        if not self.is_active or not self.office or not self.office.hubspot_id:
-            return
-
-        hubspot_client = get_hubspot_client()
+    def get_hubspot_dict(self):
         mls_modification_timestamp = self.raw_data.get("RawMlsModificationTimestamp")
-        hubspot_contact_properties = {
+        return {
             "email": self.email,
             "firstname": self.raw_data["MemberFirstName"],
             "lastname": self.raw_data["MemberLastName"],
@@ -646,6 +670,13 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             "reso_data_": "true",
             **self.get_hubspot_stats_dict(),
         }
+
+    def create_hubspot_contact(self, check_should_be_in_hubspot=True):
+        if check_should_be_in_hubspot and not self.should_be_in_hubspot:
+            return
+
+        hubspot_client = get_hubspot_client()
+        hubspot_contact_properties = self.get_hubspot_dict()
         hubspot_contact = None
         try:
             hubspot_contact = hubspot_client.crm.contacts.basic_api.create(
@@ -693,17 +724,29 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             except AssociationsApiException:
                 pass
 
-    def update_hubspot_stats(self):
-        from hubspot.crm.contacts import SimplePublicObjectInput
+    def update_or_create_hubspot_contact(self, check_should_be_in_hubspot=True):
+        if check_should_be_in_hubspot and not self.should_be_in_hubspot:
+            return
 
+        if self.hubspot_id:
+            self.update_hubspot_properties(self.get_hubspot_dict())
+        else:
+            self.create_hubspot_contact(check_should_be_in_hubspot)
+
+    def update_hubspot_stats(self):
         if not self.hubspot_id:
             return
+
+        self.update_hubspot_properties(self.get_hubspot_stats_dict())
+
+    def update_hubspot_properties(self, properties):
+        from hubspot.crm.contacts import SimplePublicObjectInput
 
         try:
             get_hubspot_client().crm.contacts.basic_api.update(
                 self.hubspot_id,
                 simple_public_object_input=SimplePublicObjectInput(
-                    properties=self.get_hubspot_stats_dict()
+                    properties=properties
                 ),
             )
         except (urllib3.exceptions.ProtocolError, ContactApiException):
@@ -726,6 +769,10 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
             "sales_count__all_time_": self.listing_transactions_count
             + self.selling_transactions_count,
         }
+
+    @property
+    def should_be_in_hubspot(self):
+        return self.is_active and self.office and self.office.hubspot_id
 
 
 class TransactionQuerySet(CommonQuerySet):
