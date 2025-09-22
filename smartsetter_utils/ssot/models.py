@@ -466,13 +466,17 @@ class AgentQuerySet(CommonQuerySet):
         agents = self.all()
         for agent_group in more_itertools.chunked(agents, 1000):
             for agent in agent_group:
-                agent.listing_transactions_count = agent.listing_transactions.count()
-                agent.selling_transactions_count = agent.selling_transactions.count()
+                agent.listing_transactions_count = (
+                    agent.listing_transactions.filter_12m().count()
+                )
+                agent.selling_transactions_count = (
+                    agent.selling_transactions.filter_12m().count()
+                )
                 agent.listing_production = (
-                    agent.listing_transactions.listing_production()
+                    agent.listing_transactions.filter_12m().listing_production()
                 )
                 agent.selling_production = (
-                    agent.selling_transactions.selling_production()
+                    agent.selling_transactions.filter_12m().selling_production()
                 )
             Agent.objects.bulk_update(
                 agent_group,
