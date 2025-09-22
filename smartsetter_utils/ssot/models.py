@@ -461,13 +461,9 @@ class AgentQuerySet(CommonQuerySet):
             / Greatest(F("total_transactions_count"), 1),
         )
 
-    def update_cached_stats(self, continue_=True):
+    def update_cached_stats(self):
         # can't update using F expressions: Joined field references are not permitted in this query
         agents = self.all()
-        if continue_:
-            agent = agents.filter(
-                listing_transactions_count=0, selling_transactions_count=0
-            )
         for agent_group in more_itertools.chunked(agents, 1000):
             for agent in agent_group:
                 agent.listing_transactions_count = agent.listing_transactions.count()
