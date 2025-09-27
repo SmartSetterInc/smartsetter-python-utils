@@ -581,6 +581,9 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     office = models.ForeignKey(
         Office, related_name="agents", null=True, blank=True, on_delete=models.SET_NULL
     )
+    office_history = models.ManyToManyField(
+        Office, related_name="historical_agents", through="AgentOfficeThrough"
+    )
     office_name = models.CharField(max_length=256, null=True, blank=True)
     job_title = models.CharField(max_length=256, null=True, blank=True)
     brand = models.ForeignKey(
@@ -773,6 +776,15 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     @property
     def should_be_in_hubspot(self):
         return self.is_active and self.office and self.office.hubspot_id
+
+
+class AgentOfficeThrough(TimeStampedModel):
+    agent = models.ForeignKey(
+        Agent, related_name="office_movements", on_delete=models.CASCADE
+    )
+    office = models.ForeignKey(
+        Office, related_name="agent_movements", on_delete=models.CASCADE
+    )
 
 
 class TransactionQuerySet(CommonQuerySet):
