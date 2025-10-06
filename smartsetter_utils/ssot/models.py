@@ -821,9 +821,11 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
     county = models.CharField(max_length=64, null=True, blank=True)
     zipcode = models.CharField(max_length=32, null=True, blank=True)
     location = models.PointField(null=True, blank=True, srid=4326)
+    property_type = models.CharField(max_length=32, null=True, blank=True)
     state_code = models.CharField(max_length=16, null=True, blank=True)
     list_price = models.PositiveBigIntegerField(null=True, blank=True)
     sold_price = models.PositiveBigIntegerField(null=True, blank=True)
+    lease_price = models.PositiveIntegerField(null=True, blank=True)
     days_on_market = models.IntegerField(null=True, blank=True)
     closed_date = models.DateField(null=True, blank=True)
     listing_agent = models.ForeignKey(
@@ -854,6 +856,8 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         blank=True,
         on_delete=models.SET_NULL,
     )
+    status = models.CharField(max_length=32, null=True, blank=True)
+    raw_data = models.JSONField(null=True, blank=True)
 
     objects = TransactionQuerySet.as_manager()
 
