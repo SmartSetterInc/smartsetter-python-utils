@@ -67,9 +67,7 @@ def handle_office_created(office_id: int, office: typing.Optional[Office] = None
 
 
 @shared_task
-def handle_agent_created(
-    agent_id, agent: typing.Optional[Agent] = None, add_in_hubspot=True
-):
+def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
     if not agent:
         agent = Agent.objects.select_related("mls", "office").get(id=agent_id)
 
@@ -97,12 +95,6 @@ def handle_agent_created(
             pass
 
     agent.save()
-
-    if add_in_hubspot:
-        agent.create_hubspot_contact()
-
-        if agent.office:
-            agent.office.update_hubspot_employee_count()
 
 
 @shared_task
