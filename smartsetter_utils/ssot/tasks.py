@@ -87,11 +87,7 @@ def handle_agent_created(
         if agent.brand:
             break
 
-    if agent.zipcode:
-        agent.location = query_location_for_zipcode(agent.zipcode)
-
-    if not agent.location and agent.address:
-        agent.location = geocode_address(agent.address, agent.zipcode)
+    agent.location = get_location_from_zipcode_or_address(agent.zipcode, agent.address)
 
     if not agent.state and agent.zipcode:
         try:
@@ -111,29 +107,14 @@ def handle_agent_created(
 
 @shared_task
 def handle_transaction_created(transaction_id: int):
-    transaction = Transaction.objects.select_related(
-        "listing_agent", "selling_agent", "listing_office", "selling_office"
-    ).get(id=transaction_id)
+    transaction = Transaction.objects.get(id=transaction_id)
 
-    if transaction.listing_agent:
-        transaction.listing_agent.listing_transactions_count += 1
-        if transaction.list_price:
-            transaction.listing_agent.listing_production += transaction.list_price
-        transaction.listing_agent.save()
-        transaction.listing_agent.update_hubspot_stats()
+    transaction.location = get_location_from_zipcode_or_address(
+        transaction.zipcode, transaction.address
+    )
 
-    if transaction.selling_agent:
-        transaction.selling_agent.selling_transactions_count += 1
-        if transaction.sold_price:
-            transaction.selling_agent.selling_production += transaction.sold_price
-        transaction.selling_agent.save()
-        transaction.selling_agent.update_hubspot_stats()
-
-    if transaction.listing_office:
-        transaction.listing_office.update_hubspot_stats()
-
-    if transaction.selling_office:
-        transaction.selling_office.update_hubspot_stats()
+    if transaction.location:
+        transaction.save()
 
 
 @shared_task
@@ -327,6 +308,16 @@ def get_reality_db_connection():
         database=settings.REALITY_DB_NAME,
         cursorclass=pymysql.cursors.DictCursor,
     )
+
+
+def get_location_from_zipcode_or_address(zipcode, address):
+    if zipcode:
+        location = query_location_for_zipcode(zipcode)
+
+    if not location and address:
+        location = geocode_address(address, zipcode)
+
+    return location
 
 
 class ModelClassMapper:
