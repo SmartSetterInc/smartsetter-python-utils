@@ -417,8 +417,8 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
         listing_transactions_12m = listing_transactions.filter_12m()
         selling_transactions = self.selling_transactions.all()
         selling_transactions_12m = selling_transactions.filter_12m()
-        listing_production_12m = listing_transactions_12m.listing_production()
-        selling_production_12m = selling_transactions_12m.selling_production()
+        listing_production_12m = listing_transactions_12m.production()
+        selling_production_12m = selling_transactions_12m.production()
 
         return {
             "sales_volume__12m_": listing_production_12m + selling_production_12m,
@@ -426,8 +426,8 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
             "sales_buying_volume__12m_": selling_production_12m,
             "sales_listing_count__12m_": listing_transactions_12m.count(),
             "sales_buying_count__12m_": selling_transactions_12m.count(),
-            "sales_volume__all_time_": listing_transactions.listing_production()
-            + selling_transactions.selling_production(),
+            "sales_volume__all_time_": listing_transactions.production()
+            + selling_transactions.production(),
             "sales_count__all_time_": listing_transactions.count()
             + selling_transactions.count(),
         }
@@ -473,10 +473,10 @@ class AgentQuerySet(CommonQuerySet):
                     agent.selling_transactions.filter_12m().count()
                 )
                 agent.listing_production = (
-                    agent.listing_transactions.filter_12m().listing_production()
+                    agent.listing_transactions.filter_12m().production()
                 )
                 agent.selling_production = (
-                    agent.selling_transactions.filter_12m().selling_production()
+                    agent.selling_transactions.filter_12m().production()
                 )
             Agent.objects.bulk_update(
                 agent_group,
@@ -757,9 +757,9 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
 
     def get_hubspot_stats_dict(self):
         listing_transactions_12m = self.listing_transactions.filter_12m()
-        listing_production_12m = listing_transactions_12m.listing_production()
+        listing_production_12m = listing_transactions_12m.production()
         selling_transactions_12m = self.selling_transactions.filter_12m()
-        selling_production_12m = selling_transactions_12m.selling_production()
+        selling_production_12m = selling_transactions_12m.production()
 
         return {
             "sales_volume__12m_": listing_production_12m + selling_production_12m,
@@ -792,17 +792,8 @@ class TransactionQuerySet(CommonQuerySet):
         year_ago = timezone.now() - relativedelta(years=1)
         return self.filter(closed_date__gte=year_ago)
 
-    def listing_production(self):
-        return (
-            self.aggregate(listing_production=Sum("list_price"))["listing_production"]
-            or 0
-        )
-
-    def selling_production(self):
-        return (
-            self.aggregate(selling_production=Sum("sold_price"))["selling_production"]
-            or 0
-        )
+    def production(self):
+        return self.aggregate(production=Sum("sold_price"))["production"] or 0
 
 
 class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedModel):

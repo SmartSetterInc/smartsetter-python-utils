@@ -30,7 +30,7 @@ class TestAgentModel(TestCase):
         agent.refresh_from_db()
         self.assertEqual(agent.listing_transactions_count, 1)
         self.assertEqual(agent.selling_transactions_count, 1)
-        self.assertEqual(agent.listing_production, listing_transaction.list_price)
+        self.assertEqual(agent.listing_production, listing_transaction.sold_price)
         self.assertEqual(agent.selling_production, selling_transaction.sold_price)
 
     @patch("smartsetter_utils.ssot.models.run_task_in_transaction")
