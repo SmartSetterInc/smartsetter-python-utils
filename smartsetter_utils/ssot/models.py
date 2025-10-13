@@ -822,7 +822,8 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
     sold_price = models.PositiveBigIntegerField(null=True, blank=True)
     lease_price = models.PositiveIntegerField(null=True, blank=True)
     days_on_market = models.IntegerField(null=True, blank=True)
-    closed_date = models.DateField(null=True, blank=True)
+    closed_date = models.DateField(null=True, blank=True, db_index=True)
+    listing_contract_date = models.DateField(null=True, blank=True, db_index=True)
     listing_agent = models.ForeignKey(
         Agent,
         related_name="listing_transactions",
