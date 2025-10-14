@@ -102,8 +102,9 @@ def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
 
 
 @shared_task
-def handle_transaction_created(transaction_id: int):
-    transaction = Transaction.objects.get(id=transaction_id)
+def handle_transaction_created(transaction_id: int, transaction=None):
+    if not transaction:
+        transaction = Transaction.objects.get(id=transaction_id)
 
     transaction.location = get_location_from_zipcode_or_address(
         transaction.zipcode, transaction.address
