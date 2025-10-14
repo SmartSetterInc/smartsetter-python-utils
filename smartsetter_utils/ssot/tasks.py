@@ -308,6 +308,7 @@ def get_reality_db_connection():
 
 
 def get_location_from_zipcode_or_address(zipcode, address):
+    location = None
     if zipcode:
         location = query_location_for_zipcode(zipcode)
 
