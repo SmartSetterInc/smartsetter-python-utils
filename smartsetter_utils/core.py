@@ -25,7 +25,7 @@ def format_phone(phone: str):
 def validate_passwords(password_1, password_2):
 
     if password_1 != password_2:
-        raise serializers.ValidationError({"password_1": "Passwords are different"})
+        raise serializers.ValidationError({"password_1": ["Passwords are different"]})
     try:
         validate_password(password_1)
     except ValidationError as ve:
