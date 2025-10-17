@@ -264,8 +264,8 @@ def iterate_all_create_in_batches(model_class_name: str):
 
 
 @shared_task
-def update_agent_cached_stats():
-    Agent.objects.update_cached_stats()
+def update_agent_cached_stats(mls_id):
+    Agent.objects.filter(mls_id=mls_id).update_cached_stats()
 
 
 @shared_task
