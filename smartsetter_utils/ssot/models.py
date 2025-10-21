@@ -597,6 +597,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     selling_transactions_count = models.PositiveIntegerField(default=0)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
+    tenure = models.DurationField(null=True, blank=True, db_index=True)
 
     objects = AgentQuerySet.as_manager()
 
