@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.files import File
-from django.db.models import F, Q, Sum
+from django.db.models import F, Max, Min, Q, Sum
 from django.db.models.functions import Cast, Greatest
 from django.utils import timezone
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
@@ -488,6 +488,24 @@ class AgentQuerySet(CommonQuerySet):
                 ],
             )
 
+    def update_tenure(self):
+        for agent_group in more_itertools.chunked(self.all(), 1000):
+            for agent in agent_group:
+                sold_transactions = Transaction.objects.filter_listing_or_selling(
+                    agent
+                ).sold()
+                agent.tenure_start_date = sold_transactions.aggregate(
+                    tenure_start_date=Min("closed_date")
+                )["tenure_start_date"]
+                agent.tenure_end_date = sold_transactions.aggregate(
+                    tenure_end_date=Max("closed_date")
+                )["tenure_end_date"]
+                agent.tenure = agent.tenure_end_date - agent.tenure_start_date
+
+            Agent.objects.bulk_update(
+                agent_group, ["tenure_start_date", "tenure_end_date", "tenure"]
+            )
+
     def filter_by_portal_filters(self, filters):
         type AllowedFilters = Literal[
             "city",
@@ -599,7 +617,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     selling_production = models.PositiveBigIntegerField(default=0)
     # used to skip fetching all agent transactions when we need their start/end dates
     tenure_start_date = models.DateField(null=True, blank=True)
-    tenure_end_date = models.DateTimeField(null=True, blank=True)
+    tenure_end_date = models.DateField(null=True, blank=True)
     # used to make tenure queries easier
     tenure = models.DurationField(null=True, blank=True, db_index=True)
 
@@ -800,6 +818,18 @@ class TransactionQuerySet(CommonQuerySet):
     def filter_12m(self):
         year_ago = timezone.now() - relativedelta(years=1)
         return self.filter(closed_date__gte=year_ago)
+
+    def filter_listing(self, agent):
+        return self.filter(listing_agent=agent)
+
+    def filter_selling(self, agent):
+        return self.filter(selling_agent=agent)
+
+    def filter_listing_or_selling(self, agent):
+        return self.filter_listing(agent) | self.filter_selling(agent)
+
+    def sold(self):
+        return self.filter(closed_date__isnull=False)
 
     def production(self):
         return self.aggregate(production=Sum("sold_price"))["production"] or 0
