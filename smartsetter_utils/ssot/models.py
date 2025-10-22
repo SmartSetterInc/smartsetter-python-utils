@@ -500,7 +500,8 @@ class AgentQuerySet(CommonQuerySet):
                 agent.tenure_end_date = sold_transactions.aggregate(
                     tenure_end_date=Max("closed_date")
                 )["tenure_end_date"]
-                agent.tenure = agent.tenure_end_date - agent.tenure_start_date
+                if agent.tenure_start_date:
+                    agent.tenure = agent.tenure_end_date - agent.tenure_start_date
 
             Agent.objects.bulk_update(
                 agent_group, ["tenure_start_date", "tenure_end_date", "tenure"]
