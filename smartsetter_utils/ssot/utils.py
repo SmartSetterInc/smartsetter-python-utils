@@ -36,6 +36,8 @@ def apply_filter_to_queryset(queryset, filter, is_number_field=False):
     filter_method = queryset.filter
     filter_type = filter["type"]
     filter_value = filter.get("value")
+    if isinstance(filter_value, str):
+        filter_value = filter_value.strip()
     if filter_type in ("is_not", "is_none_of", "not_contains", "not_exists"):
         filter_method = queryset.exclude
     field_lookup = None
