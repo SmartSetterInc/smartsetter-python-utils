@@ -76,6 +76,7 @@ class MLS(TimeStampedModel):
     contact_hubspot_internal_value = models.CharField(
         max_length=MLS_NAME_LENGTH, null=True, blank=True
     )
+    data_available_until = models.DateTimeField(null=True, blank=True)
 
     def get_company_hubspot_internal_value(self):
         return self.company_hubspot_internal_value or self.name
