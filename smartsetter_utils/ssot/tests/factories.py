@@ -4,7 +4,14 @@ import factory.django
 from django.utils import timezone
 from faker.providers import address, internet, misc, phone_number, python
 
-from smartsetter_utils.ssot.models import MLS, Agent, Brand, Office, Transaction
+from smartsetter_utils.ssot.models import (
+    MLS,
+    Agent,
+    AgentOfficeThrough,
+    Brand,
+    Office,
+    Transaction,
+)
 
 factory.Faker.add_provider(address)
 factory.Faker.add_provider(phone_number)
@@ -90,3 +97,11 @@ class TransactionFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Transaction
+
+
+class AgentOfficeThroughFactory(factory.django.DjangoModelFactory):
+    agent = factory.SubFactory(AgentFactory)
+    office = factory.SubFactory(OfficeFactory)
+
+    class Meta:
+        model = AgentOfficeThrough
