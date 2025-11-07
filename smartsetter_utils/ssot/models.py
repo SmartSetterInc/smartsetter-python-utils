@@ -455,9 +455,6 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
 class AgentQuerySet(CommonQuerySet):
     def annotate_extended_stats(self):
         return self.annotate(
-            total_transactions_count=F("listing_transactions_count")
-            + F("selling_transactions_count"),
-            total_production=F("listing_production") + F("selling_production"),
             listing_ratio=Cast("listing_production", output_field=models.FloatField())
             / Greatest(F("total_production"), 1.0, output_field=models.FloatField()),
             average_transaction_price=F("total_production")
