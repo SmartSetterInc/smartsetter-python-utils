@@ -23,42 +23,44 @@ class TestAgentModel(TestCase):
             )
         )
 
-    def test_update_cached_stats(self):
+    def test_update_cached_fields(self):
         agent = self.make_agent()
-        listing_transaction = self.make_transaction(listing_agent=agent)
-        selling_transaction = self.make_transaction(selling_agent=agent)
+        city = "Mansoura"
+        listing_transaction = self.make_transaction(
+            listing_agent=agent,
+            closed_date=(timezone.now() - relativedelta(years=5)).date(),
+            city=city,
+        )
+        selling_transaction = self.make_transaction(
+            selling_agent=agent, closed_date=timezone.now().date(), city=city
+        )
+        listing_transaction_2 = self.make_transaction(
+            listing_agent=agent,
+            city="Not Mansoura",
+            listing_contract_date=timezone.now().date(),
+        )
 
-        Agent.objects.update_cached_stats()
+        Agent.objects.update_cached_fields()
 
         agent.refresh_from_db()
         self.assertEqual(agent.listing_transactions_count, 1)
         self.assertEqual(agent.selling_transactions_count, 1)
         self.assertEqual(agent.total_transactions_count, 2)
-        self.assertEqual(agent.listing_production, listing_transaction.sold_price)
+        self.assertEqual(agent.listing_production, listing_transaction_2.sold_price)
         self.assertEqual(agent.selling_production, selling_transaction.sold_price)
         self.assertEqual(
             agent.total_production,
-            listing_transaction.sold_price + selling_transaction.sold_price,
+            agent.listing_production + agent.selling_production,
         )
-
-    def test_update_tenure(self):
-        agent = self.make_agent()
-        listing_transaction = self.make_transaction(
-            listing_agent=agent,
-            closed_date=(timezone.now() - relativedelta(years=5)).date(),
-        )
-        selling_transaction = self.make_transaction(
-            selling_agent=agent, closed_date=timezone.now().date()
-        )
-
-        Agent.objects.update_tenure()
-
-        agent.refresh_from_db()
         self.assertEqual(agent.tenure_start_date, listing_transaction.closed_date)
         self.assertEqual(agent.tenure_end_date, selling_transaction.closed_date)
         self.assertEqual(
             agent.tenure,
             selling_transaction.closed_date - listing_transaction.closed_date,
+        )
+        self.assertEqual(agent.most_transacted_city, city)
+        self.assertEqual(
+            agent.last_activity_date, listing_transaction_2.listing_contract_date
         )
 
     @patch("smartsetter_utils.ssot.models.run_task_in_transaction")

@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.files import File
-from django.db.models import F, Max, Min, Q, Sum
+from django.db.models import Count, F, Max, Min, Q, Sum
 from django.db.models.functions import Cast, Greatest
 from django.utils import timezone
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
@@ -462,11 +462,11 @@ class AgentQuerySet(CommonQuerySet):
             / Greatest(F("total_transactions_count"), 1),
         )
 
-    def update_cached_stats(self):
-        # can't update using F expressions: Joined field references are not permitted in this query
-        agents = self.iterator()
-        for agent_group in more_itertools.chunked(agents, 1000):
+    def update_cached_fields(self):
+        for agent_group in more_itertools.chunked(self.iterator(), 1000):
             for agent in agent_group:
+                # stats
+                # can't update using F expressions: Joined field references are not permitted in this query
                 agent.listing_transactions_count = (
                     agent.listing_transactions.filter_12m().count()
                 )
@@ -485,21 +485,7 @@ class AgentQuerySet(CommonQuerySet):
                 agent.total_production = (
                     agent.listing_production + agent.selling_production
                 )
-            Agent.objects.bulk_update(
-                agent_group,
-                [
-                    "listing_transactions_count",
-                    "selling_transactions_count",
-                    "total_transactions_count",
-                    "listing_production",
-                    "selling_production",
-                    "total_production",
-                ],
-            )
-
-    def update_tenure(self):
-        for agent_group in more_itertools.chunked(self.all(), 1000):
-            for agent in agent_group:
+                # tenure
                 sold_transactions = Transaction.objects.filter_listing_or_selling(
                     agent
                 ).sold()
@@ -511,9 +497,39 @@ class AgentQuerySet(CommonQuerySet):
                 )["tenure_end_date"]
                 if agent.tenure_start_date:
                     agent.tenure = agent.tenure_end_date - agent.tenure_start_date
+                # most transacted city
+                most_transacted_city_tx = (
+                    Transaction.objects.filter_listing_or_selling(agent)
+                    .values("city")
+                    .annotate(tx_count_per_city=Count("city"))
+                    .order_by("-tx_count_per_city")
+                    .values("city")
+                    .first()
+                )
+                if most_transacted_city_tx:
+                    agent.most_transacted_city = most_transacted_city_tx["city"]
+                # last activity date
+                agent.last_activity_date = (
+                    Transaction.objects.filter_listing_or_selling(agent).aggregate(
+                        max_listing_contract_date=Max("listing_contract_date")
+                    )["max_listing_contract_date"]
+                )
 
             Agent.objects.bulk_update(
-                agent_group, ["tenure_start_date", "tenure_end_date", "tenure"]
+                agent_group,
+                [
+                    "listing_transactions_count",
+                    "selling_transactions_count",
+                    "total_transactions_count",
+                    "listing_production",
+                    "selling_production",
+                    "total_production",
+                    "tenure_start_date",
+                    "tenure_end_date",
+                    "tenure",
+                    "most_transacted_city",
+                    "last_activity_date",
+                ],
             )
 
     def filter_by_portal_filters(self, filters):
