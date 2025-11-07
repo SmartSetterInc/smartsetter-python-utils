@@ -490,10 +490,10 @@ class AgentQuerySet(CommonQuerySet):
                     agent
                 ).sold()
                 agent.tenure_start_date = sold_transactions.aggregate(
-                    tenure_start_date=Min("closed_date")
+                    tenure_start_date=Min("listing_contract_date")
                 )["tenure_start_date"]
                 agent.tenure_end_date = sold_transactions.aggregate(
-                    tenure_end_date=Max("closed_date")
+                    tenure_end_date=Max("listing_contract_date")
                 )["tenure_end_date"]
                 if agent.tenure_start_date:
                     agent.tenure = agent.tenure_end_date - agent.tenure_start_date

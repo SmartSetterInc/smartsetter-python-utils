@@ -26,18 +26,25 @@ class TestAgentModel(TestCase):
     def test_update_cached_fields(self):
         agent = self.make_agent()
         city = "Mansoura"
+        tx_1_date = (timezone.now() - relativedelta(years=5)).date()
         listing_transaction = self.make_transaction(
             listing_agent=agent,
-            closed_date=(timezone.now() - relativedelta(years=5)).date(),
+            listing_contract_date=tx_1_date,
+            closed_date=tx_1_date,
             city=city,
         )
+        tx_2_date = timezone.now().date()
         selling_transaction = self.make_transaction(
-            selling_agent=agent, closed_date=timezone.now().date(), city=city
+            selling_agent=agent,
+            listing_contract_date=tx_2_date,
+            closed_date=tx_2_date,
+            city=city,
         )
         listing_transaction_2 = self.make_transaction(
             listing_agent=agent,
             city="Not Mansoura",
-            listing_contract_date=timezone.now().date(),
+            listing_contract_date=tx_2_date,
+            closed_date=tx_2_date,
         )
 
         Agent.objects.update_cached_fields()
