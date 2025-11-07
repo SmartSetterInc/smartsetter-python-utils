@@ -467,7 +467,7 @@ class AgentQuerySet(CommonQuerySet):
 
     def update_cached_stats(self):
         # can't update using F expressions: Joined field references are not permitted in this query
-        agents = self.all()
+        agents = self.iterator()
         for agent_group in more_itertools.chunked(agents, 1000):
             for agent in agent_group:
                 agent.listing_transactions_count = (
@@ -476,19 +476,27 @@ class AgentQuerySet(CommonQuerySet):
                 agent.selling_transactions_count = (
                     agent.selling_transactions.filter_12m().count()
                 )
+                agent.total_transactions_count = (
+                    agent.listing_transactions_count + agent.selling_transactions_count
+                )
                 agent.listing_production = (
                     agent.listing_transactions.filter_12m().production()
                 )
                 agent.selling_production = (
                     agent.selling_transactions.filter_12m().production()
                 )
+                agent.total_production = (
+                    agent.listing_production + agent.selling_production
+                )
             Agent.objects.bulk_update(
                 agent_group,
                 [
                     "listing_transactions_count",
                     "selling_transactions_count",
+                    "total_transactions_count",
                     "listing_production",
                     "selling_production",
+                    "total_production",
                 ],
             )
 
