@@ -181,8 +181,11 @@ def cached_brands():
 
 
 class AgentOfficeCommonFields(TimeStampedModel):
+    CITY_FIELD_LENGTH = 128
     address = models.CharField(max_length=128, null=True, blank=True)
-    city = models.CharField(max_length=128, null=True, blank=True, db_index=True)
+    city = models.CharField(
+        max_length=CITY_FIELD_LENGTH, null=True, blank=True, db_index=True
+    )
     zipcode = models.CharField(max_length=32, null=True, blank=True, db_index=True)
     location = models.PointField(null=True, blank=True, srid=4326)
     phone = models.CharField(max_length=32, null=True, db_index=True)
@@ -592,7 +595,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     )
 
     id = models.CharField(max_length=32, primary_key=True)
-    name = models.CharField(max_length=128, null=True, blank=True)
+    name = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     email = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     verified_phone = models.CharField(max_length=32, null=True, blank=True)
     verified_phone_source = models.CharField(
@@ -604,7 +607,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     office_history = models.ManyToManyField(
         Office, related_name="historical_agents", through="AgentOfficeThrough"
     )
-    office_name = models.CharField(max_length=256, null=True, blank=True)
+    office_name = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     job_title = models.CharField(max_length=256, null=True, blank=True)
     brand = models.ForeignKey(
         Brand, related_name="agents", null=True, on_delete=models.SET_NULL
@@ -615,28 +618,27 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     # cached fields that can be calculated at query time but too slow to do so
     listing_transactions_count = models.PositiveIntegerField(default=0)
     selling_transactions_count = models.PositiveIntegerField(default=0)
+    total_transactions_count = models.PositiveIntegerField(default=0)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
+    total_production = models.PositiveIntegerField(default=0)
     # used to skip fetching all agent transactions when we need their start/end dates
     tenure_start_date = models.DateField(null=True, blank=True)
     tenure_end_date = models.DateField(null=True, blank=True)
     # used to make tenure queries easier
     tenure = models.DurationField(null=True, blank=True, db_index=True)
+    most_transacted_city = models.CharField(
+        max_length=AgentOfficeCommonFields.CITY_FIELD_LENGTH,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+    last_activity_date = models.DateField(null=True, blank=True, db_index=True)
 
     objects = AgentQuerySet.as_manager()
 
     def __str__(self):
         return self.name
-
-    def __getattr__(self, name):
-        # allow accessing total properties without failing database annotations
-        # if we create same-named properties
-        match name:
-            case "total_transaction_count":
-                return self.listing_transactions_count + self.selling_transactions_count
-            case "total_production":
-                return self.listing_production + self.selling_production
-        return super().__getattribute__(name)
 
     @hook(AFTER_CREATE)
     def handle_after_create(self):
