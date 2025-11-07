@@ -628,6 +628,16 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     def __str__(self):
         return self.name
 
+    def __getattr__(self, name):
+        # allow accessing total properties without failing database annotations
+        # if we create same-named properties
+        match name:
+            case "total_transaction_count":
+                return self.listing_transactions_count + self.selling_transactions_count
+            case "total_production":
+                return self.listing_production + self.selling_production
+        return super().__getattribute__(name)
+
     @hook(AFTER_CREATE)
     def handle_after_create(self):
         from smartsetter_utils.ssot.tasks import handle_agent_created

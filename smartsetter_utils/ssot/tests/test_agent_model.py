@@ -61,3 +61,14 @@ class TestAgentModel(TestCase):
         self.make_agent()
 
         self.assertEqual(mock_run_task.call_count, 2)
+
+    def test_total_properties(self):
+        agent = self.make_agent(
+            listing_transactions_count=1,
+            selling_transactions_count=2,
+            listing_production=1000,
+            selling_production=2000,
+        )
+
+        self.assertEqual(agent.total_transaction_count, 3)
+        self.assertEqual(agent.total_production, 3000)
