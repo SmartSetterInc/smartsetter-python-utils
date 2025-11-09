@@ -15,7 +15,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.files import File
 from django.db.models import Count, F, Max, Min, Q, Sum
-from django.db.models.functions import Cast, Greatest
+from django.db.models.functions import Cast, Coalesce, Greatest
 from django.utils import timezone
 from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
 from django_lifecycle.models import LifecycleModelMixin
@@ -490,10 +490,14 @@ class AgentQuerySet(CommonQuerySet):
                     agent
                 ).sold()
                 agent.tenure_start_date = sold_transactions.aggregate(
-                    tenure_start_date=Min("listing_contract_date")
+                    tenure_start_date=Min(
+                        Coalesce("listing_contract_date", "closed_date")
+                    )
                 )["tenure_start_date"]
                 agent.tenure_end_date = sold_transactions.aggregate(
-                    tenure_end_date=Max("listing_contract_date")
+                    tenure_end_date=Max(
+                        Coalesce("listing_contract_date", "closed_date")
+                    )
                 )["tenure_end_date"]
                 if agent.tenure_start_date:
                     agent.tenure = agent.tenure_end_date - agent.tenure_start_date
