@@ -47,24 +47,43 @@ from smartsetter_utils.ssot.utils import (
 )
 
 
-class CommonQuerySet(models.QuerySet):
-    def get_by_id_or_none(self, id):
-        try:
-            return self.get(id=id)
-        except Exception:
-            return None
-
+class CommonFieldsQuerySet(models.QuerySet):
     def reality(self):
         return self.filter(source=CommonFields.SOURCE_CHOICES.reality)
 
     def constellation(self):
         return self.filter(source=CommonFields.SOURCE_CHOICES.constellation)
 
+
+class CommonFields(models.Model):
+    SOURCE_CHOICES = Choices(
+        ("reality", "Reality"), ("constellation", "Constellation1")
+    )
+
+    source = models.CharField(
+        max_length=32,
+        choices=SOURCE_CHOICES,
+        default=SOURCE_CHOICES.constellation,
+        db_index=True,
+    )
+    objects = CommonFieldsQuerySet.as_manager()
+
+    class Meta:
+        abstract = True
+
+
+class CommonQuerySet(CommonFieldsQuerySet):
+    def get_by_id_or_none(self, id):
+        try:
+            return self.get(id=id)
+        except Exception:
+            return None
+
     def active(self):
         return self.filter(status="Active")
 
 
-class MLS(TimeStampedModel):
+class MLS(CommonFields, TimeStampedModel):
     MLS_NAME_LENGTH = 256
 
     id = models.CharField(max_length=32, primary_key=True)
@@ -84,7 +103,7 @@ class MLS(TimeStampedModel):
     def get_contact_hubspot_internal_value(self):
         return self.contact_hubspot_internal_value or self.name
 
-    objects = CommonQuerySet.as_manager()
+    objects = CommonFieldsQuerySet.as_manager()
 
     def __str__(self):
         return self.name
@@ -234,22 +253,6 @@ class RealityDBBase:
     @staticmethod
     def get_property_dict_from_reality_dict(reality_dict):
         raise NotImplementedError
-
-
-class CommonFields(models.Model):
-    SOURCE_CHOICES = Choices(
-        ("reality", "Reality"), ("constellation", "Constellation1")
-    )
-
-    source = models.CharField(
-        max_length=32,
-        choices=SOURCE_CHOICES,
-        default=SOURCE_CHOICES.reality,
-        db_index=True,
-    )
-
-    class Meta:
-        abstract = True
 
 
 class BadDataException(Exception):
