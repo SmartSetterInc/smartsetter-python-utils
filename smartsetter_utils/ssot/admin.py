@@ -202,8 +202,14 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(MLS)
 class MLSAdmin(admin.ModelAdmin):
-    list_display = ["name", "table_name"]
-    readonly_fields = ["agents", "offices", "transactions"]
+    list_display = ["name", "table_name", "source", "data_available_until"]
+    readonly_fields = [
+        "source",
+        "data_available_until",
+        "agents",
+        "offices",
+        "transactions",
+    ]
 
     @admin.display(description="Agents", ordering="agent_count")
     def agents(self, mls):
