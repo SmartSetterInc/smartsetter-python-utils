@@ -74,10 +74,11 @@ class CommonFields(models.Model):
 
 class CommonQuerySet(CommonFieldsQuerySet):
     def get_by_id_or_none(self, id):
-        try:
-            return self.get(id=id)
-        except Exception:
-            return None
+        if id:
+            try:
+                return self.get(id=id)
+            except Exception:
+                return None
 
     def active(self):
         return self.filter(status="Active")
