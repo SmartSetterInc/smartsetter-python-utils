@@ -908,9 +908,23 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         blank=True,
         on_delete=models.SET_NULL,
     )
+    colisting_agent = models.ForeignKey(
+        Agent,
+        related_name="colisting_transactions",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     listing_office = models.ForeignKey(
         Office,
         related_name="listing_transactions",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    colisting_office = models.ForeignKey(
+        Office,
+        related_name="colisting_transactions",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -922,9 +936,23 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         blank=True,
         on_delete=models.SET_NULL,
     )
+    coselling_agent = models.ForeignKey(
+        Agent,
+        related_name="coselling_transactions",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     selling_office = models.ForeignKey(
         Office,
         related_name="selling_transactions",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    coselling_office = models.ForeignKey(
+        Office,
+        related_name="coselling_transactions",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
