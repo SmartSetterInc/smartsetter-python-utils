@@ -650,7 +650,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     total_transactions_count = models.PositiveIntegerField(default=0)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
-    total_production = models.PositiveIntegerField(default=0)
+    total_production = models.PositiveBigIntegerField(default=0)
     # used to skip fetching all agent transactions when we need their start/end dates
     tenure_start_date = models.DateField(null=True, blank=True)
     tenure_end_date = models.DateField(null=True, blank=True)
