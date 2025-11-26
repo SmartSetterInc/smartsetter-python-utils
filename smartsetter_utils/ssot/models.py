@@ -858,6 +858,7 @@ class AgentOfficeMovement(TimeStampedModel):
     to_office = models.ForeignKey(
         Office, related_name="in_movements", on_delete=models.CASCADE
     )
+    movement_date = models.DateField(db_index=True)
 
 
 class TransactionQuerySet(CommonQuerySet):

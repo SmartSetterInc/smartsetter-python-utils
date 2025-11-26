@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import patch
 
 import factory.django
@@ -103,6 +104,7 @@ class AgentOfficeMovementFactory(factory.django.DjangoModelFactory):
     agent = factory.SubFactory(AgentFactory)
     from_office = factory.SubFactory(OfficeFactory)
     to_office = factory.SubFactory(OfficeFactory)
+    movement_date = factory.LazyFunction(date.today)
 
     class Meta:
         model = AgentOfficeMovement
