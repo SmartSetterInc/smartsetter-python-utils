@@ -40,6 +40,7 @@ from smartsetter_utils.aws_utils import download_s3_file, read_brand_code_mappin
 from smartsetter_utils.core import Environments, run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
 from smartsetter_utils.hubspot.utils import get_hubspot_client
+from smartsetter_utils.ssot.fields import PercentageNumberField
 from smartsetter_utils.ssot.utils import (
     apply_filter_to_queryset,
     format_phone,
@@ -104,7 +105,7 @@ class MLS(CommonFields, TimeStampedModel):
     def get_contact_hubspot_internal_value(self):
         return self.contact_hubspot_internal_value or self.name
 
-    objects = CommonFieldsQuerySet.as_manager()
+    objects = CommonQuerySet.as_manager()
 
     def __str__(self):
         return self.name
@@ -272,6 +273,7 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
     id = models.CharField(max_length=256, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True)
     office_id = models.CharField(max_length=128, null=True, blank=True)
+    churn_percentage = PercentageNumberField()
 
     objects = OfficeQuerySet.as_manager()
 
@@ -633,9 +635,6 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     office = models.ForeignKey(
         Office, related_name="agents", null=True, blank=True, on_delete=models.SET_NULL
     )
-    office_history = models.ManyToManyField(
-        Office, related_name="historical_agents", through="AgentOfficeThrough"
-    )
     office_name = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     job_title = models.CharField(max_length=256, null=True, blank=True)
     brand = models.ForeignKey(
@@ -647,10 +646,10 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     # cached fields that can be calculated at query time but too slow to do so
     listing_transactions_count = models.PositiveIntegerField(default=0)
     selling_transactions_count = models.PositiveIntegerField(default=0)
-    total_transactions_count = models.PositiveIntegerField(default=0)
+    total_transactions_count = models.PositiveIntegerField(default=0, db_index=True)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
-    total_production = models.PositiveBigIntegerField(default=0)
+    total_production = models.PositiveBigIntegerField(default=0, db_index=True)
     # used to skip fetching all agent transactions when we need their start/end dates
     tenure_start_date = models.DateField(null=True, blank=True)
     tenure_end_date = models.DateField(null=True, blank=True)
@@ -663,6 +662,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
         db_index=True,
     )
     last_activity_date = models.DateField(null=True, blank=True, db_index=True)
+    likelihood_to_move = PercentageNumberField()
 
     objects = AgentQuerySet.as_manager()
 
@@ -848,12 +848,15 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
         return self.is_active and self.office and self.office.hubspot_id
 
 
-class AgentOfficeThrough(TimeStampedModel):
+class AgentOfficeMovement(TimeStampedModel):
     agent = models.ForeignKey(
         Agent, related_name="office_movements", on_delete=models.CASCADE
     )
-    office = models.ForeignKey(
-        Office, related_name="agent_movements", on_delete=models.CASCADE
+    from_office = models.ForeignKey(
+        Office, related_name="out_movements", on_delete=models.CASCADE
+    )
+    to_office = models.ForeignKey(
+        Office, related_name="in_movements", on_delete=models.CASCADE
     )
 
 

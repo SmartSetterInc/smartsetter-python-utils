@@ -7,7 +7,7 @@ from faker.providers import address, internet, misc, phone_number, python
 from smartsetter_utils.ssot.models import (
     MLS,
     Agent,
-    AgentOfficeThrough,
+    AgentOfficeMovement,
     Brand,
     Office,
     Transaction,
@@ -104,4 +104,4 @@ class AgentOfficeThroughFactory(factory.django.DjangoModelFactory):
     office = factory.SubFactory(OfficeFactory)
 
     class Meta:
-        model = AgentOfficeThrough
+        model = AgentOfficeMovement
