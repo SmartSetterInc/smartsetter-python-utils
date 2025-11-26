@@ -99,9 +99,10 @@ class TransactionFactory(factory.django.DjangoModelFactory):
         model = Transaction
 
 
-class AgentOfficeThroughFactory(factory.django.DjangoModelFactory):
+class AgentOfficeMovementFactory(factory.django.DjangoModelFactory):
     agent = factory.SubFactory(AgentFactory)
-    office = factory.SubFactory(OfficeFactory)
+    from_office = factory.SubFactory(OfficeFactory)
+    to_office = factory.SubFactory(OfficeFactory)
 
     class Meta:
         model = AgentOfficeMovement
