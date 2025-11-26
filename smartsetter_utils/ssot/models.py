@@ -853,7 +853,11 @@ class AgentOfficeMovement(TimeStampedModel):
         Agent, related_name="office_movements", on_delete=models.CASCADE
     )
     from_office = models.ForeignKey(
-        Office, related_name="out_movements", on_delete=models.CASCADE
+        Office,
+        related_name="out_movements",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
     )
     to_office = models.ForeignKey(
         Office, related_name="in_movements", on_delete=models.CASCADE
