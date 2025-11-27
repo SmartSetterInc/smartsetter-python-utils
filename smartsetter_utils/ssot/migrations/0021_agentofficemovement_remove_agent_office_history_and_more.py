@@ -6,8 +6,6 @@ import django.utils.timezone
 import model_utils.fields
 from django.db import migrations, models
 
-import smartsetter_utils.ssot.fields
-
 
 class Migration(migrations.Migration):
 
@@ -53,32 +51,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name="agent",
             name="office_history",
-        ),
-        migrations.AddField(
-            model_name="agent",
-            name="likelihood_to_move",
-            field=smartsetter_utils.ssot.fields.PercentageNumberField(
-                blank=True,
-                db_index=True,
-                null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(0),
-                    django.core.validators.MaxValueValidator(100),
-                ],
-            ),
-        ),
-        migrations.AddField(
-            model_name="office",
-            name="churn_percentage",
-            field=smartsetter_utils.ssot.fields.PercentageNumberField(
-                blank=True,
-                db_index=True,
-                null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(0),
-                    django.core.validators.MaxValueValidator(100),
-                ],
-            ),
         ),
         migrations.AlterField(
             model_name="agent",

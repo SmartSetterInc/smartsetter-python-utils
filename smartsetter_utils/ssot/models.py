@@ -13,6 +13,7 @@ import urllib3.exceptions
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.core import validators
 from django.core.files import File
 from django.db.models import Count, F, Max, Min, Q, Sum
 from django.db.models.functions import Cast, Coalesce, Greatest
@@ -40,7 +41,6 @@ from smartsetter_utils.aws_utils import download_s3_file, read_brand_code_mappin
 from smartsetter_utils.core import Environments, run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
 from smartsetter_utils.hubspot.utils import get_hubspot_client
-from smartsetter_utils.ssot.fields import PercentageNumberField
 from smartsetter_utils.ssot.utils import (
     apply_filter_to_queryset,
     format_phone,
@@ -273,7 +273,12 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
     id = models.CharField(max_length=256, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True)
     office_id = models.CharField(max_length=128, null=True, blank=True)
-    churn_percentage = PercentageNumberField()
+    churn_score = models.FloatField(
+        null=True,
+        blank=True,
+        db_index=True,
+        validators=[validators.MaxValueValidator(30)],
+    )
 
     objects = OfficeQuerySet.as_manager()
 
@@ -662,7 +667,12 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
         db_index=True,
     )
     last_activity_date = models.DateField(null=True, blank=True, db_index=True)
-    likelihood_to_move = PercentageNumberField()
+    likelihood_to_move = models.FloatField(
+        null=True,
+        blank=True,
+        db_index=True,
+        validators=[validators.MaxValueValidator(100)],
+    )
 
     objects = AgentQuerySet.as_manager()
 
