@@ -857,6 +857,54 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     def should_be_in_hubspot(self):
         return self.is_active and self.office and self.office.hubspot_id
 
+    @property
+    def sales_volume_score(self):
+        sales_volume_score = None
+        if self.total_production == 0:
+            sales_volume_score = 10
+        elif self.total_production > 2e6:
+            sales_volume_score = 0
+        else:
+            sales_volume_score = (2e6 - self.total_production) / 2e5
+        return sales_volume_score
+
+    @property
+    def transaction_count_score(self):
+        tx_count_score = 0
+        if self.total_transactions_count == 0:
+            tx_count_score = 10
+        elif self.total_transactions_count > 10:
+            tx_count_score = 10
+        else:
+            tx_count_score = 10 - self.total_transactions_count
+        return tx_count_score
+
+    @property
+    def tenure_score(self):
+        agent_tenure_score = 35
+        if self.tenure:
+            agent_tenure_years = (
+                relativedelta(seconds=self.tenure.total_seconds()).days / 365
+            )
+            if agent_tenure_years > 7:
+                agent_tenure_score = 0
+            else:
+                agent_tenure_score = (7 - agent_tenure_years) * 5
+        return agent_tenure_score
+
+    def get_office_size_score(self, office_size=None):
+        office_size_score = 0
+        if self.office:
+            if office_size is None:
+                office_size = self.office.agents.count()
+            if office_size == 0:
+                office_size_score = 0
+            elif office_size > 75:
+                office_size_score = 15
+            else:
+                office_size_score = office_size / 5
+        return office_size_score, office_size
+
 
 class AgentOfficeMovement(TimeStampedModel):
     agent = models.ForeignKey(
