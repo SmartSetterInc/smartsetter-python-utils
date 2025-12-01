@@ -40,7 +40,6 @@ def apply_filter_to_queryset(queryset, filter):
     filter_value = filter.get("value")
     table_field = queryset.model._meta.get_field(field_name)
     field_is_text = isinstance(table_field, (models.CharField, models.TextField))
-    field_is_number = isinstance(table_field, (models.IntegerField, models.FloatField))
     if isinstance(filter_value, str):
         filter_value = filter_value.strip()
     if filter_type in ("is_not", "is_none_of", "not_contains", "not_exists"):
@@ -48,7 +47,7 @@ def apply_filter_to_queryset(queryset, filter):
     field_lookup = None
     match filter_type:
         case "is" | "is_not":
-            field_lookup = "exact" if field_is_number else "iexact"
+            field_lookup = "iexact" if field_is_text else "exact"
         case "is_one_of" | "is_none_of":
             field_lookup = "in"
         case "contains" | "not_contains":
