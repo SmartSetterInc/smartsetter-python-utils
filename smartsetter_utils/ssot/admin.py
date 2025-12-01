@@ -210,6 +210,7 @@ class MLSAdmin(admin.ModelAdmin):
         "offices",
         "transactions",
     ]
+    search_fields = ["name", "source"]
 
     @admin.display(description="Agents", ordering="agent_count")
     def agents(self, mls):
