@@ -66,7 +66,7 @@ def handle_office_created(office_id: int, office: typing.Optional[Office] = None
     office.location = get_location_from_zipcode_or_address(
         office.zipcode, office.address
     )
-    if office.location:
+    if office.id and office.location:
         office.save()
 
 
@@ -110,7 +110,7 @@ def handle_transaction_created(transaction_id: int, transaction=None):
         transaction.zipcode, transaction.address
     )
 
-    if transaction.location:
+    if transaction.id and transaction.location:
         transaction.save()
 
 

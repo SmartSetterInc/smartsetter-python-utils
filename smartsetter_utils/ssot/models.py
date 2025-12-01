@@ -18,7 +18,7 @@ from django.core.files import File
 from django.db.models import Count, F, Max, Min, Q, Sum
 from django.db.models.functions import Cast, Coalesce, Greatest
 from django.utils import timezone
-from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, hook
+from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, hook
 from django_lifecycle.models import LifecycleModelMixin
 from hubspot.crm.associations.v4.exceptions import (
     ApiException as AssociationsApiException,
@@ -285,8 +285,8 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
     def __str__(self):
         return self.name
 
-    @hook(AFTER_CREATE)
-    def handle_created(self):
+    @hook(BEFORE_CREATE)
+    def handle_before_create(self):
         from smartsetter_utils.ssot.tasks import handle_office_created
 
         if Environments.is_dev():
@@ -1028,8 +1028,8 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
     def __str__(self):
         return self.mls_number
 
-    @hook(AFTER_CREATE)
-    def handle_created(self):
+    @hook(BEFORE_CREATE)
+    def handle_before_create(self):
         from smartsetter_utils.ssot.tasks import handle_transaction_created
 
         if Environments.is_dev():
