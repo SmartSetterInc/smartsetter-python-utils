@@ -2,6 +2,7 @@ import re
 
 import phonenumbers
 from django.conf import settings
+from django.db.models import Q
 
 from smartsetter_utils.core import format_phone as utils_format_phone
 from smartsetter_utils.hubspot.utils import get_hubspot_client
@@ -49,8 +50,14 @@ def apply_filter_to_queryset(queryset, filter, is_number_field=False):
         case "contains" | "not_contains":
             field_lookup = "icontains"
         case "exists" | "not_exists":
-            field_lookup = "isnull"
-            filter_value = False
+            return filter_method(
+                Q(
+                    **{
+                        f"{field_name}__isnull": False,
+                    }
+                )
+                & ~Q(**{field_name: ""})
+            )
         case "gt" | "lt":
             field_lookup = filter_type
     return filter_method(**{f"{field_name}__{field_lookup}": filter_value})
