@@ -581,8 +581,6 @@ class AgentQuerySet(CommonQuerySet):
 
         typed_filters: AgentFilters = filters
 
-        NUMBER_FIELDS = ("mls_id",)
-
         queryset = self.all()
         if not typed_filters:
             return queryset
@@ -602,9 +600,7 @@ class AgentQuerySet(CommonQuerySet):
                     )
                     continue
             filter["field"] = field_name
-            queryset = apply_filter_to_queryset(
-                queryset, filter, field_name in NUMBER_FIELDS
-            )
+            queryset = apply_filter_to_queryset(queryset, filter)
         return queryset
 
     def list_view_queryset(self):
