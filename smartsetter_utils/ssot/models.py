@@ -292,7 +292,7 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
         if Environments.is_dev():
             return
 
-        run_task_in_transaction(handle_office_created, self.id)
+        handle_office_created(self.id, self)
 
     @hook(
         AFTER_UPDATE,
@@ -1039,7 +1039,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         if Environments.is_dev():
             return
 
-        run_task_in_transaction(handle_transaction_created, self.id)
+        handle_transaction_created(self.id, self)
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
