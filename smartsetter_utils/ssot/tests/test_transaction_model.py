@@ -9,7 +9,7 @@ from smartsetter_utils.ssot.tests.base import TestCase
 
 
 class TestTransactionModel(TestCase):
-    @patch("smartsetter_utils.ssot.tasks.handle_transaction_created")
+    @patch("smartsetter_utils.ssot.tasks.handle_before_transaction_created")
     def test_import_from_reality_data(self, _1):
         transaction_data = json.loads(
             self.read_test_file("ssot", "reality_transaction.json")

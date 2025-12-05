@@ -58,7 +58,7 @@ class OfficeFactory(factory.django.DjangoModelFactory):
             patch(
                 "smartsetter_utils.ssot.models.get_hubspot_client"
             ) as mock_hubspot_client,
-            patch("smartsetter_utils.ssot.tasks.handle_office_created"),
+            patch("smartsetter_utils.ssot.tasks.handle_before_office_created"),
         ):
             create_return_value = (
                 mock_hubspot_client.return_value.crm.companies.basic_api.create.return_value
@@ -104,7 +104,7 @@ class TransactionFactory(factory.django.DjangoModelFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        with patch("smartsetter_utils.ssot.tasks.handle_transaction_created"):
+        with patch("smartsetter_utils.ssot.tasks.handle_before_transaction_created"):
             return super()._create(model_class, *args, **kwargs)
 
 

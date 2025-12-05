@@ -8,7 +8,7 @@ from smartsetter_utils.ssot.tests.base import TestCase
 
 
 class TestOfficeModel(TestCase):
-    @patch("smartsetter_utils.ssot.tasks.handle_office_created")
+    @patch("smartsetter_utils.ssot.tasks.handle_before_office_created")
     def test_import_from_reality_data(self, _1):
         office_data = self.get_office_data()
         mls = self.make_mls(id=office_data["MLSID"])
@@ -18,7 +18,7 @@ class TestOfficeModel(TestCase):
 
         self.assertTrue(Office.objects.get(office_id=office_data["OfficeID"], mls=mls))
 
-    @patch("smartsetter_utils.ssot.tasks.handle_office_created")
+    @patch("smartsetter_utils.ssot.tasks.handle_before_office_created")
     def test_updates_brand_name_in_office_name(self, _1):
         self.make_brand()
         office_data = self.get_office_data()

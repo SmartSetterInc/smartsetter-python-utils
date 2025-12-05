@@ -287,12 +287,12 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
 
     @hook(BEFORE_CREATE)
     def handle_before_create(self):
-        from smartsetter_utils.ssot.tasks import handle_office_created
+        from smartsetter_utils.ssot.tasks import handle_before_office_created
 
         if Environments.is_dev():
             return
 
-        handle_office_created(self)
+        handle_before_office_created(self)
 
     @hook(
         AFTER_UPDATE,
@@ -1030,12 +1030,12 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
 
     @hook(BEFORE_CREATE)
     def handle_before_create(self):
-        from smartsetter_utils.ssot.tasks import handle_transaction_created
+        from smartsetter_utils.ssot.tasks import handle_before_transaction_created
 
         if Environments.is_dev():
             return
 
-        handle_transaction_created(self)
+        handle_before_transaction_created(self)
 
     @classmethod
     def from_reality_dict(cls, reality_dict):

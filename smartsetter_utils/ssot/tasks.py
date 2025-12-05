@@ -58,7 +58,7 @@ def pull_reality_db_updates(force=False):
     Agent.objects.update_cached_stats()
 
 
-def handle_office_created(office: Office):
+def handle_before_office_created(office: Office):
     office.location = get_location_from_zipcode_or_address(
         office.zipcode, office.address
     )
@@ -96,7 +96,7 @@ def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
 
 
 @shared_task
-def handle_transaction_created(transaction: Transaction):
+def handle_before_transaction_created(transaction: Transaction):
     transaction.location = get_location_from_zipcode_or_address(
         transaction.zipcode, transaction.address
     )
