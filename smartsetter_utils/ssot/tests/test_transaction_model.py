@@ -1,16 +1,16 @@
 import json
 from unittest.mock import patch
 
+from django.contrib.gis.geos import Point
 from django.utils import timezone
 
 from smartsetter_utils.ssot.models import Agent, Office, Transaction
 from smartsetter_utils.ssot.tests.base import TestCase
 
 
-@patch("smartsetter_utils.ssot.tasks.handle_transaction_created")
-@patch("smartsetter_utils.ssot.models.get_hubspot_client")
 class TestTransactionModel(TestCase):
-    def test_import_from_reality_data(self, _1, _2):
+    @patch("smartsetter_utils.ssot.tasks.handle_transaction_created")
+    def test_import_from_reality_data(self, _1):
         transaction_data = json.loads(
             self.read_test_file("ssot", "reality_transaction.json")
         )
@@ -39,3 +39,13 @@ class TestTransactionModel(TestCase):
                 selling_office=selling_office,
             )
         )
+
+    @patch("smartsetter_utils.ssot.tasks.get_location_from_zipcode_or_address")
+    def test_handle_before_create_signal(self, mock_get_location):
+        location = Point(0, 0)
+        mock_get_location.return_value = location
+
+        transaction = Transaction.objects.create(id="whatnever")
+
+        transaction.refresh_from_db()
+        self.assertEqual(transaction.location, location)

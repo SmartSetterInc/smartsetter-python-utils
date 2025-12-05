@@ -1035,7 +1035,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         if Environments.is_dev():
             return
 
-        handle_transaction_created(self.id, self)
+        handle_transaction_created(self)
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
