@@ -1,6 +1,8 @@
 import json
 from unittest.mock import patch
 
+from django.contrib.gis.geos import Point
+
 from smartsetter_utils.ssot.models import Office
 from smartsetter_utils.ssot.tests.base import TestCase
 
@@ -28,6 +30,16 @@ class TestOfficeModel(TestCase):
         office.refresh_from_db()
         # works only when tested independently like with --lf flag
         self.assertEqual(office.name, "RE/MAX Reality Stuff RE/MAX")
+
+    @patch("smartsetter_utils.ssot.tasks.get_location_from_zipcode_or_address")
+    def test_before_create_signal_handler(self, mock_get_location):
+        location = Point(0, 0)
+        mock_get_location.return_value = location
+
+        office = Office.objects.create(id="whatever")
+
+        office.refresh_from_db()
+        self.assertEqual(office.location, location)
 
     def get_office_data(self):
         return json.loads(self.read_test_file("ssot", "reality_office.json"))

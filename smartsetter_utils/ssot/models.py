@@ -292,7 +292,7 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
         if Environments.is_dev():
             return
 
-        handle_office_created(self.id, self)
+        handle_office_created(self)
 
     @hook(
         AFTER_UPDATE,

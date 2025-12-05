@@ -58,16 +58,10 @@ def pull_reality_db_updates(force=False):
     Agent.objects.update_cached_stats()
 
 
-@shared_task
-def handle_office_created(office_id: int, office: typing.Optional[Office] = None):
-    if not office:
-        office = Office.objects.get(id=office_id)
-
+def handle_office_created(office: Office):
     office.location = get_location_from_zipcode_or_address(
         office.zipcode, office.address
     )
-    if office.id and office.location:
-        office.save()
 
 
 @shared_task
