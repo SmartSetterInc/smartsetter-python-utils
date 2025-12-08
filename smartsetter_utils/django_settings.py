@@ -13,12 +13,12 @@ USE_TZ = True
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.db.backends.spatialite",
-        "NAME": "db.sqlite3",
-        "USER": "",
-        "PASSWORD": "",
-        "HOST": "",
-        "PORT": "",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "ssutils",
+        "USER": "debug",
+        "PASSWORD": "debug",
+        "HOST": "postgres",
+        "PORT": "5432",
     }
 }
 
@@ -63,6 +63,7 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "django.contrib.humanize",
     "django.contrib.gis",
+    "django.contrib.postgres",
     "smartsetter_utils.airtable",
     "smartsetter_utils.ssot",
 )

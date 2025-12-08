@@ -17,8 +17,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   libgeos-dev \
   libxml2 \
   libjson-c-dev \
-  gdal-bin \
-  libsqlite3-mod-spatialite
+  gdal-bin
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements/* .

@@ -3,5 +3,15 @@ services:
     build:
       context: ../
       dockerfile: ./.devcontainer/Dockerfile
+    depends_on:
+      - postgres
     volumes:
       - ../:/app:z
+
+  postgres:
+    image: postgis/postgis:14-master
+    container_name: ssutils_postgres
+    volumes:
+      - ../data:/var/lib/postgresql/data
+    env_file:
+      - ./.postgres
