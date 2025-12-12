@@ -1,6 +1,8 @@
 import json
 import re
+import time
 
+import elasticsearch.exceptions
 import googlemaps.exceptions
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
@@ -33,16 +35,23 @@ def geocode_address(address, zip_code=None):
 
 
 def query_location_for_zipcode(zip_code):
-    es = create_elasticsearch_connection()
-    zipcode_location_response = es.search(
-        index=settings.ES_ZIPCODE_POLYGONS_INDEX_NAME,
-        body={"query": {"term": {"zip_code": zip_code}}, "size": 1},
-    )
-    if not zipcode_location_response["hits"]["hits"]:
-        return None
-    return create_geometry_from_geojson(
-        zipcode_location_response["hits"]["hits"][0]["_source"]["location"]
-    )
+    attempts = 0
+    while attempts < 5:
+        try:
+            es = create_elasticsearch_connection()
+            zipcode_location_response = es.search(
+                index=settings.ES_ZIPCODE_POLYGONS_INDEX_NAME,
+                body={"query": {"term": {"zip_code": zip_code}}, "size": 1},
+            )
+        except elasticsearch.exceptions.ConnectionTimeout:
+            attempts += 1
+            time.sleep(3)
+        else:
+            if not zipcode_location_response["hits"]["hits"]:
+                return None
+            return create_geometry_from_geojson(
+                zipcode_location_response["hits"]["hits"][0]["_source"]["location"]
+            )
 
 
 def create_geometry_from_geojson(geojson):
