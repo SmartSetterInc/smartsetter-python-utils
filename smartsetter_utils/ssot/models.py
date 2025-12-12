@@ -19,7 +19,13 @@ from django.db import connection
 from django.db.models import Count, F, Max, Min, Q, Sum
 from django.db.models.functions import Cast, Coalesce, Greatest
 from django.utils import timezone
-from django_lifecycle import AFTER_CREATE, AFTER_UPDATE, BEFORE_CREATE, hook
+from django_lifecycle import (
+    AFTER_CREATE,
+    AFTER_DELETE,
+    AFTER_UPDATE,
+    BEFORE_CREATE,
+    hook,
+)
 from django_lifecycle.models import LifecycleModelMixin
 from hubspot.crm.associations.v4.exceptions import (
     ApiException as AssociationsApiException,
@@ -114,6 +120,13 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     @hook(AFTER_CREATE)
     def handle_created(self):
         self.create_agent_materialized_view()
+
+    @hook(AFTER_DELETE)
+    def handle_deleted(self):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"DROP MATERIALIZED VIEW {self.agent_materialized_view_table_name}"
+            )
 
     @classmethod
     def import_from_s3(cls):
