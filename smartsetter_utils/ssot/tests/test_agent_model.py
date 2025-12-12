@@ -82,3 +82,12 @@ class TestAgentModel(TestCase):
         trebvow_mls_table = Agent.switch_to_mls_matview(mls)
 
         self.assertEqual(trebvow_mls_table._meta.db_table, "ssot_agent_trebvow")
+
+    def test_query_materialized_view(self):
+        mls = self.make_mls()
+        self.make_agent(mls=mls)
+
+        self.assertEqual(Agent.objects.count(), 1)
+        self.assertEqual(Agent.objects.filter_by_mls_materialized_view(mls).count(), 0)
+        mls.refresh_agent_materialized_view()
+        self.assertEqual(Agent.objects.filter_by_mls_materialized_view(mls).count(), 1)

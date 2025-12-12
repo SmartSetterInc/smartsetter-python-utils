@@ -15,6 +15,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.core import validators
 from django.core.files import File
+from django.db import connection
 from django.db.models import Count, F, Max, Min, Q, Sum
 from django.db.models.functions import Cast, Coalesce, Greatest
 from django.utils import timezone
@@ -85,7 +86,7 @@ class CommonQuerySet(CommonFieldsQuerySet):
         return self.filter(status="Active")
 
 
-class MLS(CommonFields, TimeStampedModel):
+class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     MLS_NAME_LENGTH = 256
 
     id = models.CharField(max_length=32, primary_key=True)
@@ -110,6 +111,10 @@ class MLS(CommonFields, TimeStampedModel):
     def __str__(self):
         return self.name
 
+    @hook(AFTER_CREATE)
+    def handle_created(self):
+        self.create_agent_materialized_view()
+
     @classmethod
     def import_from_s3(cls):
         from smartsetter_utils.aws_utils import download_s3_file
@@ -126,6 +131,26 @@ class MLS(CommonFields, TimeStampedModel):
                 for mls_row in csv_reader
             ]
         )
+
+    @property
+    def agent_materialized_view_table_name(self):
+        return f"{Agent._meta.db_table}_{self.table_name.lower()}"
+
+    def create_agent_materialized_view(self):
+        # mls-specific agent materialized view for MyMLS page
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"""
+                CREATE MATERIALIZED VIEW {self.agent_materialized_view_table_name} as
+                SELECT * FROM {Agent._meta.db_table} WHERE mls_id = '{self.id}'
+            """
+            )
+
+    def refresh_agent_materialized_view(self):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"REFRESH MATERIALIZED VIEW {self.agent_materialized_view_table_name}"
+            )
 
 
 def brand_icon_upload_to(instance, filename):
@@ -611,6 +636,10 @@ class AgentQuerySet(CommonQuerySet):
             Q(office__isnull=True) | Q(office__hubspot_id__isnull=True)
         )
 
+    def filter_by_mls_materialized_view(self, mls: MLS):
+        # must be applied as first query method
+        return Agent.switch_to_mls_matview(mls).objects.all()
+
 
 class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields):
 
@@ -906,7 +935,7 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
         MLSAgentMeta = type(
             f"{mls.table_name}AgentMeta",
             (cls.Meta,),
-            {"db_table": f"{cls._meta.db_table}_{mls.table_name.lower()}"},
+            {"db_table": mls.agent_materialized_view_table_name},
         )
         MLSAgent = type(
             f"{mls.table_name}Agent",
