@@ -75,3 +75,10 @@ class TestAgentModel(TestCase):
         self.make_agent()
 
         self.assertEqual(mock_run_task.call_count, 1)
+
+    def test_switch_to_mls_matview(self):
+        mls = self.make_mls(table_name="TrebVOW")
+
+        trebvow_mls_table = Agent.switch_to_mls_matview(mls)
+
+        self.assertEqual(trebvow_mls_table._meta.db_table, "ssot_agent_trebvow")

@@ -901,6 +901,20 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
                 office_size_score = office_size / 5
         return office_size_score, office_size
 
+    @classmethod
+    def switch_to_mls_matview(cls, mls: MLS):
+        MLSAgentMeta = type(
+            f"{mls.table_name}AgentMeta",
+            (cls.Meta,),
+            {"db_table": f"{cls._meta.db_table}_{mls.table_name.lower()}"},
+        )
+        MLSAgent = type(
+            f"{mls.table_name}Agent",
+            (cls,),
+            {"Meta": MLSAgentMeta, "__module__": cls.__module__},
+        )
+        return MLSAgent
+
 
 class AgentOfficeMovement(TimeStampedModel):
     agent = models.ForeignKey(
