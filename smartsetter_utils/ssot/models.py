@@ -622,22 +622,23 @@ class AgentQuerySet(CommonQuerySet):
         queryset = self.all()
         if not typed_filters:
             return queryset
-        for filter in typed_filters:
+        # filter by mls_id first because that modifies the queryset
+        sorted_filters = sorted(
+            typed_filters, key=lambda filter: 0 if filter["field"] == "mls_id" else 1
+        )
+        for filter in sorted_filters:
             field_name = filter["field"]
             filter_value = filter.get("value")
             match field_name:
-                case "sales_count":
-                    queryset = queryset.annotate_extended_stats()
-                    field_name = "total_transactions_count"
-                case "total_dollar_ltm":
-                    queryset = queryset.annotate_extended_stats()
-                    field_name = "total_production"
+                case "mls_id":
+                    mls = MLS.objects.get(id=filter_value)
+                    queryset = queryset.filter_by_mls_materialized_view(mls)
+                    continue
                 case "within_polygon":
                     queryset = queryset.filter(
                         location__intersects=create_geometry_from_geojson(filter_value)
                     )
                     continue
-            filter["field"] = field_name
             queryset = apply_filter_to_queryset(queryset, filter)
         return queryset
 
@@ -651,10 +652,15 @@ class AgentQuerySet(CommonQuerySet):
 
     def filter_by_mls_materialized_view(self, mls: MLS):
         # must be applied as first query method
+        # also changes queryset type to that of dynamic subclass
         return Agent.switch_to_mls_matview(mls).objects.all()
 
 
-class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields):
+class AbstractAgent(
+    RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields
+):
+    class Meta:
+        abstract = True
 
     reality_table_name = "tblAgents"
 
@@ -947,15 +953,22 @@ class Agent(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonF
     def switch_to_mls_matview(cls, mls: MLS):
         MLSAgentMeta = type(
             f"{mls.table_name}AgentMeta",
-            (cls.Meta,),
-            {"db_table": mls.agent_materialized_view_table_name},
+            (AbstractAgent.Meta,),
+            {"db_table": mls.agent_materialized_view_table_name, "abstract": False},
         )
         MLSAgent = type(
             f"{mls.table_name}Agent",
-            (cls,),
-            {"Meta": MLSAgentMeta, "__module__": cls.__module__},
+            (AbstractAgent,),
+            {
+                "Meta": MLSAgentMeta,
+                "__module__": cls.__module__,
+            },
         )
         return MLSAgent
+
+
+class Agent(AbstractAgent):
+    pass
 
 
 class AgentOfficeMovement(TimeStampedModel):

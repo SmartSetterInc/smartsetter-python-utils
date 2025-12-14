@@ -91,3 +91,18 @@ class TestAgentModel(TestCase):
         self.assertEqual(Agent.objects.filter_by_mls_materialized_view(mls).count(), 0)
         mls.refresh_agent_materialized_view()
         self.assertEqual(Agent.objects.filter_by_mls_materialized_view(mls).count(), 1)
+
+    def test_filter_by_mls_id_portal_filter(self):
+        mls = self.make_mls()
+        self.make_agent(name="Test Candidate", mls=mls)
+        mls.refresh_agent_materialized_view()
+
+        self.assertEqual(
+            Agent.objects.filter_by_portal_filters(
+                [
+                    {"field": "name", "type": "contains", "value": "test"},
+                    {"field": "mls_id", "type": "is", "value": mls.id},
+                ]
+            ).count(),
+            1,
+        )
