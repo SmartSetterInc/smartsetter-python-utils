@@ -17,7 +17,7 @@ class Command(BaseCommand):
         models_buffer.write(
             "from smartsetter_utils.ssot.models.abstract_agent import AbstractAgent\n\n"
         )
-        for mls_json in mlss_json:
+        for mls_json in sorted(mlss_json, key=lambda mls: mls["fields"]["table_name"]):
             mls = MLS.objects.get(id=mls_json["pk"])
             models_buffer.write(
                 dedent(
