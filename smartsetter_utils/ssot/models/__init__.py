@@ -1,4 +1,5 @@
 from .agent import Agent  # noqa: F401
+from .agent_office_movement import AgentOfficeMovement  # noqa: F401
 from .brand import Brand  # noqa: F401
 from .materialized_view_agent import *  # noqa: F401, F403
 from .mls import MLS  # noqa: F401

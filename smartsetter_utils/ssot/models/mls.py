@@ -75,7 +75,7 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
 
     @property
     def agent_materialized_view_model_name(self):
-        return f"{self.table_name_alnum}Agent"
+        return f"{self.table_name_alnum.capitalize()}Agent"
 
     def create_agent_materialized_view(self):
         from smartsetter_utils.ssot.models import Agent

@@ -227,12 +227,16 @@ class AbstractAgent(
         max_length=32, null=True, blank=True, choices=PHONE_VERIFIED_SOURCE_CHOICES
     )
     office = models.ForeignKey(
-        Office, related_name="agents", null=True, blank=True, on_delete=models.SET_NULL
+        Office,
+        related_name="%(class)s",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
     office_name = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     job_title = models.CharField(max_length=256, null=True, blank=True)
     brand = models.ForeignKey(
-        Brand, related_name="agents", null=True, on_delete=models.SET_NULL
+        Brand, related_name="%(class)s", null=True, on_delete=models.SET_NULL
     )
     years_in_business = models.PositiveSmallIntegerField(
         null=True, blank=True, db_index=True

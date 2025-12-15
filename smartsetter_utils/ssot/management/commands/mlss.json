@@ -505,20 +505,6 @@
     },
     {
         "model": "ssot.mls",
-        "pk": "150",
-        "fields": {
-            "created": "2024-12-09T17:33:34.028Z",
-            "modified": "2025-04-15T10:24:21.897Z",
-            "source": "reality",
-            "name": "Greater Greenville Association of Realtors",
-            "table_name": "GREENVILLE SC",
-            "company_hubspot_internal_value": null,
-            "contact_hubspot_internal_value": null,
-            "data_available_until": null
-        }
-    },
-    {
-        "model": "ssot.mls",
         "pk": "151",
         "fields": {
             "created": "2024-12-09T17:33:34.028Z",

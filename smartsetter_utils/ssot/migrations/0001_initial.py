@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                 "abstract": False,
             },
             bases=(
-                smartsetter_utils.ssot.models.RealityDBBase,
+                smartsetter_utils.ssot.models.base_models.RealityDBBase,
                 django_lifecycle.mixins.LifecycleModelMixin,
                 models.Model,
             ),
@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
                     models.ImageField(
                         blank=True,
                         null=True,
-                        upload_to=smartsetter_utils.ssot.models.brand_icon_upload_to,
+                        upload_to=smartsetter_utils.ssot.models.brand.brand_icon_upload_to,
                     ),
                 ),
                 (
@@ -131,7 +131,7 @@ class Migration(migrations.Migration):
                     models.ImageField(
                         blank=True,
                         null=True,
-                        upload_to=smartsetter_utils.ssot.models.brand_icon_upload_to,
+                        upload_to=smartsetter_utils.ssot.models.brand.brand_icon_upload_to,
                     ),
                 ),
             ],
@@ -214,7 +214,7 @@ class Migration(migrations.Migration):
                 "abstract": False,
             },
             bases=(
-                smartsetter_utils.ssot.models.RealityDBBase,
+                smartsetter_utils.ssot.models.base_models.RealityDBBase,
                 django_lifecycle.mixins.LifecycleModelMixin,
                 models.Model,
             ),
@@ -308,7 +308,7 @@ class Migration(migrations.Migration):
                 "abstract": False,
             },
             bases=(
-                smartsetter_utils.ssot.models.RealityDBBase,
+                smartsetter_utils.ssot.models.base_models.RealityDBBase,
                 django_lifecycle.mixins.LifecycleModelMixin,
                 models.Model,
             ),
