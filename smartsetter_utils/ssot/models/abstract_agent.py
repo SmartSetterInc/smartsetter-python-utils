@@ -226,7 +226,7 @@ class AbstractAgent(
     )
     office = models.ForeignKey(
         Office,
-        related_name="%(class)s",
+        related_name="%(class)ss",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -234,7 +234,7 @@ class AbstractAgent(
     office_name = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     job_title = models.CharField(max_length=256, null=True, blank=True)
     brand = models.ForeignKey(
-        Brand, related_name="%(class)s", null=True, on_delete=models.SET_NULL
+        Brand, related_name="%(class)ss", null=True, on_delete=models.SET_NULL
     )
     years_in_business = models.PositiveSmallIntegerField(
         null=True, blank=True, db_index=True
