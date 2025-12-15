@@ -14,7 +14,7 @@ class Command(BaseCommand):
         class MLSSerializer(serializers.ModelSerializer):
             class Meta:
                 model = MLS
-                fields = ("id", "table_name")
+                fields = ("id", "table_name", "source")
 
         self.stdout.write(
             json.dumps(

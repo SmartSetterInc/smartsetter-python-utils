@@ -1,0 +1,602 @@
+[
+    {
+        "id": "165",
+        "table_name": "RHODE ISLAND RI",
+        "source": "reality"
+    },
+    {
+        "id": "83",
+        "table_name": "TUCSON AZ",
+        "source": "reality"
+    },
+    {
+        "id": "84",
+        "table_name": "NAPLES FL",
+        "source": "reality"
+    },
+    {
+        "id": "90",
+        "table_name": "OTTAWA ON",
+        "source": "reality"
+    },
+    {
+        "id": "88",
+        "table_name": "NORTH TEXAS",
+        "source": "reality"
+    },
+    {
+        "id": "89",
+        "table_name": "JACKSONVILLE FL",
+        "source": "reality"
+    },
+    {
+        "id": "92",
+        "table_name": "OKANAGAN BC",
+        "source": "reality"
+    },
+    {
+        "id": "93",
+        "table_name": "HUNTSVILLE AL",
+        "source": "reality"
+    },
+    {
+        "id": "94",
+        "table_name": "NORTH CAROLINA NC",
+        "source": "reality"
+    },
+    {
+        "id": "95",
+        "table_name": "CHARLOTTE NC",
+        "source": "reality"
+    },
+    {
+        "id": "116",
+        "table_name": "WINNIPEG MB",
+        "source": "reality"
+    },
+    {
+        "id": "96",
+        "table_name": "ITSO ON",
+        "source": "reality"
+    },
+    {
+        "id": "97",
+        "table_name": "NORTHEAST OHIO OH",
+        "source": "reality"
+    },
+    {
+        "id": "100",
+        "table_name": "SAVANNAH GA",
+        "source": "reality"
+    },
+    {
+        "id": "101",
+        "table_name": "VIRGINIA BEACH VA",
+        "source": "reality"
+    },
+    {
+        "id": "127",
+        "table_name": "VANCOUVER ISLAND BC",
+        "source": "reality"
+    },
+    {
+        "id": "102",
+        "table_name": "WIREX",
+        "source": "reality"
+    },
+    {
+        "id": "105",
+        "table_name": "HONOLULU HI",
+        "source": "reality"
+    },
+    {
+        "id": "136",
+        "table_name": "LAS VEGAS NV",
+        "source": "reality"
+    },
+    {
+        "id": "108",
+        "table_name": "CHICAGO IL",
+        "source": "reality"
+    },
+    {
+        "id": "110",
+        "table_name": "WEST PENNSYLVANIA",
+        "source": "reality"
+    },
+    {
+        "id": "111",
+        "table_name": "PORTLAND OR",
+        "source": "reality"
+    },
+    {
+        "id": "M00000575",
+        "table_name": "Chattanooga",
+        "source": "constellation"
+    },
+    {
+        "id": "112",
+        "table_name": "NORTH CALIFORNIA CA",
+        "source": "reality"
+    },
+    {
+        "id": "113",
+        "table_name": "MIDDLESEX NJ",
+        "source": "reality"
+    },
+    {
+        "id": "155",
+        "table_name": "SPARTANBURG SC",
+        "source": "reality"
+    },
+    {
+        "id": "182",
+        "table_name": "FRESNO CA",
+        "source": "reality"
+    },
+    {
+        "id": "115",
+        "table_name": "BAKERSFIELD CA",
+        "source": "reality"
+    },
+    {
+        "id": "117",
+        "table_name": "BROOKLYN NY",
+        "source": "reality"
+    },
+    {
+        "id": "120",
+        "table_name": "KOOTENAY BC",
+        "source": "reality"
+    },
+    {
+        "id": "122",
+        "table_name": "EDMONTON AB",
+        "source": "reality"
+    },
+    {
+        "id": "124",
+        "table_name": "SAN JOSE CA",
+        "source": "reality"
+    },
+    {
+        "id": "130",
+        "table_name": "INDIANA REGIONAL",
+        "source": "reality"
+    },
+    {
+        "id": "131",
+        "table_name": "CONNECTICUT",
+        "source": "reality"
+    },
+    {
+        "id": "M00000561",
+        "table_name": "GreenvilleSC",
+        "source": "constellation"
+    },
+    {
+        "id": "132",
+        "table_name": "FRESNO CA",
+        "source": "reality"
+    },
+    {
+        "id": "133",
+        "table_name": "Massachusetts MA",
+        "source": "reality"
+    },
+    {
+        "id": "134",
+        "table_name": "DAYTON OH",
+        "source": "reality"
+    },
+    {
+        "id": "135",
+        "table_name": "COLORADO SPGS CO",
+        "source": "reality"
+    },
+    {
+        "id": "137",
+        "table_name": "SOUTHEAST ALABAMA",
+        "source": "reality"
+    },
+    {
+        "id": "157",
+        "table_name": "CENTRAL TEXAS TX",
+        "source": "reality"
+    },
+    {
+        "id": "159",
+        "table_name": "GARDEN STATE NJ",
+        "source": "reality"
+    },
+    {
+        "id": "160",
+        "table_name": "NEW JERSEY NJ",
+        "source": "reality"
+    },
+    {
+        "id": "161",
+        "table_name": "MONMOUTH NJ",
+        "source": "reality"
+    },
+    {
+        "id": "164",
+        "table_name": "GREATER MCALLEN TX",
+        "source": "reality"
+    },
+    {
+        "id": "M00000243",
+        "table_name": "MRED",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000563",
+        "table_name": "MLSGreenwood",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000306",
+        "table_name": "MLSPIN",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000568",
+        "table_name": "Spartanburg",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000141",
+        "table_name": "RealMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000564",
+        "table_name": "HiltonHeadI",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000127",
+        "table_name": "SmartMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000748",
+        "table_name": "SouthernMO",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000391",
+        "table_name": "CanopyMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000722",
+        "table_name": "NorthCarolinaRegional",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000331",
+        "table_name": "MiRealSource",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000467",
+        "table_name": "NorthernNV",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000644",
+        "table_name": "RoanokeValley",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000170",
+        "table_name": "Beaches",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000093",
+        "table_name": "CRMLSBO",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000394",
+        "table_name": "LongleafPine",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000140",
+        "table_name": "Daytona",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000309",
+        "table_name": "Bright",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000270",
+        "table_name": "HeartlandMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000345",
+        "table_name": "NorthStarMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000175",
+        "table_name": "FMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000150",
+        "table_name": "BrevardMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000495",
+        "table_name": "ColumbusOH",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000595",
+        "table_name": "ElPaso",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000169",
+        "table_name": "IndianRiver",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000389",
+        "table_name": "TriangleMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000096",
+        "table_name": "SBAOR",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000559",
+        "table_name": "ColumbiaSC",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000784",
+        "table_name": "HudsonCountyNJ",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000146",
+        "table_name": "StellarMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000845",
+        "table_name": "NYState",
+        "source": "reality"
+    },
+    {
+        "id": "nwmls",
+        "table_name": "nwmls",
+        "source": "reality"
+    },
+    {
+        "id": "M00000643",
+        "table_name": "CVR",
+        "source": "reality"
+    },
+    {
+        "id": "114",
+        "table_name": "STATEN ISLAND NY",
+        "source": "reality"
+    },
+    {
+        "id": "M00000130",
+        "table_name": "FGCMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000255",
+        "table_name": "MIBOR",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000628",
+        "table_name": "UtahRealEstate",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000592",
+        "table_name": "Bryan",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000599",
+        "table_name": "Houston",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000225",
+        "table_name": "Intermountain",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000466",
+        "table_name": "LasVegas",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000360",
+        "table_name": "MARIS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000383",
+        "table_name": "MontanaRegional",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000044",
+        "table_name": "PrescottAZ",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000151",
+        "table_name": "SEF",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000527",
+        "table_name": "TREBVOW",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000400",
+        "table_name": "TriadMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000671",
+        "table_name": "VancouverBC",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000589",
+        "table_name": "Austin",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000489",
+        "table_name": "OneKey",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000116",
+        "table_name": "REColorado",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000574",
+        "table_name": "Realtracs",
+        "source": "constellation"
+    },
+    {
+        "id": "118",
+        "table_name": "SEATTLE WA",
+        "source": "reality"
+    },
+    {
+        "id": "M00000188",
+        "table_name": "GeorgiaMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000409",
+        "table_name": "OuterBanks",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000565",
+        "table_name": "MyrtleBeach",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000017",
+        "table_name": "ValleyMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000031",
+        "table_name": "CARMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000259",
+        "table_name": "GNIAR",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000329",
+        "table_name": "SWMRIC",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000534",
+        "table_name": "LehighValley",
+        "source": "constellation"
+    },
+    {
+        "id": "M00000556",
+        "table_name": "WesternUpstateMLS",
+        "source": "constellation"
+    },
+    {
+        "id": "139",
+        "table_name": "CITRUS CO FL",
+        "source": "reality"
+    },
+    {
+        "id": "141",
+        "table_name": "EMERALD COAST FL",
+        "source": "reality"
+    },
+    {
+        "id": "142",
+        "table_name": "FRANKLIN GULF FL",
+        "source": "reality"
+    },
+    {
+        "id": "144",
+        "table_name": "NASSAU CO FL",
+        "source": "reality"
+    },
+    {
+        "id": "145",
+        "table_name": "NORTHFLORIDA",
+        "source": "reality"
+    },
+    {
+        "id": "146",
+        "table_name": "PENSACOLA FL",
+        "source": "reality"
+    },
+    {
+        "id": "147",
+        "table_name": "NORTHEAST GEORGIA GA",
+        "source": "reality"
+    },
+    {
+        "id": "148",
+        "table_name": "ALBUQUERQUE NM",
+        "source": "reality"
+    },
+    {
+        "id": "149",
+        "table_name": "YUMA AZ",
+        "source": "reality"
+    },
+    {
+        "id": "150",
+        "table_name": "GREENVILLE SC",
+        "source": "reality"
+    },
+    {
+        "id": "151",
+        "table_name": "ALBERTA  AB",
+        "source": "reality"
+    },
+    {
+        "id": "45",
+        "table_name": "PHOENIX AZ",
+        "source": "reality"
+    },
+    {
+        "id": "104",
+        "table_name": "NEW ORLEANS LA",
+        "source": "reality"
+    }
+]
