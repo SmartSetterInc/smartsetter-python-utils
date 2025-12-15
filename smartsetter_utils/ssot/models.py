@@ -1018,10 +1018,10 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
     mls = models.ForeignKey(
         MLS, related_name="transactions", null=True, on_delete=models.SET_NULL
     )
-    address = models.CharField(max_length=128, null=True, blank=True)
-    district = models.CharField(max_length=128, null=True, blank=True)
-    community = models.CharField(max_length=128, null=True, blank=True)
-    city = models.CharField(max_length=128, null=True, blank=True)
+    address = models.CharField(max_length=256, null=True, blank=True)
+    district = models.CharField(max_length=256, null=True, blank=True)
+    community = models.CharField(max_length=256, null=True, blank=True)
+    city = models.CharField(max_length=256, null=True, blank=True)
     county = models.CharField(max_length=64, null=True, blank=True)
     zipcode = models.CharField(max_length=32, null=True, blank=True)
     location = models.PointField(null=True, blank=True, srid=4326)
