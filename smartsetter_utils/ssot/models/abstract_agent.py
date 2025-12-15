@@ -194,11 +194,9 @@ class AgentQuerySet(CommonQuerySet):
         )
 
     def filter_by_mls_materialized_view(self, mls: MLS):
-        from smartsetter_utils.ssot.models.agent import Agent
-
         # must be applied as first query method
         # also changes queryset type to that of dynamic subclass
-        return Agent.switch_to_mls_matview(mls).objects.all()
+        return mls.AgentMaterializedView.objects.all()
 
 
 class AbstractAgent(
@@ -283,7 +281,9 @@ class AbstractAgent(
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
-        return AbstractAgent(
+        from smartsetter_utils.ssot.models.agent import Agent
+
+        return Agent(
             id=cls.get_id_from_reality_dict(reality_dict),
             **cls.get_property_dict_from_reality_dict(reality_dict),
         )
@@ -497,20 +497,3 @@ class AbstractAgent(
             else:
                 office_size_score = office_size / 5
         return office_size_score, office_size
-
-    @classmethod
-    def switch_to_mls_matview(cls, mls: MLS):
-        MLSAgentMeta = type(
-            f"{mls.table_name}AgentMeta",
-            (AbstractAgent.Meta,),
-            {"db_table": mls.agent_materialized_view_table_name, "abstract": False},
-        )
-        MLSAgent = type(
-            f"{mls.table_name}Agent",
-            (AbstractAgent,),
-            {
-                "Meta": MLSAgentMeta,
-                "__module__": cls.__module__,
-            },
-        )
-        return MLSAgent

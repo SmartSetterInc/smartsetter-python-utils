@@ -24,13 +24,13 @@ from smartsetter_utils.hubspot.utils import get_hubspot_client
 from smartsetter_utils.ssot.models import (
     MLS,
     Agent,
-    BadDataException,
     Brand,
     Office,
     Transaction,
     Zipcode,
-    cached_brands,
 )
+from smartsetter_utils.ssot.models.brand import cached_brands
+from smartsetter_utils.ssot.models.office import BadDataException
 from smartsetter_utils.ssot.utils import format_phone, get_reality_db_hubspot_client
 
 

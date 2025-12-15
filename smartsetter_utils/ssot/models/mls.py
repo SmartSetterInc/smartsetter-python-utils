@@ -1,5 +1,6 @@
 import csv
 
+from django.apps import apps
 from django.contrib.gis.db import models
 from django.db import connection
 from django_lifecycle import AFTER_CREATE, AFTER_DELETE, hook
@@ -94,3 +95,7 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
             cursor.execute(
                 f"REFRESH MATERIALIZED VIEW {self.agent_materialized_view_table_name}"
             )
+
+    @property
+    def AgentMaterializedView(self):
+        return apps.get_model("ssot", self.agent_materialized_view_model_name)

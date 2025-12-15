@@ -70,21 +70,14 @@ class TestAgentModel(TestCase):
             agent.last_activity_date, listing_transaction_2.listing_contract_date
         )
 
-    @patch("smartsetter_utils.ssot.models.run_task_in_transaction")
+    @patch("smartsetter_utils.ssot.models.abstract_agent.run_task_in_transaction")
     def test_runs_submit_to_clay_webhook_task(self, mock_run_task):
         self.make_agent()
 
         self.assertEqual(mock_run_task.call_count, 1)
 
-    def test_switch_to_mls_matview(self):
-        mls = self.make_mls(table_name="TrebVOW")
-
-        trebvow_mls_table = Agent.switch_to_mls_matview(mls)
-
-        self.assertEqual(trebvow_mls_table._meta.db_table, "ssot_agent_trebvow")
-
     def test_query_materialized_view(self):
-        mls = self.make_mls()
+        mls = self.make_mls(table_name="SAVANNAH GA")
         self.make_agent(mls=mls)
 
         self.assertEqual(Agent.objects.count(), 1)
@@ -93,7 +86,7 @@ class TestAgentModel(TestCase):
         self.assertEqual(Agent.objects.filter_by_mls_materialized_view(mls).count(), 1)
 
     def test_filter_by_mls_id_portal_filter(self):
-        mls = self.make_mls()
+        mls = self.make_mls(table_name="SAVANNAH GA")
         self.make_agent(name="Test Candidate", mls=mls)
         mls.refresh_agent_materialized_view()
 

@@ -23,7 +23,7 @@ def get_reality_db_hubspot_client():
 
 
 def get_brand_fixed_office_name(office_name):
-    from smartsetter_utils.ssot.models import cached_brands
+    from smartsetter_utils.ssot.models.brand import cached_brands
 
     for brand in cached_brands():
         for mark in brand.marks:

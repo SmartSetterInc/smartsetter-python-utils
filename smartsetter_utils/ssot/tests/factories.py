@@ -56,7 +56,7 @@ class OfficeFactory(factory.django.DjangoModelFactory):
     def _create(cls, model_class, *args, **kwargs):
         with (
             patch(
-                "smartsetter_utils.ssot.models.get_hubspot_client"
+                "smartsetter_utils.ssot.models.office.get_hubspot_client"
             ) as mock_hubspot_client,
             patch("smartsetter_utils.ssot.tasks.handle_before_office_created"),
         ):
