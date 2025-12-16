@@ -135,8 +135,8 @@ class AgentQuerySet(CommonQuerySet):
             "zipcode",
             "phone",
             "mls_id",
-            "sales_count",
-            "total_dollar_ltm",
+            "total_transactions_count",
+            "total_production",
             "within_polygon",
         ]
 
