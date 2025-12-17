@@ -202,6 +202,10 @@ class AgentQuerySet(CommonQuerySet):
 class AbstractAgent(
     RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommonFields
 ):
+    """
+    This model is necessary so subclasses don't create a OneToOne relationship with Agent
+    """
+
     class Meta:
         abstract = True
 
