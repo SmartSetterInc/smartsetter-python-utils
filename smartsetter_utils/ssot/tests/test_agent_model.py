@@ -26,35 +26,50 @@ class TestAgentModel(TestCase):
     def test_update_cached_fields(self):
         agent = self.make_agent()
         city = "Mansoura"
-        tx_1_date = (timezone.now() - relativedelta(years=5)).date()
+        past_date = (timezone.now() - relativedelta(years=5)).date()
         listing_transaction = self.make_transaction(
             listing_agent=agent,
-            listing_contract_date=tx_1_date,
-            closed_date=tx_1_date,
+            listing_contract_date=past_date,
+            closed_date=past_date,
             city=city,
         )
-        tx_2_date = timezone.now().date()
+        date_12m = timezone.now().date()
         selling_transaction = self.make_transaction(
             selling_agent=agent,
-            listing_contract_date=tx_2_date,
-            closed_date=tx_2_date,
+            listing_contract_date=date_12m,
+            closed_date=date_12m,
             city=city,
         )
         listing_transaction_2 = self.make_transaction(
             listing_agent=agent,
             city="Not Mansoura",
-            listing_contract_date=tx_2_date,
-            closed_date=tx_2_date,
+            listing_contract_date=date_12m,
+            closed_date=date_12m,
+        )
+        colisting_transaction = self.make_transaction(
+            colisting_agent=agent,
+            closed_date=date_12m,
+        )
+        coselling_transaction = self.make_transaction(
+            coselling_agent=agent, closed_date=date_12m
         )
 
         Agent.objects.update_cached_fields()
 
         agent.refresh_from_db()
-        self.assertEqual(agent.listing_transactions_count, 1)
-        self.assertEqual(agent.selling_transactions_count, 1)
-        self.assertEqual(agent.total_transactions_count, 2)
-        self.assertEqual(agent.listing_production, listing_transaction_2.sold_price)
-        self.assertEqual(agent.selling_production, selling_transaction.sold_price)
+        self.assertEqual(agent.listing_transactions_count, 1.5)
+        self.assertEqual(agent.selling_transactions_count, 1.5)
+        self.assertEqual(agent.total_transactions_count, 3)
+        self.assertEqual(
+            agent.listing_production,
+            int(
+                listing_transaction_2.sold_price + colisting_transaction.sold_price / 2
+            ),
+        )
+        self.assertEqual(
+            agent.selling_production,
+            int(selling_transaction.sold_price + coselling_transaction.sold_price / 2),
+        )
         self.assertEqual(
             agent.total_production,
             agent.listing_production + agent.selling_production,

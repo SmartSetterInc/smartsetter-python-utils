@@ -61,18 +61,22 @@ class AgentQuerySet(CommonQuerySet):
                 # can't update using F expressions: Joined field references are not permitted in this query
                 agent.listing_transactions_count = (
                     agent.listing_transactions.filter_12m().count()
+                    + (agent.colisting_transactions.filter_12m().count() / 2)
                 )
                 agent.selling_transactions_count = (
                     agent.selling_transactions.filter_12m().count()
+                    + (agent.coselling_transactions.filter_12m().count() / 2)
                 )
                 agent.total_transactions_count = (
                     agent.listing_transactions_count + agent.selling_transactions_count
                 )
-                agent.listing_production = (
+                agent.listing_production = int(
                     agent.listing_transactions.filter_12m().production()
+                    + (agent.colisting_transactions.filter_12m().production() / 2)
                 )
-                agent.selling_production = (
+                agent.selling_production = int(
                     agent.selling_transactions.filter_12m().production()
+                    + (agent.coselling_transactions.filter_12m().production() / 2)
                 )
                 agent.total_production = (
                     agent.listing_production + agent.selling_production
