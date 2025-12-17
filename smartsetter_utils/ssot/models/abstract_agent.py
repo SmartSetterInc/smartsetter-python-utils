@@ -244,9 +244,9 @@ class AbstractAgent(
         null=True, blank=True, db_index=True
     )
     # cached fields that can be calculated at query time but too slow to do so
-    listing_transactions_count = models.PositiveIntegerField(default=0)
-    selling_transactions_count = models.PositiveIntegerField(default=0)
-    total_transactions_count = models.PositiveIntegerField(default=0, db_index=True)
+    listing_transactions_count = models.FloatField(default=0)
+    selling_transactions_count = models.FloatField(default=0)
+    total_transactions_count = models.FloatField(default=0, db_index=True)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
     total_production = models.PositiveBigIntegerField(default=0, db_index=True)
