@@ -70,11 +70,11 @@ class AgentQuerySet(CommonQuerySet):
                 agent.total_transactions_count = (
                     agent.listing_transactions_count + agent.selling_transactions_count
                 )
-                agent.listing_production = int(
+                agent.listing_production = (
                     agent.listing_transactions.filter_12m().production()
                     + (agent.colisting_transactions.filter_12m().production() / 2)
                 )
-                agent.selling_production = int(
+                agent.selling_production = (
                     agent.selling_transactions.filter_12m().production()
                     + (agent.coselling_transactions.filter_12m().production() / 2)
                 )
@@ -248,9 +248,9 @@ class AbstractAgent(
         null=True, blank=True, db_index=True
     )
     # cached fields that can be calculated at query time but too slow to do so
-    listing_transactions_count = models.FloatField(default=0)
-    selling_transactions_count = models.FloatField(default=0)
-    total_transactions_count = models.FloatField(default=0, db_index=True)
+    listing_transactions_count = models.PositiveIntegerField(default=0)
+    selling_transactions_count = models.PositiveIntegerField(default=0)
+    total_transactions_count = models.PositiveIntegerField(default=0, db_index=True)
     listing_production = models.PositiveBigIntegerField(default=0)
     selling_production = models.PositiveBigIntegerField(default=0)
     total_production = models.PositiveBigIntegerField(default=0, db_index=True)

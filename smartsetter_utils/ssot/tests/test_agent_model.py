@@ -57,8 +57,8 @@ class TestAgentModel(TestCase):
         Agent.objects.update_cached_fields()
 
         agent.refresh_from_db()
-        self.assertEqual(agent.listing_transactions_count, 1.5)
-        self.assertEqual(agent.selling_transactions_count, 1.5)
+        self.assertEqual(agent.listing_transactions_count, 1)
+        self.assertEqual(agent.selling_transactions_count, 1)
         self.assertEqual(agent.total_transactions_count, 3)
         self.assertEqual(
             agent.listing_production,
