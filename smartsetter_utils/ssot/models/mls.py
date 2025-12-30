@@ -86,7 +86,7 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
             cursor.execute(
                 f"""
                 CREATE MATERIALIZED VIEW {self.agent_materialized_view_table_name} as
-                SELECT * FROM {Agent._meta.db_table} WHERE mls_id = '{self.id}'
+                SELECT * FROM {Agent._meta.db_table} WHERE status = 'Active' AND mls_id = '{self.id}'
             """
             )
 

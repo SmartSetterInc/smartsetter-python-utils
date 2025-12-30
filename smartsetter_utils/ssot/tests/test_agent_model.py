@@ -93,7 +93,7 @@ class TestAgentModel(TestCase):
 
     def test_query_materialized_view(self):
         mls = self.make_mls(table_name="SAVANNAH GA")
-        self.make_agent(mls=mls)
+        self.make_agent(mls=mls, status="Active")
 
         self.assertEqual(Agent.objects.count(), 1)
         self.assertEqual(Agent.objects.filter_by_mls_materialized_view(mls).count(), 0)
@@ -102,7 +102,7 @@ class TestAgentModel(TestCase):
 
     def test_filter_by_mls_id_portal_filter(self):
         mls = self.make_mls(table_name="SAVANNAH GA")
-        self.make_agent(name="Test Candidate", mls=mls)
+        self.make_agent(name="Test Candidate", mls=mls, status="Active")
         mls.refresh_agent_materialized_view()
 
         self.assertEqual(
