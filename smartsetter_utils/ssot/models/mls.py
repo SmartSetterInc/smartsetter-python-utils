@@ -68,15 +68,21 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     def agent_materialized_view_table_name(self):
         from smartsetter_utils.ssot.models import Agent
 
-        return f"{Agent._meta.db_table}_{self.table_name_alnum.lower()}"
-
-    @property
-    def table_name_alnum(self):
-        return "".join([char for char in self.table_name if char.isalnum()])
+        return f"{Agent._meta.db_table}_{self.source_alnum.lower()}_{self.table_name_alnum.lower()}"
 
     @property
     def agent_materialized_view_model_name(self):
-        return f"{self.table_name_alnum.capitalize()}Agent"
+        return (
+            f"{self.source_alnum.capitalize()}{self.table_name_alnum.capitalize()}Agent"
+        )
+
+    @property
+    def table_name_alnum(self):
+        return self.get_alnum_str(self.table_name)
+
+    @property
+    def source_alnum(self):
+        return self.get_alnum_str(self.source)
 
     def create_agent_materialized_view(self):
         from smartsetter_utils.ssot.models import Agent
@@ -99,3 +105,6 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     @property
     def AgentMaterializedView(self):
         return apps.get_model("ssot", self.agent_materialized_view_model_name)
+
+    def get_alnum_str(self, value: str):
+        return "".join([char for char in value if char.isalnum()])

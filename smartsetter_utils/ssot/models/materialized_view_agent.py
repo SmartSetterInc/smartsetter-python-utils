@@ -1,709 +1,733 @@
 from smartsetter_utils.ssot.models.abstract_agent import AbstractAgent
 
 
-class AlbertaabAgent(AbstractAgent):
+class RealityAlbertaabAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_albertaab"
+        db_table = "ssot_agent_reality_albertaab"
         managed = False
 
 
-class AlbuquerquenmAgent(AbstractAgent):
+class RealityAlbuquerquenmAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_albuquerquenm"
+        db_table = "ssot_agent_reality_albuquerquenm"
         managed = False
 
 
-class AustinAgent(AbstractAgent):
+class ConstellationAustinAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_austin"
+        db_table = "ssot_agent_constellation_austin"
         managed = False
 
 
-class BakersfieldcaAgent(AbstractAgent):
+class RealityBakersfieldcaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_bakersfieldca"
+        db_table = "ssot_agent_reality_bakersfieldca"
         managed = False
 
 
-class BrooklynnyAgent(AbstractAgent):
+class RealityBrooklynnyAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_brooklynny"
+        db_table = "ssot_agent_reality_brooklynny"
         managed = False
 
 
-class BeachesAgent(AbstractAgent):
+class ConstellationBeachesAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_beaches"
+        db_table = "ssot_agent_constellation_beaches"
         managed = False
 
 
-class BrevardmlsAgent(AbstractAgent):
+class ConstellationBrevardmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_brevardmls"
+        db_table = "ssot_agent_constellation_brevardmls"
         managed = False
 
 
-class BrightAgent(AbstractAgent):
+class ConstellationBrightAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_bright"
+        db_table = "ssot_agent_constellation_bright"
         managed = False
 
 
-class BryanAgent(AbstractAgent):
+class ConstellationBryanAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_bryan"
+        db_table = "ssot_agent_constellation_bryan"
         managed = False
 
 
-class CarmlsAgent(AbstractAgent):
+class ConstellationCarmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_carmls"
+        db_table = "ssot_agent_constellation_carmls"
         managed = False
 
 
-class CentraltexastxAgent(AbstractAgent):
+class RealityCentraltexastxAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_centraltexastx"
+        db_table = "ssot_agent_reality_centraltexastx"
         managed = False
 
 
-class CharlottencAgent(AbstractAgent):
+class RealityCharlottencAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_charlottenc"
+        db_table = "ssot_agent_reality_charlottenc"
         managed = False
 
 
-class ChicagoilAgent(AbstractAgent):
+class RealityChicagoilAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_chicagoil"
+        db_table = "ssot_agent_reality_chicagoil"
         managed = False
 
 
-class CitruscoflAgent(AbstractAgent):
+class RealityCitruscoflAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_citruscofl"
+        db_table = "ssot_agent_reality_citruscofl"
         managed = False
 
 
-class ColoradospgscoAgent(AbstractAgent):
+class RealityColoradospgscoAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_coloradospgsco"
+        db_table = "ssot_agent_reality_coloradospgsco"
         managed = False
 
 
-class ConnecticutAgent(AbstractAgent):
+class RealityConnecticutAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_connecticut"
+        db_table = "ssot_agent_reality_connecticut"
         managed = False
 
 
-class CrmlsboAgent(AbstractAgent):
+class ConstellationCrmlsboAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_crmlsbo"
+        db_table = "ssot_agent_constellation_crmlsbo"
         managed = False
 
 
-class CvrAgent(AbstractAgent):
+class RealityCvrAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_cvr"
+        db_table = "ssot_agent_reality_cvr"
         managed = False
 
 
-class CanopymlsAgent(AbstractAgent):
+class ConstellationCanopymlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_canopymls"
+        db_table = "ssot_agent_constellation_canopymls"
         managed = False
 
 
-class ChattanoogaAgent(AbstractAgent):
+class ConstellationChattanoogaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_chattanooga"
+        db_table = "ssot_agent_constellation_chattanooga"
         managed = False
 
 
-class ColumbiascAgent(AbstractAgent):
+class ConstellationColumbiascAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_columbiasc"
+        db_table = "ssot_agent_constellation_columbiasc"
         managed = False
 
 
-class ColumbusohAgent(AbstractAgent):
+class ConstellationColumbusohAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_columbusoh"
+        db_table = "ssot_agent_constellation_columbusoh"
         managed = False
 
 
-class DaytonohAgent(AbstractAgent):
+class RealityDaytonohAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_daytonoh"
+        db_table = "ssot_agent_reality_daytonoh"
         managed = False
 
 
-class DaytonaAgent(AbstractAgent):
+class ConstellationDaytonaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_daytona"
+        db_table = "ssot_agent_constellation_daytona"
         managed = False
 
 
-class EdmontonabAgent(AbstractAgent):
+class RealityEdmontonabAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_edmontonab"
+        db_table = "ssot_agent_reality_edmontonab"
         managed = False
 
 
-class EmeraldcoastflAgent(AbstractAgent):
+class RealityEmeraldcoastflAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_emeraldcoastfl"
+        db_table = "ssot_agent_reality_emeraldcoastfl"
         managed = False
 
 
-class ElpasoAgent(AbstractAgent):
+class ConstellationElpasoAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_elpaso"
+        db_table = "ssot_agent_constellation_elpaso"
         managed = False
 
 
-class FgcmlsAgent(AbstractAgent):
+class ConstellationFgcmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_fgcmls"
+        db_table = "ssot_agent_constellation_fgcmls"
         managed = False
 
 
-class FmlsAgent(AbstractAgent):
+class ConstellationFmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_fmls"
+        db_table = "ssot_agent_constellation_fmls"
         managed = False
 
 
-class FranklingulfflAgent(AbstractAgent):
+class RealityFranklingulfflAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_franklingulffl"
+        db_table = "ssot_agent_reality_franklingulffl"
         managed = False
 
 
-class FresnocaAgent(AbstractAgent):
+class RealityFresnocaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_fresnoca"
+        db_table = "ssot_agent_reality_fresnoca"
         managed = False
 
 
-class GardenstatenjAgent(AbstractAgent):
+class RealityGardenstatenjAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_gardenstatenj"
+        db_table = "ssot_agent_reality_gardenstatenj"
         managed = False
 
 
-class GniarAgent(AbstractAgent):
+class ConstellationGniarAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_gniar"
+        db_table = "ssot_agent_constellation_gniar"
         managed = False
 
 
-class GreatermcallentxAgent(AbstractAgent):
+class RealityGreatermcallentxAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_greatermcallentx"
+        db_table = "ssot_agent_reality_greatermcallentx"
         managed = False
 
 
-class GeorgiamlsAgent(AbstractAgent):
+class ConstellationGeorgiamlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_georgiamls"
+        db_table = "ssot_agent_constellation_georgiamls"
         managed = False
 
 
-class GreenvillescAgent(AbstractAgent):
+class ConstellationGreenvillescAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_greenvillesc"
+        db_table = "ssot_agent_constellation_greenvillesc"
         managed = False
 
 
-class HonoluluhiAgent(AbstractAgent):
+class RealityHonoluluhiAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_honoluluhi"
+        db_table = "ssot_agent_reality_honoluluhi"
         managed = False
 
 
-class HuntsvillealAgent(AbstractAgent):
+class RealityHuntsvillealAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_huntsvilleal"
+        db_table = "ssot_agent_reality_huntsvilleal"
         managed = False
 
 
-class HeartlandmlsAgent(AbstractAgent):
+class ConstellationHeartlandmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_heartlandmls"
+        db_table = "ssot_agent_constellation_heartlandmls"
         managed = False
 
 
-class HiltonheadiAgent(AbstractAgent):
+class ConstellationHiltonheadiAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_hiltonheadi"
+        db_table = "ssot_agent_constellation_hiltonheadi"
         managed = False
 
 
-class HoustonAgent(AbstractAgent):
+class ConstellationHoustonAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_houston"
+        db_table = "ssot_agent_constellation_houston"
         managed = False
 
 
-class HudsoncountynjAgent(AbstractAgent):
+class ConstellationHudsoncountynjAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_hudsoncountynj"
+        db_table = "ssot_agent_constellation_hudsoncountynj"
         managed = False
 
 
-class IndianaregionalAgent(AbstractAgent):
+class RealityIndianaregionalAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_indianaregional"
+        db_table = "ssot_agent_reality_indianaregional"
         managed = False
 
 
-class ItsoonAgent(AbstractAgent):
+class RealityItsoonAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_itsoon"
+        db_table = "ssot_agent_reality_itsoon"
         managed = False
 
 
-class IndianriverAgent(AbstractAgent):
+class ConstellationIndianriverAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_indianriver"
+        db_table = "ssot_agent_constellation_indianriver"
         managed = False
 
 
-class IntermountainAgent(AbstractAgent):
+class ConstellationIntermountainAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_intermountain"
+        db_table = "ssot_agent_constellation_intermountain"
         managed = False
 
 
-class JacksonvilleflAgent(AbstractAgent):
+class RealityJacksonvilleflAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_jacksonvillefl"
+        db_table = "ssot_agent_reality_jacksonvillefl"
         managed = False
 
 
-class KootenaybcAgent(AbstractAgent):
+class RealityKootenaybcAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_kootenaybc"
+        db_table = "ssot_agent_reality_kootenaybc"
         managed = False
 
 
-class LasvegasnvAgent(AbstractAgent):
+class RealityLasvegasnvAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_lasvegasnv"
+        db_table = "ssot_agent_reality_lasvegasnv"
         managed = False
 
 
-class LasvegasAgent(AbstractAgent):
+class ConstellationLasvegasAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_lasvegas"
+        db_table = "ssot_agent_constellation_lasvegas"
         managed = False
 
 
-class LehighvalleyAgent(AbstractAgent):
+class ConstellationLehighvalleyAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_lehighvalley"
+        db_table = "ssot_agent_constellation_lehighvalley"
         managed = False
 
 
-class LongleafpineAgent(AbstractAgent):
+class ConstellationLongleafpineAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_longleafpine"
+        db_table = "ssot_agent_constellation_longleafpine"
         managed = False
 
 
-class MarisAgent(AbstractAgent):
+class ConstellationMarisAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_maris"
+        db_table = "ssot_agent_constellation_maris"
         managed = False
 
 
-class MiborAgent(AbstractAgent):
+class ConstellationMiborAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_mibor"
+        db_table = "ssot_agent_constellation_mibor"
         managed = False
 
 
-class MiddlesexnjAgent(AbstractAgent):
+class RealityMiddlesexnjAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_middlesexnj"
+        db_table = "ssot_agent_reality_middlesexnj"
         managed = False
 
 
-class MlsgreenwoodAgent(AbstractAgent):
+class ConstellationMlsgreenwoodAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_mlsgreenwood"
+        db_table = "ssot_agent_constellation_mlsgreenwood"
         managed = False
 
 
-class MlspinAgent(AbstractAgent):
+class ConstellationMlspinAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_mlspin"
+        db_table = "ssot_agent_constellation_mlspin"
         managed = False
 
 
-class MonmouthnjAgent(AbstractAgent):
+class ConstellationMlsunitedAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_monmouthnj"
+        db_table = "ssot_agent_constellation_mlsunited"
         managed = False
 
 
-class MredAgent(AbstractAgent):
+class RealityMonmouthnjAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_mred"
+        db_table = "ssot_agent_reality_monmouthnj"
         managed = False
 
 
-class MassachusettsmaAgent(AbstractAgent):
+class ConstellationMredAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_massachusettsma"
+        db_table = "ssot_agent_constellation_mred"
         managed = False
 
 
-class MirealsourceAgent(AbstractAgent):
+class ConstellationMirealsourceAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_mirealsource"
+        db_table = "ssot_agent_constellation_mirealsource"
         managed = False
 
 
-class MontanaregionalAgent(AbstractAgent):
+class ConstellationMontanaregionalAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_montanaregional"
+        db_table = "ssot_agent_constellation_montanaregional"
         managed = False
 
 
-class MyrtlebeachAgent(AbstractAgent):
+class ConstellationMyrtlebeachAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_myrtlebeach"
+        db_table = "ssot_agent_constellation_myrtlebeach"
         managed = False
 
 
-class NaplesflAgent(AbstractAgent):
+class RealityNaplesflAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_naplesfl"
+        db_table = "ssot_agent_reality_naplesfl"
         managed = False
 
 
-class NassaucoflAgent(AbstractAgent):
+class RealityNassaucoflAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_nassaucofl"
+        db_table = "ssot_agent_reality_nassaucofl"
         managed = False
 
 
-class NewjerseynjAgent(AbstractAgent):
+class RealityNewjerseynjAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_newjerseynj"
+        db_table = "ssot_agent_reality_newjerseynj"
         managed = False
 
 
-class NeworleanslaAgent(AbstractAgent):
+class RealityNeworleanslaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_neworleansla"
+        db_table = "ssot_agent_reality_neworleansla"
         managed = False
 
 
-class NorthcaliforniacaAgent(AbstractAgent):
+class NurealityNjmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northcaliforniaca"
+        db_table = "ssot_agent_nureality_njmls"
         managed = False
 
 
-class NorthcarolinancAgent(AbstractAgent):
+class RealityNorthcaliforniacaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northcarolinanc"
+        db_table = "ssot_agent_reality_northcaliforniaca"
         managed = False
 
 
-class NorthtexasAgent(AbstractAgent):
+class RealityNorthcarolinancAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northtexas"
+        db_table = "ssot_agent_reality_northcarolinanc"
         managed = False
 
 
-class NortheastgeorgiagaAgent(AbstractAgent):
+class RealityNorthtexasAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northeastgeorgiaga"
+        db_table = "ssot_agent_reality_northtexas"
         managed = False
 
 
-class NortheastohioohAgent(AbstractAgent):
+class RealityNortheastgeorgiagaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northeastohiooh"
+        db_table = "ssot_agent_reality_northeastgeorgiaga"
         managed = False
 
 
-class NorthfloridaAgent(AbstractAgent):
+class RealityNortheastohioohAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northflorida"
+        db_table = "ssot_agent_reality_northeastohiooh"
         managed = False
 
 
-class NystateAgent(AbstractAgent):
+class RealityNorthfloridaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_nystate"
+        db_table = "ssot_agent_reality_northflorida"
         managed = False
 
 
-class NorthcarolinaregionalAgent(AbstractAgent):
+class NurealityNtrAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northcarolinaregional"
+        db_table = "ssot_agent_nureality_ntr"
         managed = False
 
 
-class NorthstarmlsAgent(AbstractAgent):
+class NurealityNwmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northstarmls"
+        db_table = "ssot_agent_nureality_nwmls"
         managed = False
 
 
-class NorthernnvAgent(AbstractAgent):
+class RealityNystateAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_northernnv"
+        db_table = "ssot_agent_reality_nystate"
         managed = False
 
 
-class OkanaganbcAgent(AbstractAgent):
+class ConstellationNorthcarolinaregionalAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_okanaganbc"
+        db_table = "ssot_agent_constellation_northcarolinaregional"
         managed = False
 
 
-class OttawaonAgent(AbstractAgent):
+class ConstellationNorthstarmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_ottawaon"
+        db_table = "ssot_agent_constellation_northstarmls"
         managed = False
 
 
-class OnekeyAgent(AbstractAgent):
+class ConstellationNorthernnvAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_onekey"
+        db_table = "ssot_agent_constellation_northernnv"
         managed = False
 
 
-class OuterbanksAgent(AbstractAgent):
+class RealityOkanaganbcAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_outerbanks"
+        db_table = "ssot_agent_reality_okanaganbc"
         managed = False
 
 
-class PensacolaflAgent(AbstractAgent):
+class RealityOttawaonAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_pensacolafl"
+        db_table = "ssot_agent_reality_ottawaon"
         managed = False
 
 
-class PhoenixazAgent(AbstractAgent):
+class ConstellationOnekeyAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_phoenixaz"
+        db_table = "ssot_agent_constellation_onekey"
         managed = False
 
 
-class PortlandorAgent(AbstractAgent):
+class ConstellationOuterbanksAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_portlandor"
+        db_table = "ssot_agent_constellation_outerbanks"
         managed = False
 
 
-class PrescottazAgent(AbstractAgent):
+class RealityPensacolaflAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_prescottaz"
+        db_table = "ssot_agent_reality_pensacolafl"
         managed = False
 
 
-class RecoloradoAgent(AbstractAgent):
+class RealityPhoenixazAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_recolorado"
+        db_table = "ssot_agent_reality_phoenixaz"
         managed = False
 
 
-class RhodeislandriAgent(AbstractAgent):
+class RealityPortlandorAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_rhodeislandri"
+        db_table = "ssot_agent_reality_portlandor"
         managed = False
 
 
-class RealmlsAgent(AbstractAgent):
+class ConstellationPrescottazAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_realmls"
+        db_table = "ssot_agent_constellation_prescottaz"
         managed = False
 
 
-class RealtracsAgent(AbstractAgent):
+class ConstellationRecoloradoAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_realtracs"
+        db_table = "ssot_agent_constellation_recolorado"
         managed = False
 
 
-class RoanokevalleyAgent(AbstractAgent):
+class RealityRhodeislandriAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_roanokevalley"
+        db_table = "ssot_agent_reality_rhodeislandri"
         managed = False
 
 
-class SanjosecaAgent(AbstractAgent):
+class ConstellationRealmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_sanjoseca"
+        db_table = "ssot_agent_constellation_realmls"
         managed = False
 
 
-class SavannahgaAgent(AbstractAgent):
+class ConstellationRealtracsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_savannahga"
+        db_table = "ssot_agent_constellation_realtracs"
         managed = False
 
 
-class SbaorAgent(AbstractAgent):
+class ConstellationRoanokevalleyAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_sbaor"
+        db_table = "ssot_agent_constellation_roanokevalley"
         managed = False
 
 
-class SeattlewaAgent(AbstractAgent):
+class RealitySanjosecaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_seattlewa"
+        db_table = "ssot_agent_reality_sanjoseca"
         managed = False
 
 
-class SefAgent(AbstractAgent):
+class RealitySavannahgaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_sef"
+        db_table = "ssot_agent_reality_savannahga"
         managed = False
 
 
-class SoutheastalabamaAgent(AbstractAgent):
+class ConstellationSbaorAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_southeastalabama"
+        db_table = "ssot_agent_constellation_sbaor"
         managed = False
 
 
-class SpartanburgscAgent(AbstractAgent):
+class RealitySeattlewaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_spartanburgsc"
+        db_table = "ssot_agent_reality_seattlewa"
         managed = False
 
 
-class StatenislandnyAgent(AbstractAgent):
+class ConstellationSefAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_statenislandny"
+        db_table = "ssot_agent_constellation_sef"
         managed = False
 
 
-class SwmricAgent(AbstractAgent):
+class RealitySoutheastalabamaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_swmric"
+        db_table = "ssot_agent_reality_southeastalabama"
         managed = False
 
 
-class SmartmlsAgent(AbstractAgent):
+class RealitySpartanburgscAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_smartmls"
+        db_table = "ssot_agent_reality_spartanburgsc"
         managed = False
 
 
-class SouthernmoAgent(AbstractAgent):
+class RealityStatenislandnyAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_southernmo"
+        db_table = "ssot_agent_reality_statenislandny"
         managed = False
 
 
-class SpartanburgAgent(AbstractAgent):
+class ConstellationSwmricAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_spartanburg"
+        db_table = "ssot_agent_constellation_swmric"
         managed = False
 
 
-class StellarmlsAgent(AbstractAgent):
+class ConstellationSmartmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_stellarmls"
+        db_table = "ssot_agent_constellation_smartmls"
         managed = False
 
 
-class TrebvowAgent(AbstractAgent):
+class ConstellationSouthernmoAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_trebvow"
+        db_table = "ssot_agent_constellation_southernmo"
         managed = False
 
 
-class TucsonazAgent(AbstractAgent):
+class ConstellationSpartanburgAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_tucsonaz"
+        db_table = "ssot_agent_constellation_spartanburg"
         managed = False
 
 
-class TriadmlsAgent(AbstractAgent):
+class ConstellationStellarmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_triadmls"
+        db_table = "ssot_agent_constellation_stellarmls"
         managed = False
 
 
-class TrianglemlsAgent(AbstractAgent):
+class ConstellationTrebvowAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_trianglemls"
+        db_table = "ssot_agent_constellation_trebvow"
         managed = False
 
 
-class UtahrealestateAgent(AbstractAgent):
+class NurealityTrrebAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_utahrealestate"
+        db_table = "ssot_agent_nureality_trreb"
         managed = False
 
 
-class VancouverislandbcAgent(AbstractAgent):
+class RealityTucsonazAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_vancouverislandbc"
+        db_table = "ssot_agent_reality_tucsonaz"
         managed = False
 
 
-class VirginiabeachvaAgent(AbstractAgent):
+class ConstellationTriadmlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_virginiabeachva"
+        db_table = "ssot_agent_constellation_triadmls"
         managed = False
 
 
-class ValleymlsAgent(AbstractAgent):
+class ConstellationTrianglemlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_valleymls"
+        db_table = "ssot_agent_constellation_trianglemls"
         managed = False
 
 
-class VancouverbcAgent(AbstractAgent):
+class ConstellationUtahrealestateAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_vancouverbc"
+        db_table = "ssot_agent_constellation_utahrealestate"
         managed = False
 
 
-class WestpennsylvaniaAgent(AbstractAgent):
+class RealityVancouverislandbcAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_westpennsylvania"
+        db_table = "ssot_agent_reality_vancouverislandbc"
         managed = False
 
 
-class WinnipegmbAgent(AbstractAgent):
+class RealityVirginiabeachvaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_winnipegmb"
+        db_table = "ssot_agent_reality_virginiabeachva"
         managed = False
 
 
-class WirexAgent(AbstractAgent):
+class ConstellationValleymlsAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_wirex"
+        db_table = "ssot_agent_constellation_valleymls"
         managed = False
 
 
-class WesternupstatemlsAgent(AbstractAgent):
+class ConstellationVancouverbcAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_westernupstatemls"
+        db_table = "ssot_agent_constellation_vancouverbc"
         managed = False
 
 
-class YumaazAgent(AbstractAgent):
+class ConstellationVenturaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_yumaaz"
+        db_table = "ssot_agent_constellation_ventura"
         managed = False
 
 
-class NwmlsAgent(AbstractAgent):
+class RealityWestpennsylvaniaAgent(AbstractAgent):
     class Meta:
-        db_table = "ssot_agent_nwmls"
+        db_table = "ssot_agent_reality_westpennsylvania"
+        managed = False
+
+
+class RealityWinnipegmbAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_reality_winnipegmb"
+        managed = False
+
+
+class RealityWirexAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_reality_wirex"
+        managed = False
+
+
+class ConstellationWesternupstatemlsAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_constellation_westernupstatemls"
+        managed = False
+
+
+class RealityYumaazAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_reality_yumaaz"
         managed = False
