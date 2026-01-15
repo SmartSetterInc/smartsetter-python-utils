@@ -22,6 +22,15 @@ def format_phone(phone: str):
     )
 
 
+def optional_parse_phone(phone: str):
+    if not phone:
+        return None
+    try:
+        return format_phone(phone)
+    except phonenumbers.NumberParseException:
+        return None
+
+
 def validate_passwords(password_1, password_2):
 
     if password_1 != password_2:
