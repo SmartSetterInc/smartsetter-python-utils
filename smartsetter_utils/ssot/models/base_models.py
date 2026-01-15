@@ -8,7 +8,11 @@ from smartsetter_utils.ssot.utils import format_phone
 
 class CommonFields(models.Model):
     SOURCE_CHOICES = Choices(
-        ("reality", "Reality"), ("constellation", "Constellation1")
+        ("reality", "Reality"),
+        ("constellation", "Constellation1"),
+        ("nureality", "Reality API"),
+        ("trestle", "Trestle"),
+        ("mlsgrid", "MLSGrid"),
     )
 
     source = models.CharField(
