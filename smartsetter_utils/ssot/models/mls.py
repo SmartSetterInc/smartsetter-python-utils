@@ -81,9 +81,13 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     def source_alnum(self):
         return self.get_alnum_str(self.source)
 
-    def create_agent_materialized_view(self, has_active_agents=True):
+    def create_agent_materialized_view(self, has_active_agents=None):
         from smartsetter_utils.ssot.models import Agent
 
+        if has_active_agents is None:
+            has_active_agents = (
+                bool(self.data_available_until) and self.agents.active().exists()
+            )
         # mls-specific agent materialized view for MyMLS page
         with connection.cursor() as cursor:
             cursor.execute(
