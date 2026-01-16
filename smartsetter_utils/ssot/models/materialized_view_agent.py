@@ -97,6 +97,12 @@ class RealityConnecticutAgent(AbstractAgent):
         managed = False
 
 
+class NurealityCrmlsAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_nureality_crmls"
+        managed = False
+
+
 class ConstellationCrmlsboAgent(AbstractAgent):
     class Meta:
         db_table = "ssot_agent_constellation_crmlsbo"
@@ -184,6 +190,12 @@ class RealityFranklingulfflAgent(AbstractAgent):
 class RealityFresnocaAgent(AbstractAgent):
     class Meta:
         db_table = "ssot_agent_reality_fresnoca"
+        managed = False
+
+
+class NurealityFirstmultiplelistingserviceAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_nureality_firstmultiplelistingservice"
         managed = False
 
 
@@ -673,6 +685,12 @@ class ConstellationUtahrealestateAgent(AbstractAgent):
         managed = False
 
 
+class NurealityUtahrealestatecomAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_nureality_utahrealestatecom"
+        managed = False
+
+
 class RealityVancouverislandbcAgent(AbstractAgent):
     class Meta:
         db_table = "ssot_agent_reality_vancouverislandbc"
@@ -730,4 +748,16 @@ class ConstellationWesternupstatemlsAgent(AbstractAgent):
 class RealityYumaazAgent(AbstractAgent):
     class Meta:
         db_table = "ssot_agent_reality_yumaaz"
+        managed = False
+
+
+class NurealityMfrmlsAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_nureality_mfrmls"
+        managed = False
+
+
+class NurealityRealtracAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_nureality_realtrac"
         managed = False
