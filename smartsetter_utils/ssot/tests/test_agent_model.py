@@ -4,7 +4,7 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 
-from smartsetter_utils.ssot.models import Agent, Office
+from smartsetter_utils.ssot.models import MLS, Agent, Office
 from smartsetter_utils.ssot.tests.base import TestCase
 
 
@@ -92,7 +92,7 @@ class TestAgentModel(TestCase):
         self.assertEqual(mock_run_task.call_count, 1)
 
     def test_query_materialized_view(self):
-        mls = self.make_mls(table_name="SAVANNAH GA")
+        mls = self.make_mls(source=MLS.SOURCE_CHOICES.reality, table_name="SAVANNAH GA")
         self.make_agent(mls=mls, status="Active")
 
         self.assertEqual(Agent.objects.count(), 1)
@@ -101,7 +101,7 @@ class TestAgentModel(TestCase):
         self.assertEqual(Agent.objects.filter_by_mls_materialized_view(mls).count(), 1)
 
     def test_filter_by_mls_id_portal_filter(self):
-        mls = self.make_mls(table_name="SAVANNAH GA")
+        mls = self.make_mls(source=MLS.SOURCE_CHOICES.reality, table_name="SAVANNAH GA")
         self.make_agent(name="Test Candidate", mls=mls, status="Active")
         mls.refresh_agent_materialized_view()
 

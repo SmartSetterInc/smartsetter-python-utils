@@ -42,10 +42,7 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
 
     @hook(AFTER_DELETE)
     def handle_deleted(self):
-        with connection.cursor() as cursor:
-            cursor.execute(
-                f"DROP MATERIALIZED VIEW {self.agent_materialized_view_table_name}"
-            )
+        self.delete_materialized_view()
 
     @classmethod
     def import_from_s3(cls):
@@ -84,7 +81,7 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     def source_alnum(self):
         return self.get_alnum_str(self.source)
 
-    def create_agent_materialized_view(self):
+    def create_agent_materialized_view(self, has_active_agents=True):
         from smartsetter_utils.ssot.models import Agent
 
         # mls-specific agent materialized view for MyMLS page
@@ -92,7 +89,8 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
             cursor.execute(
                 f"""
                 CREATE MATERIALIZED VIEW {self.agent_materialized_view_table_name} as
-                SELECT * FROM {Agent._meta.db_table} WHERE status = 'Active' AND mls_id = '{self.id}'
+                SELECT * FROM {Agent._meta.db_table}
+                WHERE {'''status = 'Active' AND''' if has_active_agents else ''} mls_id = '{self.id}'
             """
             )
 
@@ -100,6 +98,12 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
         with connection.cursor() as cursor:
             cursor.execute(
                 f"REFRESH MATERIALIZED VIEW {self.agent_materialized_view_table_name}"
+            )
+
+    def delete_materialized_view(self):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"DROP MATERIALIZED VIEW {self.agent_materialized_view_table_name}"
             )
 
     @property
