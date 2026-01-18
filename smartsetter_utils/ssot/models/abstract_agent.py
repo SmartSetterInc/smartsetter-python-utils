@@ -215,6 +215,8 @@ class AbstractAgent(
 
     reality_table_name = "tblAgents"
 
+    ROLE_CHOICES = Choices(("agent", "Agent"), ("broker", "Broker"), ("other", "Other"))
+
     PHONE_VERIFIED_SOURCE_SHEET = "sheet"
     PHONE_VERIFIED_SOURCE_PHONE_VALIDATOR = "phone_validator"
     PHONE_VERIFIED_SOURCE_CLAY = "clay"
@@ -271,6 +273,9 @@ class AbstractAgent(
         blank=True,
         db_index=True,
         validators=[validators.MaxValueValidator(100)],
+    )
+    role = models.CharField(
+        max_length=16, choices=ROLE_CHOICES, db_index=True, null=True, blank=True
     )
 
     objects = AgentQuerySet.as_manager()
