@@ -299,7 +299,7 @@ class AbstractAgent(
         """
         Must be called after setting total_transactions_count
         """
-        office_raw_data = self.office.raw_data
+        office_raw_data = self.office and self.office.raw_data
         raw_data = self.raw_data
         if office_raw_data and self.id in (
             office_raw_data.get("OfficeBrokerKey"),
