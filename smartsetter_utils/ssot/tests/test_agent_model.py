@@ -80,6 +80,7 @@ class TestAgentModel(TestCase):
             agent.tenure,
             selling_transaction.closed_date - listing_transaction.closed_date,
         )
+        self.assertEqual(agent.years_in_business, 5)
         self.assertEqual(agent.most_transacted_city, city)
         self.assertEqual(
             agent.last_activity_date, listing_transaction_2.listing_contract_date

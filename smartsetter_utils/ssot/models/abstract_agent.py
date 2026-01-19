@@ -98,6 +98,7 @@ class AgentQuerySet(CommonQuerySet):
                 )["tenure_end_date"]
                 if agent.tenure_start_date:
                     agent.tenure = agent.tenure_end_date - agent.tenure_start_date
+                    agent.years_in_business = agent.tenure.days / 365
                 # most transacted city
                 most_transacted_city_tx = (
                     Transaction.objects.filter_listing_or_selling(agent)
@@ -129,6 +130,7 @@ class AgentQuerySet(CommonQuerySet):
                     "tenure_start_date",
                     "tenure_end_date",
                     "tenure",
+                    "years_in_business",
                     "most_transacted_city",
                     "last_activity_date",
                     "role",
