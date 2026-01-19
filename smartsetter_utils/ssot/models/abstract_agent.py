@@ -314,12 +314,9 @@ class AbstractAgent(
 
                 def is_role_other(value: str, patterns):
                     if value:
-                        value_has_numbers = len(re.findall(r"\d+", value)) > 0
-                        if value_has_numbers:
-                            return True
-                        value_lowercase = value.lower()
+                        value_normalized = value.lower().strip()
                         for pattern in patterns:
-                            if pattern in value_lowercase:
+                            if value_normalized in pattern:
                                 return True
                     return False
 
