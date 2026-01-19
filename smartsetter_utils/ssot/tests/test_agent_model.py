@@ -84,6 +84,23 @@ class TestAgentModel(TestCase):
         self.assertEqual(
             agent.last_activity_date, listing_transaction_2.listing_contract_date
         )
+        self.assertEqual(agent.role, Agent.ROLE_CHOICES.agent)
+
+    def test_assign_role_other(self):
+        agent = self.make_agent(
+            raw_data={"MemberType": "wow", "MemberMlsSecurityClass": "Photographer"},
+            office=self.make_office(
+                raw_data={
+                    "OfficeBrokerKey": "something",
+                    "OfficeManagerKey": "something else",
+                    "OfficeBrokerMlsId": "different thing",
+                }
+            ),
+        )
+
+        agent.assign_role()
+
+        self.assertEqual(agent.role, Agent.ROLE_CHOICES.other)
 
     @patch("smartsetter_utils.ssot.models.abstract_agent.run_task_in_transaction")
     def test_runs_submit_to_clay_webhook_task(self, mock_run_task):

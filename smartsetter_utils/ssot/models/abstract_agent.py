@@ -25,6 +25,7 @@ from model_utils.choices import Choices
 from smartsetter_utils.core import Environments, run_task_in_transaction
 from smartsetter_utils.geo_utils import create_geometry_from_geojson
 from smartsetter_utils.hubspot.utils import get_hubspot_client
+from smartsetter_utils.ssot.data import member_type_patterns, security_class_patterns
 from smartsetter_utils.ssot.models.base_models import (
     AgentOfficeCommonFields,
     CommonFields,
@@ -114,6 +115,7 @@ class AgentQuerySet(CommonQuerySet):
                         max_listing_contract_date=Max("listing_contract_date")
                     )["max_listing_contract_date"]
                 )
+                agent.assign_role()
 
             Agent.objects.bulk_update(
                 agent_group,
@@ -129,6 +131,7 @@ class AgentQuerySet(CommonQuerySet):
                     "tenure",
                     "most_transacted_city",
                     "last_activity_date",
+                    "role",
                 ],
             )
 
@@ -291,6 +294,43 @@ class AbstractAgent(
             return
 
         run_task_in_transaction(handle_agent_created, self.id)
+
+    def assign_role(self):
+        """
+        Must be called after setting total_transactions_count
+        """
+        office_raw_data = self.office.raw_data
+        raw_data = self.raw_data
+        if office_raw_data and self.id in (
+            office_raw_data.get("OfficeBrokerKey"),
+            office_raw_data.get("OfficeManagerKey"),
+            office_raw_data.get("OfficeBrokerMlsId"),
+        ):
+            self.role = self.ROLE_CHOICES.broker
+        else:
+            if self.total_transactions_count > 0:
+                self.role = self.ROLE_CHOICES.agent
+            elif raw_data:
+
+                def is_role_other(value: str, patterns):
+                    if value:
+                        value_has_numbers = len(re.findall(r"\d+", value)) > 0
+                        if value_has_numbers:
+                            return True
+                        value_lowercase = value.lower()
+                        for pattern in patterns:
+                            if pattern in value_lowercase:
+                                return True
+                    return False
+
+                member_type = raw_data.get("MemberType")
+                security_class = raw_data.get("MemberMlsSecurityClass")
+                if is_role_other(member_type, member_type_patterns) or is_role_other(
+                    security_class, security_class_patterns
+                ):
+                    self.role = self.ROLE_CHOICES.other
+                else:
+                    self.role = self.ROLE_CHOICES.agent
 
     @classmethod
     def from_reality_dict(cls, reality_dict):
