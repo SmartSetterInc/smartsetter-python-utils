@@ -24,6 +24,7 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
         max_length=MLS_NAME_LENGTH, null=True, blank=True
     )
     data_available_until = models.DateTimeField(null=True, blank=True)
+    visible = models.BooleanField(default=True)
 
     def get_company_hubspot_internal_value(self):
         return self.company_hubspot_internal_value or self.name
