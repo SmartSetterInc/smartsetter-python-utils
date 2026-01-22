@@ -202,7 +202,7 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(MLS)
 class MLSAdmin(admin.ModelAdmin):
-    list_display = ["name", "table_name", "source", "data_available_until"]
+    list_display = ["name", "data_available_until", "table_name", "source", "visible"]
     readonly_fields = [
         "source",
         "data_available_until",
