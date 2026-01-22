@@ -5,12 +5,20 @@ class CommonFieldsQuerySet(models.QuerySet):
     def reality(self):
         from smartsetter_utils.ssot.models.base_models import CommonFields
 
-        return self.filter(source=CommonFields.SOURCE_CHOICES.reality)
+        return self.filter_by_source(CommonFields.SOURCE_CHOICES.reality)
+
+    def nureality(self):
+        from smartsetter_utils.ssot.models.base_models import CommonFields
+
+        return self.filter_by_source(CommonFields.SOURCE_CHOICES.nureality)
 
     def constellation(self):
         from smartsetter_utils.ssot.models.base_models import CommonFields
 
-        return self.filter(source=CommonFields.SOURCE_CHOICES.constellation)
+        return self.filter_by_source(CommonFields.SOURCE_CHOICES.constellation)
+
+    def filter_by_source(self, source):
+        return self.filter(source=source)
 
 
 class CommonQuerySet(CommonFieldsQuerySet):

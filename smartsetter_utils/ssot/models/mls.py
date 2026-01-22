@@ -11,6 +11,14 @@ from smartsetter_utils.ssot.models.base_models import CommonFields
 from smartsetter_utils.ssot.models.querysets import CommonQuerySet
 
 
+class MLSQuerySet(CommonQuerySet):
+    def visible(self):
+        return self.filter(visible=True)
+
+    def invisible(self):
+        return self.filter(visible=False)
+
+
 class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     MLS_NAME_LENGTH = 256
 
@@ -26,13 +34,13 @@ class MLS(LifecycleModelMixin, CommonFields, TimeStampedModel):
     data_available_until = models.DateTimeField(null=True, blank=True)
     visible = models.BooleanField(default=True)
 
+    objects = MLSQuerySet.as_manager()
+
     def get_company_hubspot_internal_value(self):
         return self.company_hubspot_internal_value or self.name
 
     def get_contact_hubspot_internal_value(self):
         return self.contact_hubspot_internal_value or self.name
-
-    objects = CommonQuerySet.as_manager()
 
     def __str__(self):
         return self.name
