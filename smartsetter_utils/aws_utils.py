@@ -7,14 +7,14 @@ import boto3
 from django.conf import settings
 
 
-def download_s3_file(filename, bucket_name="smartsetter-media", file_suffix=None):
+def download_s3_file(filename, bucket_name=settings.AWS_STORAGE_BUCKET_MEDIA_NAME, file_suffix=None):
     temp_download = tempfile.NamedTemporaryFile(suffix=file_suffix)
     get_boto_client("s3").download_file(bucket_name, filename, temp_download.name)
     temp_download.seek(0)
     return temp_download
 
 
-def upload_s3_file(file, file_name, bucket_name="smartsetter-media"):
+def upload_s3_file(file, file_name, bucket_name=settings.AWS_STORAGE_BUCKET_MEDIA_NAME):
     file.seek(0)
     return get_boto_client("s3").upload_fileobj(
         Fileobj=open(file.name, "rb"),
@@ -23,7 +23,7 @@ def upload_s3_file(file, file_name, bucket_name="smartsetter-media"):
     )
 
 
-def download_extract_iterate_s3_zipfile(filename, bucket_name="smartsetter-media"):
+def download_extract_iterate_s3_zipfile(filename, bucket_name=settings.AWS_STORAGE_BUCKET_MEDIA_NAME):
     temp_download = download_s3_file(filename, bucket_name, file_suffix=".zip")
     zip_file = zipfile.ZipFile(open(temp_download.name, "rb"))
     temp_extract_dir = tempfile.TemporaryDirectory()
@@ -34,7 +34,7 @@ def download_extract_iterate_s3_zipfile(filename, bucket_name="smartsetter-media
 def read_brand_code_mapping_sheet():
     brand_mappings_csv_tempfile = tempfile.NamedTemporaryFile(suffix=".csv")
     get_boto_client("s3").download_file(
-        "smartsetter-media",
+        settings.AWS_STORAGE_BUCKET_MEDIA_NAME,
         "brand-code-mapping-v2.csv",
         brand_mappings_csv_tempfile.name,
     )
