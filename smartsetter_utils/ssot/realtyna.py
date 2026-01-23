@@ -1,4 +1,5 @@
 import requests
+from django.conf import settings
 
 
 def get_access_token():
@@ -13,7 +14,7 @@ def get_session():
     session = requests.Session()
     session.headers.update(
         {
-            "x-api-key": "6RXC5uoz8Y3LpQdNCpwHp2IwQXU6NPgh57zajPNH",
+            "x-api-key": settings.REALITY_FEED_API_KEY,
             "Authorization": f"Bearer {access_token}",
         }
     )
