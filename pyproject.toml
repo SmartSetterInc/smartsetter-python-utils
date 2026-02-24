@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "smartsetter-utils"
 version = "0.1"
 dynamic = ["dependencies", "optional-dependencies"]
-description = "Common utilities used by SmartSetter projects"
+description = "Common utilities used by OneBase projects"
 requires-python = ">= 3.12"
 authors = [
     {name = "Mohammed Hamdy", email = "mohammed.hamdy777@gmail.com"},
@@ -41,3 +41,6 @@ pythonpath = "."
 
 [project.urls]
 Homepage = "https://www.smartsetter.com/"
+
+[tool.setuptools.package-data]
+"smartsetter_utils.ssot.management.commands" = ["mlss.json"]
