@@ -19,7 +19,8 @@ from hubspot.crm.contacts.exceptions import ApiException as HubSpotContactsApiEx
 
 from smartsetter_utils.aws_utils import download_s3_file
 from smartsetter_utils.core import Environments
-from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
+#from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
+from smartsetter_utils.geo_utils import query_location_for_zipcode
 from smartsetter_utils.hubspot.utils import get_hubspot_client
 from smartsetter_utils.ssot.models import (
     MLS,
@@ -60,7 +61,7 @@ def pull_reality_db_updates(force=False):
 
 def handle_before_office_created(office: Office):
     office.location = get_location_from_zipcode_or_address(
-        office.zipcode, office.address
+        office.zipcode, office.address, office.city
     )
 
 
@@ -83,7 +84,7 @@ def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
         if agent.brand:
             break
 
-    agent.location = get_location_from_zipcode_or_address(agent.zipcode, agent.address)
+    agent.location = get_location_from_zipcode_or_address(agent.zipcode, agent.address, agent.city)
 
     if not agent.state and agent.zipcode:
         try:
@@ -98,7 +99,7 @@ def handle_agent_created(agent_id, agent: typing.Optional[Agent] = None):
 @shared_task
 def handle_before_transaction_created(transaction: Transaction):
     transaction.location = get_location_from_zipcode_or_address(
-        transaction.zipcode, transaction.address
+        transaction.zipcode, transaction.address, transaction.city
     )
 
 
@@ -295,13 +296,13 @@ def get_reality_db_connection():
     )
 
 
-def get_location_from_zipcode_or_address(zipcode, address):
+def get_location_from_zipcode_or_address(zipcode, address, city=None):
     location = None
     if zipcode:
         location = query_location_for_zipcode(zipcode)
 
-    if not location and address:
-        location = geocode_address(address, zipcode)
+    # if not location and address:
+    #     location = geocode_address(address, zipcode, city)
 
     return location
 
