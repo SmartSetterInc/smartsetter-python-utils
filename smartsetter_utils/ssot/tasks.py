@@ -19,7 +19,8 @@ from hubspot.crm.contacts.exceptions import ApiException as HubSpotContactsApiEx
 
 from smartsetter_utils.aws_utils import download_s3_file
 from smartsetter_utils.core import Environments
-from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
+#from smartsetter_utils.geo_utils import geocode_address, query_location_for_zipcode
+from smartsetter_utils.geo_utils import query_location_for_zipcode
 from smartsetter_utils.hubspot.utils import get_hubspot_client
 from smartsetter_utils.ssot.models import (
     MLS,
@@ -300,8 +301,8 @@ def get_location_from_zipcode_or_address(zipcode, address):
     if zipcode:
         location = query_location_for_zipcode(zipcode)
 
-    if not location and address:
-        location = geocode_address(address, zipcode)
+    # if not location and address:
+    #     location = geocode_address(address, zipcode)
 
     return location
 
