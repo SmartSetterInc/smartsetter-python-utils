@@ -3,7 +3,7 @@ import re
 import time
 
 import elasticsearch.exceptions
-import googlemaps.exceptions
+#import googlemaps.exceptions
 from django.conf import settings
 from django.contrib.gis.geos import GEOSGeometry, Point
 
@@ -13,25 +13,25 @@ CANADA_ZIPCODE_RE = re.compile(r"(?P<init>[A-Z]\d[A-Z])\s?(\d[A-Z]\d)?$", re.IGN
 USA_ZIPCODE_RE = re.compile(r"\d{5}(-\d{4})?$")
 
 
-def geocode_address(address, zip_code=None):
-    components = {}
-    if zip_code:
-        if USA_ZIPCODE_RE.match(zip_code):
-            components["country"] = "US"
-        elif CANADA_ZIPCODE_RE.match(zip_code):
-            components["country"] = "CA"
-    try:
-        geocode_res = get_googlemaps_client().geocode(
-            address,
-            components=components,
-        )
-    except (googlemaps.exceptions.ApiError, googlemaps.exceptions.HTTPError):
-        return None
-    else:
-        if geocode_res:
-            location = geocode_res[0]["geometry"]["location"]
-            return Point((location["lng"], location["lat"]))
-    return None
+# def geocode_address(address, zip_code=None):
+#     components = {}
+#     if zip_code:
+#         if USA_ZIPCODE_RE.match(zip_code):
+#             components["country"] = "US"
+#         elif CANADA_ZIPCODE_RE.match(zip_code):
+#             components["country"] = "CA"
+#     try:
+#         geocode_res = get_googlemaps_client().geocode(
+#             address,
+#             components=components,
+#         )
+#     except (googlemaps.exceptions.ApiError, googlemaps.exceptions.HTTPError):
+#         return None
+#     else:
+#         if geocode_res:
+#             location = geocode_res[0]["geometry"]["location"]
+#             return Point((location["lng"], location["lat"]))
+#     return None
 
 
 def query_location_for_zipcode(zip_code):
@@ -63,5 +63,5 @@ def create_geometry_from_geojson(geojson):
     )
 
 
-def get_googlemaps_client():
-    return googlemaps.Client(settings.GOOGLE_API_KEY)
+# def get_googlemaps_client():
+#     return googlemaps.Client(settings.GOOGLE_API_KEY)
