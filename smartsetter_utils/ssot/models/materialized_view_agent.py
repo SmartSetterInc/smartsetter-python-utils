@@ -761,3 +761,8 @@ class NurealityRealtracAgent(AbstractAgent):
     class Meta:
         db_table = "ssot_agent_nureality_realtrac"
         managed = False
+
+class ConstellationSanantonioAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_constellation_sanantonio"
+        managed = False
