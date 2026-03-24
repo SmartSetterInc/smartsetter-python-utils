@@ -50,7 +50,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
     city = models.CharField(max_length=256, null=True, blank=True)
     county = models.CharField(max_length=64, null=True, blank=True)
     zipcode = models.CharField(max_length=32, null=True, blank=True)
-    location = models.PointField(null=True, blank=True, srid=4326)
+    location = models.PointField(null=True, blank=True, srid=4326, db_index=False)
     property_type = models.CharField(max_length=32, null=True, blank=True)
     state_code = models.CharField(max_length=16, null=True, blank=True)
     list_price = models.PositiveBigIntegerField(null=True, blank=True)
@@ -65,6 +65,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     colisting_agent = models.ForeignKey(
         Agent,
@@ -72,6 +73,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     listing_office = models.ForeignKey(
         Office,
@@ -79,6 +81,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     colisting_office = models.ForeignKey(
         Office,
@@ -86,6 +89,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     selling_agent = models.ForeignKey(
         Agent,
@@ -93,6 +97,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     coselling_agent = models.ForeignKey(
         Agent,
@@ -100,6 +105,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     selling_office = models.ForeignKey(
         Office,
@@ -107,6 +113,7 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     coselling_office = models.ForeignKey(
         Office,
@@ -114,8 +121,14 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     status = models.CharField(max_length=32, null=True, blank=True)
+    raw_mls_modification_timestamp = models.DateTimeField(null=True, blank=True)
+    modification_timestamp = models.DateTimeField(null=True, blank=True)
+    originating_system_name = models.CharField(max_length=128, null=True, blank=True)
+    source_system_id = models.CharField(max_length=128, null=True, blank=True)
+    source_system_name = models.CharField(max_length=128, null=True, blank=True)
     raw_data = models.JSONField(null=True, blank=True)
 
     objects = TransactionQuerySet.as_manager()

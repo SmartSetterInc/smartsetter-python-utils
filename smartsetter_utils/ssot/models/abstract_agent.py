@@ -234,22 +234,29 @@ class AbstractAgent(
 
     id = models.CharField(max_length=32, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True, db_index=True)
+    member_firstname = models.CharField(max_length=128, null=True, blank=True)
+    member_middlename = models.CharField(max_length=128, null=True, blank=True)
+    member_lastname = models.CharField(max_length=128, null=True, blank=True)
     email = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     verified_phone = models.CharField(max_length=32, null=True, blank=True)
     verified_phone_source = models.CharField(
         max_length=32, null=True, blank=True, choices=PHONE_VERIFIED_SOURCE_CHOICES
     )
+    member_directphone = models.CharField(max_length=32, null=True, blank=True)
+    member_homephone = models.CharField(max_length=32, null=True, blank=True)
+    member_preferred_phone = models.CharField(max_length=32, null=True, blank=True)
     office = models.ForeignKey(
         Office,
         related_name="%(class)ss",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        db_index=False,
     )
     office_name = models.CharField(max_length=256, null=True, blank=True, db_index=True)
     job_title = models.CharField(max_length=256, null=True, blank=True)
     brand = models.ForeignKey(
-        Brand, related_name="%(class)ss", null=True, on_delete=models.SET_NULL
+        Brand, related_name="%(class)ss", null=True, on_delete=models.SET_NULL, db_index=False,
     )
     years_in_business = models.PositiveSmallIntegerField(
         null=True, blank=True, db_index=True
@@ -282,6 +289,10 @@ class AbstractAgent(
     role = models.CharField(
         max_length=16, choices=ROLE_CHOICES, db_index=True, null=True, blank=True
     )
+    member_type = models.CharField(max_length=128, null=True, blank=True)
+    member_mlssecurity_class = models.CharField(max_length=256, null=True, blank=True)
+    member_mlsid = models.CharField(max_length=128, null=True, blank=True)
+    member_state_license = models.CharField(max_length=128, null=True, blank=True)
 
     objects = AgentQuerySet.as_manager()
 
@@ -301,18 +312,23 @@ class AbstractAgent(
         """
         Must be called after setting total_transactions_count
         """
-        office_raw_data = self.office and self.office.raw_data
-        raw_data = self.raw_data
-        if office_raw_data and self.id in (
-            office_raw_data.get("OfficeBrokerKey"),
-            office_raw_data.get("OfficeManagerKey"),
-            office_raw_data.get("OfficeBrokerMlsId"),
+        #office_raw_data = self.office and self.office.raw_data
+        #raw_data = self.raw_data
+        # if office_raw_data and self.id in (
+        #     office_raw_data.get("OfficeBrokerKey"),
+        #     office_raw_data.get("OfficeManagerKey"),
+        #     office_raw_data.get("OfficeBrokerMlsId"),
+        # ):
+        if self.office and self.id in (
+            self.office.office_broker_key,
+            self.office.office_manager_key,
+            self.office.office_broker_mls_id,
         ):
             self.role = self.ROLE_CHOICES.broker
         else:
             if self.total_transactions_count > 0:
                 self.role = self.ROLE_CHOICES.agent
-            elif raw_data:
+            else:
 
                 def is_role_other(value: str, patterns):
                     if value:
@@ -322,8 +338,10 @@ class AbstractAgent(
                                 return True
                     return False
 
-                member_type = raw_data.get("MemberType")
-                security_class = raw_data.get("MemberMlsSecurityClass")
+                #member_type = raw_data.get("MemberType")
+                #security_class = raw_data.get("MemberMlsSecurityClass")
+                member_type = self.member_type 
+                security_class = self.member_mlssecurity_class
                 if is_role_other(member_type, member_type_patterns) or is_role_other(
                     security_class, security_class_patterns
                 ):
@@ -360,13 +378,13 @@ class AbstractAgent(
         }
 
     def get_hubspot_dict(self):
-        mls_modification_timestamp = self.raw_data.get("RawMlsModificationTimestamp")
+        mls_modification_timestamp = self.raw_mls_modification_timestamp #self.raw_data.get("RawMlsModificationTimestamp")
         return {
             "email": self.email,
-            "firstname": self.raw_data["MemberFirstName"],
-            "lastname": self.raw_data["MemberLastName"],
-            "middle_name": self.raw_data["MemberMiddleName"],
-            "full_name": self.raw_data["MemberFullName"],
+            "firstname": self.member_firstname,
+            "lastname": self.member_lastname,
+            "middle_name": self.member_middlename,
+            "full_name": self.name,
             "company": self.office_name,
             "address": self.address,
             "city": self.city,
@@ -377,20 +395,20 @@ class AbstractAgent(
             "mls_name__dropdown_": (
                 self.mls.get_contact_hubspot_internal_value() if self.mls else None
             ),
-            "memberdirectphone": self.raw_data["MemberDirectPhone"],
-            "memberhomephone": self.raw_data["MemberHomePhone"],
-            "resomemberkeyunique": self.raw_data["MemberKey"],
-            "membermlsid": self.raw_data["MemberMlsId"],
-            "membermlssecurityclass": self.raw_data["MemberMlsSecurityClass"],
-            "resomembermobilephone": self.raw_data["MemberMobilePhone"],
-            "memberpreferredphone": self.raw_data["MemberPreferredPhone"],
-            "resomemberstatus": self.raw_data["MemberStatus"],
-            "resomembertype": self.raw_data["MemberType"],
-            "resomodificationtimestamp": self.raw_data["ModificationTimestamp"],
-            "originatingsystemname": self.raw_data["OriginatingSystemName"],
+            "memberdirectphone": self.member_directphone,
+            "memberhomephone": self.member_homephone,
+            "resomemberkeyunique": self.id,
+            "membermlsid": self.member_mlsid,
+            "membermlssecurityclass": self.member_mlssecurity_class,
+            "resomembermobilephone": self.phone,
+            "memberpreferredphone": self.member_preferred_phone,
+            "resomemberstatus": self.status,
+            "resomembertype": self.member_type,
+            "resomodificationtimestamp": self.modification_timestamp,
+            "originatingsystemname": self.originating_system_name   ,
             "rawmlsmodificationtimestamp": mls_modification_timestamp
             and get_hubspot_timestamp_from_iso_date(mls_modification_timestamp),
-            "memberstatelicense": self.raw_data["MemberStateLicense"],
+            "memberstatelicense": self.member_state_license,
             "reso_data_": "true",
             **self.get_hubspot_stats_dict(),
         }
