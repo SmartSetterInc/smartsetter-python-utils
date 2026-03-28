@@ -37,6 +37,13 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
     id = models.CharField(max_length=256, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True)
     office_id = models.CharField(max_length=128, null=True, blank=True)
+    office_broker_key = models.CharField(max_length=128, null=True, blank=True)
+    office_manager_key = models.CharField(max_length=128, null=True, blank=True)
+    office_broker_mls_id = models.CharField(max_length=128, null=True, blank=True)
+    main_office_key = models.CharField(max_length=128, null=True, blank=True)
+    main_office_name = models.CharField(max_length=128, null=True, blank=True)
+    office_mls_id = models.CharField(max_length=128, null=True, blank=True)
+
     churn_score = models.FloatField(
         null=True,
         blank=True,
@@ -113,20 +120,18 @@ class Office(RealityDBBase, LifecycleModelMixin, CommonFields, AgentOfficeCommon
         if self.source == self.SOURCE_CHOICES.constellation:
             hubspot_dict["resoofficekey"] = self.id
             hubspot_dict["resoofficestatus"] = self.status
-            hubspot_dict["resomainofficekey"] = self.raw_data["MainOfficeKey"]
-            hubspot_dict["resomainofficename"] = self.raw_data["MainOfficeName"]
-            hubspot_dict["resoofficemlsid"] = self.raw_data["OfficeMlsId"]
+            hubspot_dict["resomainofficekey"] = self.main_office_key
+            hubspot_dict["resomainofficename"] = self.main_office_name
+            hubspot_dict["resoofficemlsid"] = self.office_mls_id
             hubspot_dict["resoofficename"] = self.name
-            hubspot_dict["originatingsystemname"] = self.raw_data[
-                "OriginatingSystemName"
-            ]
+            hubspot_dict["originatingsystemname"] = self.originating_system_name
             hubspot_dict["rawmlsmodificationtimestamp"] = (
                 get_hubspot_timestamp_from_iso_date(
-                    self.raw_data["RawMlsModificationTimestamp"]
+                    self.raw_mls_modification_timestamp
                 )
             )
-            hubspot_dict["sourcesystemid"] = self.raw_data["SourceSystemID"]
-            hubspot_dict["sourcesystemname"] = self.raw_data["SourceSystemName"]
+            hubspot_dict["sourcesystemid"] = self.source_system_id
+            hubspot_dict["sourcesystemname"] = self.source_system_name
             hubspot_dict["reso_data_"] = "true"
         return hubspot_dict
 

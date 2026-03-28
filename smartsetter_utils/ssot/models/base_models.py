@@ -34,7 +34,7 @@ class AgentOfficeCommonFields(TimeStampedModel):
         max_length=CITY_FIELD_LENGTH, null=True, blank=True, db_index=True
     )
     zipcode = models.CharField(max_length=32, null=True, blank=True, db_index=True)
-    location = models.PointField(null=True, blank=True, srid=4326)
+    location = models.PointField(null=True, blank=True, srid=4326, db_index=False)
     phone = models.CharField(max_length=32, null=True, db_index=True)
     state = models.CharField(max_length=16, null=True, blank=True, db_index=True)
     status = models.CharField(max_length=32, null=True, blank=True, db_index=True)
@@ -42,6 +42,12 @@ class AgentOfficeCommonFields(TimeStampedModel):
         "MLS", related_name="%(class)ss", null=True, on_delete=models.SET_NULL
     )
     hubspot_id = models.CharField(max_length=128, null=True, blank=True)
+    raw_mls_modification_timestamp = models.DateTimeField(null=True, blank=True)
+    modification_timestamp = models.DateTimeField(null=True, blank=True)
+    originating_system_name = models.CharField(max_length=128, null=True, blank=True)
+    source_system_id = models.CharField(max_length=128, null=True, blank=True)
+    source_system_name = models.CharField(max_length=128, null=True, blank=True)
+
     raw_data = models.JSONField(null=True, blank=True)
 
     objects = CommonQuerySet.as_manager()
