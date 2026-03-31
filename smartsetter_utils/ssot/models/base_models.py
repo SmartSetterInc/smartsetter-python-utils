@@ -48,8 +48,6 @@ class AgentOfficeCommonFields(TimeStampedModel):
     source_system_id = models.CharField(max_length=128, null=True, blank=True)
     source_system_name = models.CharField(max_length=128, null=True, blank=True)
 
-    raw_data = models.JSONField(null=True, blank=True)
-
     objects = CommonQuerySet.as_manager()
 
     class Meta:
