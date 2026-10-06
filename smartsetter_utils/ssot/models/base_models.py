@@ -13,6 +13,7 @@ class CommonFields(models.Model):
         ("nureality", "Reality API"),
         ("trestle", "Trestle"),
         ("mlsgrid", "MLSGrid"),
+        ("restats", "Restats"),
     )
 
     source = models.CharField(
