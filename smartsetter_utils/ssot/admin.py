@@ -212,6 +212,13 @@ class MLSAdmin(admin.ModelAdmin):
     ]
     search_fields = ["name", "source"]
 
+    def get_readonly_fields(self, request, obj=None):
+        # Source is picked when the MLS is created. It stays read-only afterwards
+        # because it is part of the MLS's agent materialized view name.
+        if obj is None:
+            return [field for field in self.readonly_fields if field != "source"]
+        return self.readonly_fields
+
     @admin.display(description="Agents", ordering="agent_count")
     def agents(self, mls):
         return mls.agents.count()
