@@ -791,6 +791,12 @@ class RestatsGgarAgent(AbstractAgent):
         managed = False
 
 
+class RestatsMfrmlsAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_mfrmls"
+        managed = False
+
+
 class RestatsNorthstarmlsAgent(AbstractAgent):
     class Meta:
         db_table = "ssot_agent_restats_northstarmls"
