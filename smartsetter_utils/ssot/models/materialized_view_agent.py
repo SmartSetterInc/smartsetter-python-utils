@@ -766,3 +766,44 @@ class ConstellationSanantonioAgent(AbstractAgent):
     class Meta:
         db_table = "ssot_agent_constellation_sanantonio"
         managed = False
+
+class RestatsCcarAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_ccar"
+        managed = False
+
+
+class RestatsCcbrAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_ccbr"
+        managed = False
+
+
+class RestatsCtarchsmlsAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_ctarchsmls"
+        managed = False
+
+
+class RestatsGgarAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_ggar"
+        managed = False
+
+
+class RestatsNorthstarmlsAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_northstarmls"
+        managed = False
+
+
+class RestatsOttawaonAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_ottawaon"
+        managed = False
+
+
+class RestatsWuarAgent(AbstractAgent):
+    class Meta:
+        db_table = "ssot_agent_restats_wuar"
+        managed = False
