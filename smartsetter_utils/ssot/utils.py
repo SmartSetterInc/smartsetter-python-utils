@@ -33,6 +33,24 @@ def get_brand_fixed_office_name(office_name):
     return office_name
 
 
+def split_filter_values(filter_value):
+    """
+    Commas separate alternatives in the filter dialog's text fields.
+
+    The "is one of" / "is none of" inputs split on commas client-side and send a
+    list, but "contains" / "does not contain" send the raw string, so
+    "Remax, Coldwell Banker" arrived as one literal value and matched nothing.
+    Accepts either shape and always returns a list of non-empty terms.
+    """
+    if isinstance(filter_value, (list, tuple)):
+        values = filter_value
+    elif isinstance(filter_value, str):
+        values = filter_value.split(",")
+    else:
+        return [filter_value]
+    return [value.strip() for value in values if str(value).strip()]
+
+
 def apply_filter_to_queryset(queryset, filter):
     field_name = filter["field"]
     filter_method = queryset.filter
@@ -51,6 +69,16 @@ def apply_filter_to_queryset(queryset, filter):
         case "is_one_of" | "is_none_of":
             field_lookup = "in"
         case "contains" | "not_contains":
+            # "Remax, Coldwell Banker" means either brokerage, not one literal
+            # string. A single term keeps the previous behaviour exactly.
+            values = split_filter_values(filter_value)
+            if len(values) > 1:
+                query = Q()
+                for value in values:
+                    query |= Q(**{f"{field_name}__icontains": value})
+                return filter_method(query)
+            if values:
+                filter_value = values[0]
             field_lookup = "icontains"
         case "exists" | "not_exists":
             query = Q(

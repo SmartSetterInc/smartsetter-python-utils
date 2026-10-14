@@ -37,3 +37,69 @@ class TestApplyFilterToQuerySet(TestCase):
         self.make_agent(email="")
         self.make_agent(email=None)
         return agent_with_email
+
+
+class TestCommaSeparatedContainsFilters(TestCase):
+    """
+    The filter dialog sends "contains" / "does not contain" as a raw string, so
+    a comma-separated list used to be matched as one literal value and excluded
+    nothing. See split_filter_values.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.remax = self.make_agent(office_name="RE/MAX Premier Properties")
+        self.coldwell = self.make_agent(office_name="Coldwell Banker Realty")
+        self.other = self.make_agent(office_name="Keller Williams Realty")
+
+    def test_contains_matches_any_comma_separated_term(self):
+        filtered = apply_filter_to_queryset(
+            Agent.objects.all(),
+            {"field": "office_name", "type": "contains", "value": "RE/MAX, Coldwell"},
+        )
+
+        self.assertCountEqual(filtered, [self.remax, self.coldwell])
+
+    def test_not_contains_excludes_every_comma_separated_term(self):
+        filtered = apply_filter_to_queryset(
+            Agent.objects.all(),
+            {
+                "field": "office_name",
+                "type": "not_contains",
+                "value": "RE/MAX, Coldwell",
+            },
+        )
+
+        self.assertCountEqual(filtered, [self.other])
+
+    def test_single_term_is_unchanged(self):
+        filtered = apply_filter_to_queryset(
+            Agent.objects.all(),
+            {"field": "office_name", "type": "contains", "value": "Coldwell"},
+        )
+
+        self.assertCountEqual(filtered, [self.coldwell])
+
+    def test_whitespace_and_empty_terms_are_ignored(self):
+        filtered = apply_filter_to_queryset(
+            Agent.objects.all(),
+            {
+                "field": "office_name",
+                "type": "contains",
+                "value": "  RE/MAX ,, Coldwell  ,",
+            },
+        )
+
+        self.assertCountEqual(filtered, [self.remax, self.coldwell])
+
+    def test_accepts_an_already_split_list(self):
+        filtered = apply_filter_to_queryset(
+            Agent.objects.all(),
+            {
+                "field": "office_name",
+                "type": "contains",
+                "value": ["RE/MAX", "Coldwell"],
+            },
+        )
+
+        self.assertCountEqual(filtered, [self.remax, self.coldwell])
