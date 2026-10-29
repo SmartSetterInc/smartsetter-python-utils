@@ -158,6 +158,10 @@ class AgentQuerySet(CommonQuerySet):
             "not_contains",
             "gt",
             "lt",
+            "gte",
+            "lte",
+            "between",
+            "starts_with",
             "exists",
             "not_exists",
         ]
