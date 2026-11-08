@@ -236,7 +236,9 @@ class AbstractAgent(
         (PHONE_VERIFIED_SOURCE_CLAY, "Clay"),
     )
 
-    id = models.CharField(max_length=32, primary_key=True)
+    # 64, not 32: Restats ids are "<key>__<board>" and long board names
+    # (e.g. GBRMLSGBRARNOMARROAM) push them past 32 characters.
+    id = models.CharField(max_length=64, primary_key=True)
     name = models.CharField(max_length=128, null=True, blank=True, db_index=True)
     member_firstname = models.CharField(max_length=128, null=True, blank=True)
     member_middlename = models.CharField(max_length=128, null=True, blank=True)

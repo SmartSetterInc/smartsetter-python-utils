@@ -39,7 +39,9 @@ class Transaction(RealityDBBase, LifecycleModelMixin, CommonFields, TimeStampedM
 
     reality_table_name = "tblTransactions"
 
-    id = models.CharField(max_length=32, primary_key=True)
+    # 64, not 32: Restats ids are "<key>__<board>" and long board names
+    # (e.g. GBRMLSGBRARNOMARROAM) push them past 32 characters.
+    id = models.CharField(max_length=64, primary_key=True)
     mls_number = models.CharField(max_length=32, null=True, blank=True)
     mls = models.ForeignKey(
         MLS, related_name="transactions", null=True, on_delete=models.SET_NULL
